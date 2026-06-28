@@ -27,7 +27,7 @@ const SLIDES = [
 export function HeroSection() {
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   function goTo(i: number) {
     setActive(i);
