@@ -1,0 +1,78 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { MobileNav } from "./mobile-nav";
+import { useCart } from "@/components/cart/cart-provider";
+
+export function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { cart, openCart } = useCart();
+  const pathname = usePathname();
+
+  const isHome = pathname === "/";
+  const isTransparent = isHome && !scrolled;
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 50);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <>
+      <header
+        className={`fixed top-0 z-50 w-full transition-all duration-200 ${
+          isTransparent
+            ? "bg-transparent"
+            : "bg-white/95 backdrop-blur-sm"
+        }`}
+      >
+        <div className="mx-auto flex h-[60px] max-w-[90rem] items-center justify-between px-6 sm:px-10">
+          {/* Left — hamburger */}
+          <div className="flex items-center">
+            <button
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+              className="flex flex-col gap-[4px]"
+            >
+              <span className={`block h-[1.5px] w-[18px] transition-colors ${isTransparent ? "bg-white" : "bg-black"}`} />
+              <span className={`block h-[1.5px] w-[18px] transition-colors ${isTransparent ? "bg-white" : "bg-black"}`} />
+            </button>
+          </div>
+
+          {/* Center — Logo */}
+          <Link
+            href="/"
+            className={`absolute left-1/2 -translate-x-1/2 font-display text-lg font-bold tracking-[0.08em] uppercase sm:text-xl transition-colors duration-200 ${isTransparent ? "text-white" : "text-black"}`}
+          >
+            DUSK&CO
+          </Link>
+
+          {/* Right — Shop Now + Cart */}
+          <div className="flex items-center gap-6">
+            <Link
+              href="/collections/frontpage"
+              className={`hidden sm:block font-primary text-[13px] font-bold tracking-[0.08em] uppercase transition-colors duration-200 ${isTransparent ? "text-white/80 hover:text-white" : "text-black/70 hover:text-black"}`}
+            >
+              Shop Now
+            </Link>
+            <button
+              onClick={openCart}
+              className={`font-primary text-[13px] font-bold tracking-[0.08em] uppercase transition-colors duration-200 ${isTransparent ? "text-white/80 hover:text-white" : "text-black/70 hover:text-black"}`}
+            >
+              Cart{cart && cart.totalQuantity > 0 ? ` (${cart.totalQuantity})` : ""}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
+    </>
+  );
+}
