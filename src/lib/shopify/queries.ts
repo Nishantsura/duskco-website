@@ -1,8 +1,23 @@
 import { shopifyFetch } from "./client";
-import type { Product, Collection } from "./types";
+import type { Product, Collection, SizeChart } from "./types";
 import { SEED_PRODUCTS } from "@/lib/seed-products";
 
 const USE_SEED_DATA = false;
+
+interface RawProduct extends Omit<Product, "sizeChart"> {
+  metafield?: { value: string; type: string } | null;
+}
+
+function parseSizeChart(raw: RawProduct): Product {
+  let sizeChart: SizeChart | null = null;
+  if (raw.metafield?.value) {
+    try {
+      sizeChart = JSON.parse(raw.metafield.value);
+    } catch {}
+  }
+  const { metafield: _, ...rest } = raw;
+  return { ...rest, sizeChart };
+}
 
 const PRODUCT_FRAGMENT = `
   fragment ProductFields on Product {
@@ -73,6 +88,10 @@ const PRODUCT_FRAGMENT = `
       name
       values
     }
+    metafield(namespace: "custom", key: "size_chart") {
+      value
+      type
+    }
   }
 `;
 
@@ -82,7 +101,7 @@ export async function getProducts(first = 20) {
   }
 
   const data = await shopifyFetch<{
-    products: { edges: { node: Product }[] };
+    products: { edges: { node: RawProduct }[] };
   }>({
     query: `
       ${PRODUCT_FRAGMENT}
@@ -99,7 +118,7 @@ export async function getProducts(first = 20) {
     variables: { first },
   });
 
-  return data.products.edges.map((e) => e.node);
+  return data.products.edges.map((e) => parseSizeChart(e.node));
 }
 
 export async function getProductByHandle(handle: string) {
@@ -108,7 +127,7 @@ export async function getProductByHandle(handle: string) {
   }
 
   const data = await shopifyFetch<{
-    productByHandle: Product | null;
+    productByHandle: RawProduct | null;
   }>({
     query: `
       ${PRODUCT_FRAGMENT}
@@ -121,7 +140,7 @@ export async function getProductByHandle(handle: string) {
     variables: { handle },
   });
 
-  return data.productByHandle;
+  return data.productByHandle ? parseSizeChart(data.productByHandle) : null;
 }
 
 export async function getCollections(first = 20) {
@@ -196,7 +215,7 @@ export async function getCollectionByHandle(handle: string, first = 50) {
 
 export async function searchProducts(query: string, first = 20) {
   const data = await shopifyFetch<{
-    products: { edges: { node: Product }[] };
+    products: { edges: { node: RawProduct }[] };
   }>({
     query: `
       ${PRODUCT_FRAGMENT}
@@ -213,5 +232,5 @@ export async function searchProducts(query: string, first = 20) {
     variables: { query, first },
   });
 
-  return data.products.edges.map((e) => e.node);
+  return data.products.edges.map((e) => parseSizeChart(e.node));
 }

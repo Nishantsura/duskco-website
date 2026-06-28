@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Product } from "@/lib/shopify/types";
 import { useCart } from "@/components/cart/cart-provider";
+import { SizeGuide } from "@/components/shop/size-guide";
 
 function formatPrice(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("en-IN", {
@@ -28,6 +29,7 @@ export function ProductInfo({ product }: { product: Product }) {
   const { addItem, isPending } = useCart();
   const [selectedSize, setSelectedSize] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("Details & Description");
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   function getVariantForSize(size: string) {
     return variants.find((v) =>
@@ -65,9 +67,14 @@ export function ProductInfo({ product }: { product: Product }) {
             <p className="font-primary text-[12px] font-medium tracking-[0.06em] text-neutral-500 uppercase">
               Size
             </p>
-            <button className="font-primary text-[12px] font-medium text-neutral-900 underline underline-offset-2 transition-colors hover:text-neutral-500">
-              Size Guide
-            </button>
+            {product.sizeChart && (
+              <button
+                onClick={() => setSizeGuideOpen(true)}
+                className="font-primary text-[12px] font-medium text-neutral-900 underline underline-offset-2 transition-colors hover:text-neutral-500"
+              >
+                Size Guide
+              </button>
+            )}
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             {sizes.map((size) => {
@@ -187,6 +194,14 @@ export function ProductInfo({ product }: { product: Product }) {
           )}
         </div>
       </div>
+
+      {product.sizeChart && (
+        <SizeGuide
+          chart={product.sizeChart}
+          open={sizeGuideOpen}
+          onClose={() => setSizeGuideOpen(false)}
+        />
+      )}
     </div>
   );
 }

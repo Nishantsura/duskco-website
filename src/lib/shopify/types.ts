@@ -38,6 +38,13 @@ export interface Product {
     maxVariantPrice: MoneyV2;
   };
   options: { id: string; name: string; values: string[] }[];
+  sizeChart?: SizeChart | null;
+}
+
+export interface SizeChart {
+  unit: string;
+  columns: string[];
+  rows: { size: string; values: number[] }[];
 }
 
 export interface Collection {
