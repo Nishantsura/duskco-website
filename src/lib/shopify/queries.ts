@@ -2,7 +2,7 @@ import { shopifyFetch } from "./client";
 import type { Product, Collection } from "./types";
 import { SEED_PRODUCTS } from "@/lib/seed-products";
 
-const USE_SEED_DATA = true;
+const USE_SEED_DATA = false;
 
 const PRODUCT_FRAGMENT = `
   fragment ProductFields on Product {

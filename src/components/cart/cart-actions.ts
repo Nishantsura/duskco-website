@@ -13,7 +13,7 @@ import { SEED_PRODUCTS } from "@/lib/seed-products";
 
 const CART_COOKIE = "duskco-cart-id";
 const SEED_CART_COOKIE = "duskco-seed-cart";
-const USE_SEED_DATA = true;
+const USE_SEED_DATA = false;
 
 interface SeedCartLine {
   id: string;
