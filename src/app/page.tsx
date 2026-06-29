@@ -42,7 +42,7 @@ export default async function HomePage() {
           {/* View All */}
           <div className="mt-16 flex justify-center">
             <Link
-              href="/collections/frontpage"
+              href="/shop"
               className="rounded-full border border-black bg-white px-12 py-3.5 font-primary text-[11px] font-normal tracking-[0.08em] text-black uppercase transition-all duration-200 hover:bg-black hover:text-white"
             >
               View All

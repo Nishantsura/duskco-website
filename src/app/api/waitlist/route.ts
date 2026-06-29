@@ -14,16 +14,19 @@ export async function POST(request: Request) {
     const timestamp = new Date().toISOString();
 
     const results = await Promise.allSettled([
+      createShopifyCustomer({ email, name }),
       appendToGoogleSheet({ email, name, timestamp }),
       sendEmailNotification({ email, name, timestamp }),
     ]);
 
-    const sheetResult = results[0];
+    const [shopifyResult, sheetResult, emailResult] = results;
+
+    if (shopifyResult.status === "rejected") {
+      console.error("Shopify customer error:", shopifyResult.reason);
+    }
     if (sheetResult.status === "rejected") {
       console.error("Google Sheets error:", sheetResult.reason);
     }
-
-    const emailResult = results[1];
     if (emailResult.status === "rejected") {
       console.error("Email notification error:", emailResult.reason);
     }
@@ -35,6 +38,44 @@ export async function POST(request: Request) {
       { error: "Failed to join waitlist" },
       { status: 500 }
     );
+  }
+}
+
+async function createShopifyCustomer({
+  email,
+  name,
+}: {
+  email: string;
+  name: string;
+}) {
+  const [firstName, ...rest] = name.trim().split(" ");
+  const lastName = rest.join(" ") || "";
+
+  const res = await fetch(
+    "https://duskco-brqicsmo.myshopify.com/admin/api/2025-04/customers.json",
+    {
+      method: "POST",
+      headers: {
+        "X-Shopify-Access-Token": process.env.SHOPIFY_ADMIN_TOKEN ?? "",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customer: {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          tags: "waitlist",
+          send_email_welcome: false,
+        },
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.json();
+    // 422 = email already taken — not a real error for us
+    if (res.status === 422 && err.errors?.email) return;
+    throw new Error(`Shopify error ${res.status}: ${JSON.stringify(err)}`);
   }
 }
 

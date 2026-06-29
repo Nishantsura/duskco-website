@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto_Slab } from "next/font/google";
+import { Roboto_Slab, Bebas_Neue } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -13,6 +13,13 @@ const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
   subsets: ["latin"],
   weight: ["100", "300", "400", "700"],
+  display: "swap",
+});
+
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas-neue",
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -43,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${robotoSlab.variable} ${expansiva.variable} h-full antialiased`}>
+    <html lang="en" className={`${robotoSlab.variable} ${expansiva.variable} ${bebasNeue.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <CartProvider>
           <QuickViewProvider>

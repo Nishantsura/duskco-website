@@ -39,6 +39,11 @@
 
   --font-primary: var(--font-roboto-slab);
   --font-display: var(--font-expansiva);
+  --font-street: var(--font-bebas-neue);
+}
+
+.font-street {
+  font-family: var(--font-bebas-neue), "Bebas Neue", sans-serif;
 }
 
 body {

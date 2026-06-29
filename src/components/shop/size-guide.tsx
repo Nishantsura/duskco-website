@@ -147,9 +147,24 @@ export function SizeGuide({
       </div>
 
       {/* ── Desktop: anchored to bottom of left (static) image ── */}
+      <style>{`
+        .size-guide-desktop {
+          left: 0;
+          width: calc((min(100vw, 1600px) - 400px - 4px) / 2);
+        }
+        @media (min-width: 1280px) {
+          .size-guide-desktop {
+            width: calc((min(100vw, 1600px) - 440px - 4px) / 2);
+          }
+        }
+        @media (min-width: 1600px) {
+          .size-guide-desktop {
+            left: calc((100vw - 1600px) / 2);
+          }
+        }
+      `}</style>
       <div
-        className="fixed bottom-0 left-0 z-50 hidden bg-white/95 backdrop-blur-sm lg:block"
-        style={{ width: "calc((min(100vw, 1600px) - 400px) / 2)" }}
+        className="size-guide-desktop fixed bottom-0 z-50 hidden bg-white/95 backdrop-blur-sm lg:block"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

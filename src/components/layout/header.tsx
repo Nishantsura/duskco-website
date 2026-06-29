@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { ShoppingBag } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
 import { useCart } from "@/components/cart/cart-provider";
 
@@ -54,19 +55,25 @@ export function Header() {
             DUSK&CO
           </Link>
 
-          {/* Right — Shop Now + Cart */}
+          {/* Right — Stage 1 + Cart icon */}
           <div className="flex items-center gap-6">
             <Link
-              href="/collections/frontpage"
-              className={`hidden sm:block font-primary text-[13px] font-bold tracking-[0.08em] uppercase transition-colors duration-200 ${isTransparent ? "text-white/80 hover:text-white" : "text-black/70 hover:text-black"}`}
+              href="/shop"
+              className="hidden sm:block font-primary text-[13px] font-bold tracking-[0.08em] uppercase transition-colors duration-200 text-accent-orange hover:opacity-70"
             >
-              Shop Now
+              Stage 1
             </Link>
             <button
               onClick={openCart}
-              className={`font-primary text-[13px] font-bold tracking-[0.08em] uppercase transition-colors duration-200 ${isTransparent ? "text-white/80 hover:text-white" : "text-black/70 hover:text-black"}`}
+              className={`relative transition-colors duration-200 ${
+                isTransparent ? "text-white/80 hover:text-white" : "text-black/70 hover:text-black"
+              }`}
+              aria-label={cart?.totalQuantity ? `Open cart, ${cart.totalQuantity} items` : "Open cart"}
             >
-              Cart{cart && cart.totalQuantity > 0 ? ` (${cart.totalQuantity})` : ""}
+              <ShoppingBag size={20} strokeWidth={1.5} />
+              {cart && cart.totalQuantity > 0 && (
+                <span className="absolute -right-1 -top-1 block h-[7px] w-[7px] rounded-full bg-accent-orange" />
+              )}
             </button>
           </div>
         </div>
