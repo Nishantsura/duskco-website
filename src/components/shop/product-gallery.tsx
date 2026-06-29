@@ -6,10 +6,16 @@ import type { ShopifyImage } from "@/lib/shopify/types";
 
 export function ProductGallery({ images }: { images: ShopifyImage[] }) {
   const [active, setActive] = useState(0);
+  const [isStuck, setIsStuck] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("");
   const trackRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
   const startScroll = useRef(0);
   const isDragging = useRef(false);
+
+  const NAVBAR_H = 60;
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -44,6 +50,41 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
     track.addEventListener("scroll", onScroll, { passive: true });
     return () => track.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Detect when the thumbnail dock should become fixed
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsStuck(!entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: `-${NAVBAR_H}px 0px 0px 0px` }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  // Read selected size from ProductInfo's active button
+  useEffect(() => {
+    if (!isStuck) {
+      setSelectedSize("");
+      return;
+    }
+
+    function readSize() {
+      const activeBtn = document.querySelector('[data-size-btn="active"]');
+      if (activeBtn) {
+        setSelectedSize(activeBtn.textContent?.trim() || "");
+      }
+    }
+
+    readSize();
+    const interval = setInterval(readSize, 300);
+    return () => clearInterval(interval);
+  }, [isStuck]);
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     const track = trackRef.current;
@@ -88,7 +129,7 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
   return (
     <>
       {/* ── Mobile + Tablet — swipeable carousel ── */}
-      <div className="lg:hidden">
+      <div ref={carouselRef} className="lg:hidden">
         {/* Carousel track */}
         <div
           ref={trackRef}
@@ -116,8 +157,11 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
           ))}
         </div>
 
-        {/* Thumbnail dock */}
-        {images.length > 1 && (
+        {/* Sentinel — marks the natural position of the dock */}
+        <div ref={sentinelRef} className="h-0 w-full" />
+
+        {/* In-flow thumbnails — shown only when NOT stuck */}
+        {images.length > 1 && !isStuck && (
           <div className="flex gap-1.5 px-5 py-2.5">
             {images.map((img, i) => (
               <button
@@ -141,6 +185,52 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
           </div>
         )}
       </div>
+
+      {/* Fixed thumbnail bar — slides down when scrolled past the gallery (mobile only) */}
+      {images.length > 1 && (
+        <div
+          className={`fixed left-0 right-0 z-30 flex items-center gap-1.5 bg-[#EFEFEF]/95 px-3 py-1.5 backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] lg:hidden ${
+            isStuck
+              ? "translate-y-0 opacity-100 shadow-sm"
+              : "-translate-y-full opacity-0 pointer-events-none"
+          }`}
+          style={{ top: NAVBAR_H }}
+        >
+          {images.map((img, i) => (
+            <button
+              key={img.url}
+              onClick={() => {
+                scrollToSlide(i);
+                carouselRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className={`relative aspect-square w-5 flex-shrink-0 overflow-hidden rounded-[2px] transition-all duration-200 ${
+                i === active
+                  ? "ring-[1px] ring-brand-near-black ring-offset-[0.5px]"
+                  : "ring-1 ring-black/5 hover:ring-black/20"
+              }`}
+            >
+              <Image
+                src={img.url}
+                alt={img.altText || `Thumbnail ${i + 1}`}
+                fill
+                sizes="20px"
+                className="object-cover"
+              />
+            </button>
+          ))}
+
+          {selectedSize && (
+            <div className="ml-auto flex items-center">
+              <span className="flex h-6 items-center gap-1 rounded-full bg-brand-near-black pl-2.5 pr-2 font-street text-[11px] tracking-[0.08em] text-white uppercase">
+                {selectedSize}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/50">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Desktop — 2 columns: sticky cover + scrollable ── */}
       <div className="hidden gap-1 lg:grid lg:grid-cols-2">

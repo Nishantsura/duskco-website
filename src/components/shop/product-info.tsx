@@ -83,6 +83,7 @@ export function ProductInfo({ product }: { product: Product }) {
               return (
                 <button
                   key={size}
+                  data-size-btn={active ? "active" : undefined}
                   onClick={() => available && setSelectedSize(size)}
                   disabled={!available}
                   className={`flex h-11 min-w-[56px] items-center justify-center rounded-full border px-5 font-primary text-[13px] transition-all ${
