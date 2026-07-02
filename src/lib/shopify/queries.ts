@@ -4,6 +4,29 @@ import { SEED_PRODUCTS } from "@/lib/seed-products";
 
 const USE_SEED_DATA = false;
 
+// Only show Bluorang-scraped catalogue; hide default/test Shopify products.
+const BLUORANG_HANDLES = new Set([
+  "puyma-t-shirt-red",
+  "tiger-fury-t-shirt-orange",
+  "swan-t-shirt-pink",
+  "fade-flora-ombre-t-shirt",
+  "iced-t-shirt-black",
+  "serpent-bloom-zipper-hoodie-red",
+  "meadow-blue-hoodie",
+  "favourite-child-hoodie-brown",
+  "nocturnal-hoodie-black",
+  "boxy-utility-jacket-brown",
+  "techwear-over-jacket-black",
+  "indigo-bloom-denim-jacket",
+  "ripstop-cargos-black",
+  "ripstop-cargos-olive",
+  "ripstop-cargos-brown",
+]);
+
+function isAllowed(p: { handle: string }) {
+  return BLUORANG_HANDLES.has(p.handle);
+}
+
 interface RawProduct extends Omit<Product, "sizeChart"> {
   metafield?: { value: string; type: string } | null;
 }
@@ -100,6 +123,9 @@ export async function getProducts(first = 20) {
     return SEED_PRODUCTS.slice(0, first);
   }
 
+  // Fetch a wider window so filtering leaves enough Bluorang items.
+  const fetchCount = Math.max(first, 100);
+
   const data = await shopifyFetch<{
     products: { edges: { node: RawProduct }[] };
   }>({
@@ -115,10 +141,13 @@ export async function getProducts(first = 20) {
         }
       }
     `,
-    variables: { first },
+    variables: { first: fetchCount },
   });
 
-  return data.products.edges.map((e) => parseSizeChart(e.node));
+  return data.products.edges
+    .map((e) => parseSizeChart(e.node))
+    .filter(isAllowed)
+    .slice(0, first);
 }
 
 export async function getProductByHandle(handle: string) {

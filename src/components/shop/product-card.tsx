@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/shopify/types";
 import { useQuickView } from "./quick-view-provider";
+import { useCart } from "@/components/cart/cart-provider";
 
 function formatPrice(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("en-IN", {
@@ -75,10 +76,14 @@ function getCategoryLabel(title: string): string {
 
 export function ProductCard({ product }: { product: Product }) {
   const { open: openQuickView } = useQuickView();
+  const { lastAddedProductId } = useCart();
+  const justAdded = lastAddedProductId === product.id;
   const price = product.priceRange.minVariantPrice;
   const images = product.images?.edges?.map((e) => e.node) ?? [];
   const [idx, setIdx] = useState(0);
   const [activeColor, setActiveColor] = useState(0);
+  const [isHover, setIsHover] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const hasMultiple = images.length > 1;
   const current = images[idx] ?? product.featuredImage;
@@ -88,24 +93,30 @@ export function ProductCard({ product }: { product: Product }) {
   const colors = getColorsForProduct(product.title);
   const hasColors = colors.length > 1;
 
-  function prev(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    setIdx((i) => (i - 1 + images.length) % images.length);
-  }
+  useEffect(() => {
+    if (!isHover || !hasMultiple) return;
+    intervalRef.current = setInterval(() => {
+      setIdx((i) => (i + 1) % images.length);
+    }, 800);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isHover, hasMultiple, images.length]);
 
-  function next(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    setIdx((i) => (i + 1) % images.length);
-  }
+  useEffect(() => {
+    if (!isHover) setIdx(0);
+  }, [isHover]);
 
   return (
-    <div className="group">
+    <div
+      className="group"
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
       {/* Image */}
       <Link
         href={`/products/${product.handle}`}
-        className="relative block aspect-[3/4] w-full overflow-hidden bg-[#f0f0f0]"
+        className="relative block aspect-[3/4] w-full overflow-hidden rounded-[0.2rem] bg-white"
       >
         {current ? (
           <Image
@@ -123,38 +134,6 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {hasMultiple && (
-          <>
-            <button
-              onClick={prev}
-              aria-label="Previous image"
-              className="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-300 bg-white/90 opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:bg-white group-hover:opacity-100"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button
-              onClick={next}
-              aria-label="Next image"
-              className="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-300 bg-white/90 opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:bg-white group-hover:opacity-100"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              {images.map((_, i) => (
-                <span
-                  key={i}
-                  className={`block h-[5px] w-[5px] rounded-full transition-colors ${
-                    i === idx ? "bg-neutral-800" : "bg-neutral-400/60"
-                  }`}
-                />
-              ))}
-            </div>
-          </>
-        )}
       </Link>
 
       {/* Product info */}
@@ -192,13 +171,31 @@ export function ProductCard({ product }: { product: Product }) {
           </Link>
           <button
             onClick={() => openQuickView(product)}
-            aria-label="Quick view"
-            className="text-neutral-500 transition-colors hover:text-neutral-900"
+            aria-label={justAdded ? "Added" : "Quick view"}
+            className={`transition-colors ${justAdded ? "text-green-600" : "text-neutral-500 hover:text-neutral-900"}`}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" strokeLinecap="round" strokeLinejoin="round" />
-              <line x1="3" y1="6" x2="21" y2="6" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M16 10a4 4 0 01-8 0" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              className={`transition-transform duration-300 ${justAdded ? "scale-110" : "scale-100"}`}
+            >
+              {justAdded ? (
+                <path
+                  d="M5 12l5 5L20 7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              ) : (
+                <path
+                  d="M12 5v14M5 12h14"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
             </svg>
           </button>
         </div>

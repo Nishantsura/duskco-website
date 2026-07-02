@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { Store, Sparkles, MessageCircle, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 
 interface MobileNavProps {
   open: boolean;
@@ -10,9 +10,9 @@ interface MobileNavProps {
 }
 
 const LINKS = [
-  { label: "Shop", href: "/shop", icon: Store },
-  { label: "About", href: "/about", icon: Sparkles },
-  { label: "Contact", href: "/contact", icon: MessageCircle },
+  { label: "Shop", href: "/shop" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function MobileNav({ open, onClose }: MobileNavProps) {
@@ -55,21 +55,17 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
         </div>
 
         {/* Nav links */}
-        <nav className={`flex flex-col gap-3 px-8 pt-10 ${open ? "stagger-children" : ""}`}>
-          {LINKS.map((link) => {
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={onClose}
-                className="animate-slide-in-left flex items-center gap-3 font-primary text-[13px] font-bold tracking-[0.16em] text-white uppercase opacity-0 transition-colors hover:text-white/60"
-              >
-                <Icon size={18} strokeWidth={1.5} className="text-white/50" />
-                {link.label}
-              </Link>
-            );
-          })}
+        <nav className={`flex flex-col gap-1 px-8 pt-8 ${open ? "stagger-children" : ""}`}>
+          {LINKS.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={onClose}
+              className="animate-slide-in-left block font-primary text-[13px] font-bold tracking-[0.16em] text-white uppercase opacity-0 transition-colors hover:text-white/60 leading-tight py-1"
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Video */}

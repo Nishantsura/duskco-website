@@ -46,12 +46,12 @@ export default async function ProductPage({
   const relatedProducts = await getProducts(4);
 
   return (
-    <main className="pt-16">
+    <main className="bg-white pt-11">
       <div className="mx-auto max-w-[1600px]">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_440px]">
           <ProductGallery images={images} />
 
-          <div className="px-5 py-8 sm:px-8 lg:sticky lg:top-20 lg:self-start lg:py-10 lg:pr-10 lg:pl-8 xl:pl-10 xl:pr-14">
+          <div className="px-5 py-8 sm:px-8 lg:sticky lg:top-11 lg:h-[calc(100vh-2.75rem)] lg:self-start lg:py-10 lg:pr-10 lg:pl-8 xl:pl-10 xl:pr-14">
             <ProductInfo product={product} />
           </div>
         </div>

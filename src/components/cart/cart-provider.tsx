@@ -22,9 +22,11 @@ interface CartContext {
   isPending: boolean;
   openCart: () => void;
   closeCart: () => void;
-  addItem: (merchandiseId: string, quantity?: number) => Promise<void>;
+  addItem: (merchandiseId: string, quantity?: number, productId?: string) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
+  lastAddedProductId: string | null;
+  markAdded: (productId: string) => void;
 }
 
 const CartContext = createContext<CartContext | null>(null);
@@ -39,6 +41,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<Cart | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [lastAddedProductId, setLastAddedProductId] = useState<string | null>(null);
+
+  const markAdded = useCallback((productId: string) => {
+    setLastAddedProductId(productId);
+    setTimeout(() => {
+      setLastAddedProductId((cur) => (cur === productId ? null : cur));
+    }, 1500);
+  }, []);
 
   useEffect(() => {
     getCartAction().then(setCart);
@@ -48,14 +58,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const closeCart = useCallback(() => setIsOpen(false), []);
 
   const addItem = useCallback(
-    async (merchandiseId: string, quantity: number = 1) => {
+    async (merchandiseId: string, quantity: number = 1, productId?: string) => {
       startTransition(async () => {
         const updatedCart = await addToCartAction(merchandiseId, quantity);
         setCart(updatedCart);
         setIsOpen(true);
+        if (productId) markAdded(productId);
       });
     },
-    []
+    [markAdded]
   );
 
   const updateItem = useCallback(
@@ -88,6 +99,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       addItem,
       updateItem,
       removeItem,
+      lastAddedProductId,
+      markAdded,
     }}>
       {children}
     </CartContext>

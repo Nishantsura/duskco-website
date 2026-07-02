@@ -88,28 +88,29 @@ export function SizeGuide({
   if (!open) return null;
 
   return (
-    <>
-      {/* Backdrop — mobile only */}
-      <div
-        className="fixed inset-0 z-50 bg-black/30 transition-opacity lg:hidden"
-        onClick={onClose}
-      />
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" />
 
-      {/* ── Mobile: bottom sheet (~35% of screen) ── */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-2xl bg-white shadow-2xl lg:hidden"
-        style={{ maxHeight: "45vh" }}
+      {/* ── Centered popup ── */}
+      <div
+        className="relative z-10 flex w-full max-w-[440px] flex-col rounded-[0.2rem] bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-black/5 px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-black/5 px-6 py-4">
           <h3 className="font-primary text-[15px] font-medium text-neutral-900">
             Size guide
           </h3>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {/* Unit toggle */}
             <div className="flex overflow-hidden rounded-full border border-neutral-200">
               <button
                 onClick={() => setUnit("IN")}
-                className={`px-3 py-1 font-primary text-[11px] font-medium transition-colors ${
+                className={`px-4 py-1.5 font-primary text-[12px] font-medium transition-colors ${
                   unit === "IN"
                     ? "bg-neutral-900 text-white"
                     : "text-neutral-500 hover:text-neutral-700"
@@ -119,7 +120,7 @@ export function SizeGuide({
               </button>
               <button
                 onClick={() => setUnit("CM")}
-                className={`px-3 py-1 font-primary text-[11px] font-medium transition-colors ${
+                className={`px-4 py-1.5 font-primary text-[12px] font-medium transition-colors ${
                   unit === "CM"
                     ? "bg-neutral-900 text-white"
                     : "text-neutral-500 hover:text-neutral-700"
@@ -131,72 +132,7 @@ export function SizeGuide({
             {/* Close */}
             <button
               onClick={onClose}
-              className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-neutral-100"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-500">
-                <path d="M1 1l12 12M13 1L1 13" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Table */}
-        <div className="flex-1 overflow-y-auto px-5 py-3">
-          <SizeTable chart={chart} unit={unit} />
-        </div>
-      </div>
-
-      {/* ── Desktop: anchored to bottom of left (static) image ── */}
-      <style>{`
-        .size-guide-desktop {
-          left: 0;
-          width: calc((min(100vw, 1600px) - 400px - 4px) / 2);
-        }
-        @media (min-width: 1280px) {
-          .size-guide-desktop {
-            width: calc((min(100vw, 1600px) - 440px - 4px) / 2);
-          }
-        }
-        @media (min-width: 1600px) {
-          .size-guide-desktop {
-            left: calc((100vw - 1600px) / 2);
-          }
-        }
-      `}</style>
-      <div
-        className="size-guide-desktop fixed bottom-0 z-50 hidden bg-white/95 backdrop-blur-sm lg:block"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-black/5 px-6 py-3">
-          <h3 className="font-primary text-[15px] font-medium text-neutral-900">
-            Size guide
-          </h3>
-          <div className="flex items-center gap-4">
-            <div className="flex overflow-hidden rounded-full border border-neutral-200">
-              <button
-                onClick={() => setUnit("IN")}
-                className={`px-4 py-1.5 font-primary text-[12px] font-medium transition-colors ${
-                  unit === "IN"
-                    ? "bg-neutral-900 text-white"
-                    : "text-neutral-500 hover:text-neutral-700"
-                }`}
-              >
-                IN
-              </button>
-              <button
-                onClick={() => setUnit("CM")}
-                className={`px-4 py-1.5 font-primary text-[12px] font-medium transition-colors ${
-                  unit === "CM"
-                    ? "bg-neutral-900 text-white"
-                    : "text-neutral-500 hover:text-neutral-700"
-                }`}
-              >
-                CM
-              </button>
-            </div>
-            <button
-              onClick={onClose}
+              aria-label="Close size guide"
               className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-black/5"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-500">
@@ -207,10 +143,10 @@ export function SizeGuide({
         </div>
 
         {/* Table */}
-        <div className="px-6 py-4">
+        <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
           <SizeTable chart={chart} unit={unit} />
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto_Slab, Bebas_Neue } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/header";
+import { NavVisibilityProvider } from "@/components/layout/nav-visibility";
 import { Footer } from "@/components/layout/footer";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
@@ -54,11 +55,13 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <CartProvider>
           <QuickViewProvider>
-            <Header />
-            <div className="flex-1">{children}</div>
-            <Footer />
-            <CartDrawer />
-            <QuickViewDrawer />
+            <NavVisibilityProvider>
+              <Header />
+              <div className="flex-1">{children}</div>
+              <Footer />
+              <CartDrawer />
+              <QuickViewDrawer />
+            </NavVisibilityProvider>
           </QuickViewProvider>
         </CartProvider>
       </body>

@@ -120,7 +120,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="w-full rounded-full border border-neutral-200 bg-neutral-50 px-5 py-3.5 font-primary text-[13px] tracking-[0.03em] text-black placeholder:text-neutral-400 outline-none focus:border-black transition-colors"
+                        className="w-full rounded-[0.2rem] border border-neutral-200 bg-neutral-50 px-5 py-3.5 font-primary text-[13px] tracking-[0.03em] text-black placeholder:text-neutral-400 outline-none focus:border-black transition-colors"
                       />
                       <input
                         type="email"
@@ -128,7 +128,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="w-full rounded-full border border-neutral-200 bg-neutral-50 px-5 py-3.5 font-primary text-[13px] tracking-[0.03em] text-black placeholder:text-neutral-400 outline-none focus:border-black transition-colors"
+                        className="w-full rounded-[0.2rem] border border-neutral-200 bg-neutral-50 px-5 py-3.5 font-primary text-[13px] tracking-[0.03em] text-black placeholder:text-neutral-400 outline-none focus:border-black transition-colors"
                       />
 
                       {status === "error" && (
@@ -138,7 +138,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       <button
                         type="submit"
                         disabled={status === "loading"}
-                        className="mt-1 w-full rounded-full bg-black py-4 font-primary text-[11px] font-medium tracking-[0.12em] text-white uppercase transition-all hover:bg-[#FF4500] disabled:opacity-50"
+                        className="mt-1 w-full rounded-[0.2rem] bg-black py-4 font-primary text-[11px] font-medium tracking-[0.12em] text-white uppercase transition-all hover:bg-[#FF4500] disabled:opacity-50"
                       >
                         {status === "loading" ? "Joining..." : "Join Now"}
                       </button>

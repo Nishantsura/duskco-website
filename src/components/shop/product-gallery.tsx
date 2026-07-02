@@ -3,11 +3,13 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import type { ShopifyImage } from "@/lib/shopify/types";
+import { useNavVisibility, NAVBAR_HEIGHT } from "@/components/layout/nav-visibility";
 
 export function ProductGallery({ images }: { images: ShopifyImage[] }) {
   const [active, setActive] = useState(0);
   const [isStuck, setIsStuck] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
+  const { hidden: navHidden } = useNavVisibility();
   const trackRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -15,7 +17,7 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
   const startScroll = useRef(0);
   const isDragging = useRef(false);
 
-  const NAVBAR_H = 60;
+  const NAVBAR_H = NAVBAR_HEIGHT;
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -143,7 +145,7 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
           {images.map((img, i) => (
             <div
               key={img.url}
-              className="relative aspect-[3/4] w-full flex-shrink-0 snap-center overflow-hidden bg-[#f0f0f0]"
+              className="relative aspect-[3/4] w-full flex-shrink-0 snap-center overflow-hidden bg-white"
             >
               <Image
                 src={img.url}
@@ -186,13 +188,13 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
         )}
       </div>
 
-      {/* Fixed thumbnail bar — slides down when scrolled past the gallery (mobile only) */}
+      {/* Fixed thumbnail dock — sits flush under the navbar and hides/shows with it (mobile only) */}
       {images.length > 1 && (
         <div
-          className={`fixed left-0 right-0 z-30 flex items-center gap-1.5 bg-[#EFEFEF]/95 px-3 py-1.5 backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] lg:hidden ${
-            isStuck
-              ? "translate-y-0 opacity-100 shadow-sm"
-              : "-translate-y-full opacity-0 pointer-events-none"
+          className={`fixed left-0 right-0 z-40 flex items-center gap-1.5 bg-white/95 px-3 py-1.5 backdrop-blur-sm transition-transform duration-300 lg:hidden ${
+            isStuck && !navHidden
+              ? "translate-y-0 shadow-sm"
+              : "pointer-events-none -translate-y-[calc(100%+44px)]"
           }`}
           style={{ top: NAVBAR_H }}
         >
@@ -232,15 +234,15 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
         </div>
       )}
 
-      {/* ── Desktop — 2 columns: sticky cover + scrollable ── */}
-      <div className="hidden gap-1 lg:grid lg:grid-cols-2">
-        <div className="sticky top-20 self-start">
-          <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f0f0f0]">
+      {/* ── Desktop — sticky cover (smaller) + scrollable (larger) ── */}
+      <div className="hidden gap-1 lg:grid lg:grid-cols-[5fr_7fr]">
+        <div className="sticky top-11 self-start">
+          <div className="relative aspect-[3/4] w-full overflow-hidden bg-white">
             <Image
               src={cover.url}
               alt={cover.altText || "Product cover"}
               fill
-              sizes="35vw"
+              sizes="30vw"
               className="object-cover"
               priority
             />
@@ -251,13 +253,13 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
           {(rest.length > 0 ? rest : [cover]).map((img, i) => (
             <div
               key={img.url}
-              className="relative h-svh w-full overflow-hidden bg-[#f0f0f0]"
+              className="relative h-svh w-full overflow-hidden bg-white"
             >
               <Image
                 src={img.url}
                 alt={img.altText || `Product image ${i + 2}`}
                 fill
-                sizes="35vw"
+                sizes="42vw"
                 className="object-cover"
               />
             </div>

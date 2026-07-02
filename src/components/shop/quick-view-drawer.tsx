@@ -75,7 +75,7 @@ export function QuickViewDrawer() {
     if (!variant) return;
 
     setAdding(true);
-    await addItem(variant.id);
+    await addItem(variant.id, 1, product.id);
     setAdding(false);
     close();
   }
@@ -230,7 +230,7 @@ export function QuickViewDrawer() {
                 <button
                   onClick={handleAddToCart}
                   disabled={!selectedSize || adding || isPending}
-                  className={`mt-6 flex h-[43px] w-full items-center justify-center rounded-full font-primary text-[11px] font-normal tracking-[0.08em] uppercase transition-all ${
+                  className={`mt-6 flex h-[43px] w-full items-center justify-center rounded-[0.2rem] font-primary text-[11px] font-normal tracking-[0.08em] uppercase transition-all ${
                     selectedSize
                       ? "bg-neutral-900 text-white hover:bg-neutral-800"
                       : "bg-neutral-200 text-neutral-400 cursor-not-allowed"

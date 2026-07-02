@@ -1,40 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
 import { useCart } from "@/components/cart/cart-provider";
+import { useNavVisibility, NAVBAR_HEIGHT } from "./nav-visibility";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const { hidden, scrolled } = useNavVisibility();
   const { cart, openCart } = useCart();
   const pathname = usePathname();
 
   const isHome = pathname === "/";
   const isTransparent = isHome && !scrolled;
 
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 50);
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <>
       <header
-        className={`fixed top-0 z-50 w-full transition-all duration-200 ${
+        className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+          hidden ? "-translate-y-full" : "translate-y-0"
+        } ${
           isTransparent
             ? "bg-transparent"
             : "bg-white/95 backdrop-blur-sm"
         }`}
       >
-        <div className="mx-auto flex h-[60px] max-w-[90rem] items-center justify-between px-6 sm:px-10">
+        <div
+          className="mx-auto flex max-w-[90rem] items-center justify-between px-6 sm:px-10"
+          style={{ height: NAVBAR_HEIGHT }}
+        >
           {/* Left — hamburger */}
           <div className="flex items-center">
             <button
