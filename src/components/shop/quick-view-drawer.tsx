@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useQuickView } from "./quick-view-provider";
 import { useCart } from "@/components/cart/cart-provider";
+import { capture, productProps } from "@/lib/analytics";
 
 function formatPrice(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("en-IN", {
@@ -73,6 +74,14 @@ export function QuickViewDrawer() {
     if (!selectedSize || !product) return;
     const variant = getVariantForSize(selectedSize);
     if (!variant) return;
+
+    capture("product_added_to_cart", {
+      ...productProps(product),
+      variant_id: variant.id,
+      size: selectedSize,
+      quantity: 1,
+      source: "quick_view",
+    });
 
     setAdding(true);
     await addItem(variant.id, 1, product.id);

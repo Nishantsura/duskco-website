@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getCollectionByHandle, getProducts } from "@/lib/shopify/queries";
 import { ProductCard } from "@/components/shop/product-card";
+import { ListViewTracker } from "@/components/analytics/list-view-tracker";
 
 export async function generateMetadata({
   params,
@@ -44,6 +45,7 @@ export default async function CollectionPage({
     const allProducts = await getProducts(20);
     return (
       <main className="pt-16">
+        <ListViewTracker listType="collection" collection={handle} productCount={allProducts.length} />
         <div className="mx-auto max-w-[1440px] px-6 sm:px-10">
           {/* FILTER & SORT */}
           <div className="flex items-center justify-end border-b border-black/5 py-4">
@@ -67,6 +69,7 @@ export default async function CollectionPage({
 
   return (
     <main className="pt-16">
+      <ListViewTracker listType="collection" collection={handle} productCount={products.length} />
       <div className="mx-auto max-w-[1440px] px-6 sm:px-10">
         {/* FILTER & SORT */}
         <div className="flex items-center justify-end border-b border-black/5 py-4">

@@ -8,6 +8,9 @@ import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { QuickViewProvider } from "@/components/shop/quick-view-provider";
 import { QuickViewDrawer } from "@/components/shop/quick-view-drawer";
+import { CookieConsent } from "@/components/layout/cookie-consent";
+import { PostHogProvider } from "@/components/analytics/posthog-provider";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const robotoSlab = Roboto_Slab({
@@ -34,6 +37,7 @@ const expansiva = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "DUSK&CO — Wear The Difference",
   description:
     "Timeless luxury streetwear. Exclusive drops, limited pieces. Shop the collection.",
@@ -53,6 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${robotoSlab.variable} ${expansiva.variable} ${bebasNeue.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <PostHogProvider>
         <CartProvider>
           <QuickViewProvider>
             <NavVisibilityProvider>
@@ -61,9 +66,11 @@ export default function RootLayout({
               <Footer />
               <CartDrawer />
               <QuickViewDrawer />
+              <CookieConsent />
             </NavVisibilityProvider>
           </QuickViewProvider>
         </CartProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

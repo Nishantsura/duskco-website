@@ -7,6 +7,7 @@ import {
   useCallback,
   useTransition,
   useEffect,
+  useRef,
 } from "react";
 import type { Cart } from "@/lib/shopify/types";
 import {
@@ -15,6 +16,7 @@ import {
   updateCartLineAction,
   removeCartLineAction,
 } from "./cart-actions";
+import { capture } from "@/lib/analytics";
 
 interface CartContext {
   cart: Cart | null;
@@ -54,7 +56,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     getCartAction().then(setCart);
   }, []);
 
-  const openCart = useCallback(() => setIsOpen(true), []);
+  // Keep a ref to the latest cart so openCart can report it without re-binding.
+  const cartRef = useRef<Cart | null>(cart);
+  useEffect(() => {
+    cartRef.current = cart;
+  }, [cart]);
+
+  const openCart = useCallback(() => {
+    setIsOpen(true);
+    const c = cartRef.current;
+    capture("cart_viewed", {
+      item_count: c?.totalQuantity ?? 0,
+      subtotal: c ? parseFloat(c.cost.subtotalAmount.amount) : 0,
+      currency: c?.cost.subtotalAmount.currencyCode ?? "INR",
+    });
+  }, []);
   const closeCart = useCallback(() => setIsOpen(false), []);
 
   const addItem = useCallback(

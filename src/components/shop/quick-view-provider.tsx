@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useCallback } from "react";
 import type { Product } from "@/lib/shopify/types";
+import { capture, productProps } from "@/lib/analytics";
 
 interface QuickViewContext {
   product: Product | null;
@@ -25,6 +26,7 @@ export function QuickViewProvider({ children }: { children: React.ReactNode }) {
   const open = useCallback((p: Product) => {
     setProduct(p);
     setIsOpen(true);
+    capture("quick_view_opened", productProps(p));
   }, []);
 
   const close = useCallback(() => {

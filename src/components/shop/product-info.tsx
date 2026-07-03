@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Product } from "@/lib/shopify/types";
 import { useCart } from "@/components/cart/cart-provider";
 import { SizeGuide } from "@/components/shop/size-guide";
+import { capture, productProps } from "@/lib/analytics";
 
 function formatPrice(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("en-IN", {
@@ -78,6 +79,11 @@ export function ProductInfo({ product }: { product: Product }) {
   const sizes = sizeOption?.values ?? [];
 
   const { addItem, isPending } = useCart();
+
+  useEffect(() => {
+    capture("product_viewed", { ...productProps(product), source: "pdp" });
+  }, [product]);
+
   const [selectedSize, setSelectedSize] = useState("");
   const [sizeOpen, setSizeOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>("details");
@@ -115,7 +121,16 @@ export function ProductInfo({ product }: { product: Product }) {
       setSizeOpen(true);
       return;
     }
-    if (selectedVariant) addItem(selectedVariant.id, 1, product.id);
+    if (selectedVariant) {
+      capture("product_added_to_cart", {
+        ...productProps(product),
+        variant_id: selectedVariant.id,
+        size: selectedSize || null,
+        quantity: 1,
+        source: "pdp",
+      });
+      addItem(selectedVariant.id, 1, product.id);
+    }
   }
 
   return (
@@ -197,7 +212,13 @@ export function ProductInfo({ product }: { product: Product }) {
         {product.sizeChart && sizes.length > 0 && (
           <div className="mb-2 flex justify-end">
             <button
-              onClick={() => setSizeGuideOpen(true)}
+              onClick={() => {
+                capture("size_guide_opened", {
+                  product_id: product.id,
+                  product_name: product.title,
+                });
+                setSizeGuideOpen(true);
+              }}
               className="font-primary text-[11px] font-medium tracking-[0.04em] text-neutral-500 underline underline-offset-2 transition-colors hover:text-neutral-900"
             >
               Size Guide

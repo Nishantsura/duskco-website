@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "./cart-provider";
 import type { CartLineItem } from "@/lib/shopify/types";
+import { capture } from "@/lib/analytics";
 
 function formatPrice(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("en-IN", {
@@ -180,6 +181,13 @@ export function CartDrawer() {
             </p>
             <a
               href={cart.checkoutUrl}
+              onClick={() =>
+                capture("checkout_started", {
+                  item_count: cart.totalQuantity,
+                  subtotal: parseFloat(cart.cost.subtotalAmount.amount),
+                  currency: cart.cost.subtotalAmount.currencyCode,
+                })
+              }
               className={`block w-full rounded-full bg-neutral-900 py-3.5 text-center font-primary text-[11px] font-normal tracking-[0.08em] text-white uppercase transition-all duration-200 hover:bg-neutral-800 ${
                 isPending ? "pointer-events-none opacity-60" : ""
               }`}

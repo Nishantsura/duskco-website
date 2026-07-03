@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { capture, identifyUser } from "@/lib/analytics";
 
 interface WaitlistModalProps {
   open: boolean;
@@ -33,6 +34,10 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
         const data = await res.json();
         throw new Error(data.error || "Something went wrong");
       }
+
+      const cleanEmail = email.trim();
+      identifyUser(cleanEmail, { email: cleanEmail, name: name.trim() });
+      capture("waitlist_signup", { email: cleanEmail });
 
       setStatus("success");
     } catch (err) {

@@ -239,7 +239,20 @@ export async function getCollectionByHandle(handle: string, first = 50) {
     variables: { handle, first },
   });
 
-  return data.collectionByHandle;
+  if (!data.collectionByHandle) return null;
+
+  // Hide default/test Shopify products from collection listings.
+  const filteredEdges = data.collectionByHandle.products.edges.filter((e) =>
+    isAllowed(e.node)
+  );
+
+  return {
+    ...data.collectionByHandle,
+    products: {
+      ...data.collectionByHandle.products,
+      edges: filteredEdges,
+    },
+  };
 }
 
 export async function searchProducts(query: string, first = 20) {
@@ -261,5 +274,7 @@ export async function searchProducts(query: string, first = 20) {
     variables: { query, first },
   });
 
-  return data.products.edges.map((e) => parseSizeChart(e.node));
+  return data.products.edges
+    .map((e) => parseSizeChart(e.node))
+    .filter(isAllowed);
 }

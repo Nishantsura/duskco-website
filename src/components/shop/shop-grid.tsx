@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/lib/shopify/types";
 import { ProductCard } from "./product-card";
+import { capture } from "@/lib/analytics";
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "name-asc";
 
@@ -20,6 +21,13 @@ function priceOf(p: Product) {
 export function ShopGrid({ products }: { products: Product[] }) {
   const [sort, setSort] = useState<SortKey>("featured");
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    capture("product_list_viewed", {
+      list_type: "shop",
+      product_count: products.length,
+    });
+  }, [products.length]);
 
   const sorted = useMemo(() => {
     const arr = [...products];

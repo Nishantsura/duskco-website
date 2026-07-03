@@ -13,22 +13,28 @@ export async function POST(request: Request) {
 
     const timestamp = new Date().toISOString();
 
-    const results = await Promise.allSettled([
+    // Shopify customer creation is our source of truth. Google Sheets and
+    // email are best-effort side channels that no-op when unconfigured.
+    const [shopifyResult, sheetResult, emailResult] = await Promise.allSettled([
       createShopifyCustomer({ email, name }),
       appendToGoogleSheet({ email, name, timestamp }),
       sendEmailNotification({ email, name, timestamp }),
     ]);
 
-    const [shopifyResult, sheetResult, emailResult] = results;
-
-    if (shopifyResult.status === "rejected") {
-      console.error("Shopify customer error:", shopifyResult.reason);
-    }
     if (sheetResult.status === "rejected") {
       console.error("Google Sheets error:", sheetResult.reason);
     }
     if (emailResult.status === "rejected") {
       console.error("Email notification error:", emailResult.reason);
+    }
+
+    // If our record of truth failed, don't tell the user they're on the list.
+    if (shopifyResult.status === "rejected") {
+      console.error("Shopify customer error:", shopifyResult.reason);
+      return NextResponse.json(
+        { error: "Something went wrong. Please try again." },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json({ success: true });
