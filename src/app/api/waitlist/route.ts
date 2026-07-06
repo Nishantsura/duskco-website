@@ -13,14 +13,18 @@ export async function POST(request: Request) {
 
     const timestamp = new Date().toISOString();
 
-    // Shopify customer creation is our source of truth. Google Sheets and
-    // email are best-effort side channels that no-op when unconfigured.
+    // Every configured channel is attempted. The signup succeeds as long as the
+    // lead lands in at least one durable place, so a single channel being down
+    // (e.g. Shopify customer writes pending merchant approval) never loses a lead.
     const [shopifyResult, sheetResult, emailResult] = await Promise.allSettled([
       createShopifyCustomer({ email, name }),
       appendToGoogleSheet({ email, name, timestamp }),
       sendEmailNotification({ email, name, timestamp }),
     ]);
 
+    if (shopifyResult.status === "rejected") {
+      console.error("Shopify customer error:", shopifyResult.reason);
+    }
     if (sheetResult.status === "rejected") {
       console.error("Google Sheets error:", sheetResult.reason);
     }
@@ -28,9 +32,14 @@ export async function POST(request: Request) {
       console.error("Email notification error:", emailResult.reason);
     }
 
-    // If our record of truth failed, don't tell the user they're on the list.
-    if (shopifyResult.status === "rejected") {
-      console.error("Shopify customer error:", shopifyResult.reason);
+    const captured =
+      shopifyResult.status === "fulfilled" ||
+      (sheetResult.status === "fulfilled" && sheetResult.value === "stored") ||
+      (emailResult.status === "fulfilled" && emailResult.value === "stored");
+
+    if (!captured) {
+      // Nothing stored the lead — either every channel failed or none is
+      // configured. Don't tell the user they're on the list.
       return NextResponse.json(
         { error: "Something went wrong. Please try again." },
         { status: 502 }
@@ -85,6 +94,11 @@ async function createShopifyCustomer({
   }
 }
 
+// Appends the lead to a Google Sheet via SheetDB (https://sheetdb.io), which
+// turns a Google Sheet into a writable REST API — no Google Cloud project or
+// Apps Script deploy needed. The column keys below must match the Sheet's header
+// row exactly (Name | Email | Timestamp). Returns "stored" on success, "skipped"
+// if unconfigured, and throws on a real failure.
 async function appendToGoogleSheet({
   email,
   name,
@@ -93,32 +107,31 @@ async function appendToGoogleSheet({
   email: string;
   name: string;
   timestamp: string;
-}) {
-  const sheetId = process.env.GOOGLE_SHEET_ID;
-  const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
-  const sheetName = process.env.GOOGLE_SHEET_NAME || "Waitlist";
+}): Promise<"stored" | "skipped"> {
+  const apiUrl = process.env.SHEETDB_API_URL;
 
-  if (!sheetId || !apiKey) {
+  if (!apiUrl) {
     console.warn(
-      "Google Sheets not configured. Set GOOGLE_SHEET_ID and GOOGLE_SHEETS_API_KEY."
+      "Sheet storage not configured. Set SHEETDB_API_URL to your SheetDB API endpoint."
     );
-    return;
+    return "skipped";
   }
 
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}!A:C:append?valueInputOption=USER_ENTERED&key=${apiKey}`;
-
-  const res = await fetch(url, {
+  const res = await fetch(apiUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      values: [[name || "—", email, timestamp]],
+      data: [{ Name: name || "—", Email: email, Timestamp: timestamp }],
     }),
   });
 
+  // SheetDB returns 201 { created: N } on success.
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Google Sheets API error: ${res.status} ${text}`);
+    throw new Error(`SheetDB error: ${res.status} ${text}`);
   }
+
+  return "stored";
 }
 
 async function sendEmailNotification({
@@ -129,7 +142,7 @@ async function sendEmailNotification({
   email: string;
   name: string;
   timestamp: string;
-}) {
+}): Promise<"stored" | "skipped"> {
   const resendApiKey = process.env.RESEND_API_KEY;
   const founderEmails = process.env.FOUNDER_EMAILS;
 
@@ -137,7 +150,7 @@ async function sendEmailNotification({
     console.warn(
       "Email notifications not configured. Set RESEND_API_KEY and FOUNDER_EMAILS."
     );
-    return;
+    return "skipped";
   }
 
   const recipients = founderEmails.split(",").map((e) => e.trim());
@@ -169,4 +182,6 @@ async function sendEmailNotification({
     const text = await res.text();
     throw new Error(`Resend API error: ${res.status} ${text}`);
   }
+
+  return "stored";
 }
