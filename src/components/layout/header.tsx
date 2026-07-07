@@ -14,8 +14,10 @@ export function Header() {
   const { cart, openCart } = useCart();
   const pathname = usePathname();
 
-  const isHome = pathname === "/";
-  const isTransparent = isHome && !scrolled;
+  // Routes that open on a dark, full-bleed hero — the nav floats transparent
+  // over them until the user scrolls.
+  const heroRoutes = ["/", "/shop"];
+  const isTransparent = heroRoutes.includes(pathname) && !scrolled;
 
   return (
     <>
