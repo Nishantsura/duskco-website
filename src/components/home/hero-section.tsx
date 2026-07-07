@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { WaitlistModal } from "./waitlist-modal";
 
 const AUTOPLAY_MS = 7000;
@@ -10,11 +10,11 @@ const AUTOPLAY_MS = 7000;
 // Editorial line-by-line "mask rise" for the hero heading — plays once on load.
 // `settled` flips true shortly after mount so later slide changes swap text
 // instantly instead of re-hiding the heading.
-const HEAD_CONTAINER = {
+const HEAD_CONTAINER: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
 };
-const HEAD_LINE = {
+const HEAD_LINE: Variants = {
   hidden: { y: "115%" },
   visible: { y: 0, transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] } },
 };
