@@ -86,8 +86,8 @@ export function ShopGrid({ products }: { products: Product[] }) {
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-10 py-8 sm:grid-cols-3 lg:grid-cols-4">
-        {sorted.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {sorted.map((product, i) => (
+          <ProductCard key={product.id} product={product} index={i} />
         ))}
       </div>
     </>

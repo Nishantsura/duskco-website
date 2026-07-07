@@ -2,9 +2,62 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { WaitlistModal } from "./waitlist-modal";
 
 const AUTOPLAY_MS = 7000;
+
+// Editorial line-by-line "mask rise" for the hero heading — plays once on load.
+// `settled` flips true shortly after mount so later slide changes swap text
+// instantly instead of re-hiding the heading.
+const HEAD_CONTAINER = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
+};
+const HEAD_LINE = {
+  hidden: { y: "115%" },
+  visible: { y: 0, transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] } },
+};
+
+function HeroHeading({
+  text,
+  className,
+  reduce,
+  settled,
+}: {
+  text: string;
+  className: string;
+  reduce: boolean | null;
+  settled: boolean;
+}) {
+  if (reduce) {
+    return (
+      <h1
+        className={`${className} text-white uppercase whitespace-pre-line transition-opacity duration-200 group-hover:opacity-75`}
+      >
+        {text}
+      </h1>
+    );
+  }
+
+  const lines = text.split("\n");
+  return (
+    <motion.h1
+      className={`${className} text-white uppercase transition-opacity duration-200 group-hover:opacity-75`}
+      initial={settled ? false : "hidden"}
+      animate="visible"
+      variants={HEAD_CONTAINER}
+    >
+      {lines.map((line, i) => (
+        <span key={i} className="block overflow-hidden pb-[0.06em]">
+          <motion.span className="block" variants={HEAD_LINE}>
+            {line}
+          </motion.span>
+        </span>
+      ))}
+    </motion.h1>
+  );
+}
 
 const SLIDES = [
   {
@@ -32,7 +85,16 @@ export function HeroSection() {
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [settled, setSettled] = useState(false);
+  const reduce = useReducedMotion();
   const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+
+  // After the intro reveal has played once, later slide changes swap the
+  // heading text instantly instead of re-running the mask rise.
+  useEffect(() => {
+    const t = setTimeout(() => setSettled(true), 1800);
+    return () => clearTimeout(t);
+  }, []);
 
   function goTo(i: number) {
     setActive(i);
@@ -62,8 +124,13 @@ export function HeroSection() {
   return (
     <>
       <section className="relative h-svh w-full overflow-hidden bg-black">
-        {/* Background — video or image */}
-        <div className="absolute inset-0">
+        {/* Background — video or image (slow zoom-out + fade-in on load) */}
+        <motion.div
+          className="absolute inset-0"
+          initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 1.08 }}
+          animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+        >
           {SLIDES.map((s, i) => (
             <div
               key={s.id}
@@ -95,11 +162,14 @@ export function HeroSection() {
             </div>
           ))}
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50" />
-        </div>
+        </motion.div>
 
         {/* Slide 01 — top left */}
-        <button
+        <motion.button
           onClick={() => goTo(0)}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
+          animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
           className={`absolute left-5 top-24 z-20 sm:left-10 font-display font-light italic transition-all duration-300 ${
             active === 0
               ? "text-[24px] text-white"
@@ -107,11 +177,14 @@ export function HeroSection() {
           }`}
         >
           01
-        </button>
+        </motion.button>
 
         {/* Slide 02 — top right */}
-        <button
+        <motion.button
           onClick={() => goTo(1)}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
+          animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
           className={`absolute right-5 top-24 z-20 sm:right-10 font-display font-light italic transition-all duration-300 ${
             active === 1
               ? "text-[24px] text-white"
@@ -119,7 +192,7 @@ export function HeroSection() {
           }`}
         >
           02
-        </button>
+        </motion.button>
 
         {/* Clickable heading — bottom left */}
         <div className="absolute bottom-16 left-5 z-20 sm:bottom-20 sm:left-10">
@@ -129,9 +202,7 @@ export function HeroSection() {
               className="group text-left"
               aria-label="Join the waitlist"
             >
-              <h1 className={`${slide.headingClass} text-white uppercase whitespace-pre-line transition-opacity duration-200 group-hover:opacity-75`}>
-                {slide.heading}
-              </h1>
+              <HeroHeading text={slide.heading} className={slide.headingClass} reduce={reduce} settled={settled} />
               {/* Mobile: underline + tap cue always visible. Desktop: expand on hover */}
               <div className="mt-2 flex items-center gap-3">
                 <span className="h-px bg-white transition-[width] duration-400 w-full sm:w-0 sm:group-hover:w-full" />
@@ -145,9 +216,7 @@ export function HeroSection() {
               href={"href" in slide ? slide.href : "/"}
               className="group text-left block"
             >
-              <h1 className={`${slide.headingClass} text-white uppercase whitespace-pre-line transition-opacity duration-200 group-hover:opacity-75`}>
-                {slide.heading}
-              </h1>
+              <HeroHeading text={slide.heading} className={slide.headingClass} reduce={reduce} settled={settled} />
               <div className="mt-2 flex items-center gap-3">
                 <span className="h-px bg-white transition-[width] duration-400 w-full sm:w-0 sm:group-hover:w-full" />
                 <span className="shrink-0 font-primary text-[9px] tracking-[0.25em] text-white/50 uppercase transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">

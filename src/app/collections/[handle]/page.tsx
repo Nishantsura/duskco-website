@@ -56,8 +56,8 @@ export default async function CollectionPage({
 
           {/* Product Grid — 3 columns like FOG */}
           <div className="grid grid-cols-2 gap-x-4 gap-y-10 py-8 sm:grid-cols-3">
-            {allProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {allProducts.map((product, i) => (
+              <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>
         </div>
@@ -81,8 +81,8 @@ export default async function CollectionPage({
         {/* Product Grid — 3 columns like FOG */}
         {products.length > 0 ? (
           <div className="grid grid-cols-2 gap-x-4 gap-y-10 py-8 sm:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {products.map((product, i) => (
+              <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>
         ) : (

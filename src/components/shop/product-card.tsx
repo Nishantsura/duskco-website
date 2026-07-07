@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Product } from "@/lib/shopify/types";
 import { useQuickView } from "./quick-view-provider";
 import { useCart } from "@/components/cart/cart-provider";
@@ -74,7 +75,8 @@ function getCategoryLabel(title: string): string {
   return "ESSENTIAL";
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
+  const reduce = useReducedMotion();
   const { open: openQuickView } = useQuickView();
   const { lastAddedProductId } = useCart();
   const justAdded = lastAddedProductId === product.id;
@@ -108,10 +110,14 @@ export function ProductCard({ product }: { product: Product }) {
   }, [isHover]);
 
   return (
-    <div
+    <motion.div
       className="group"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 34, scale: 0.97, filter: "blur(6px)" }}
+      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: (index % 4) * 0.09 }}
     >
       {/* Image */}
       <Link
@@ -205,6 +211,6 @@ export function ProductCard({ product }: { product: Product }) {
           {formatPrice(price.amount, price.currencyCode)}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }
