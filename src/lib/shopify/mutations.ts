@@ -70,7 +70,7 @@ export async function createCart(
   }>({
     query: `
       ${CART_FRAGMENT}
-      mutation CartCreate($lines: [CartLineInput!]!) {
+      mutation CartCreate($lines: [CartLineInput!]!) @inContext(country: IN) {
         cartCreate(input: { lines: $lines }) {
           cart {
             ...CartFields
@@ -93,7 +93,7 @@ export async function addToCart(
   }>({
     query: `
       ${CART_FRAGMENT}
-      mutation CartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+      mutation CartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) @inContext(country: IN) {
         cartLinesAdd(cartId: $cartId, lines: $lines) {
           cart {
             ...CartFields
@@ -116,7 +116,7 @@ export async function updateCartLines(
   }>({
     query: `
       ${CART_FRAGMENT}
-      mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+      mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) @inContext(country: IN) {
         cartLinesUpdate(cartId: $cartId, lines: $lines) {
           cart {
             ...CartFields
@@ -136,7 +136,7 @@ export async function removeFromCart(cartId: string, lineIds: string[]) {
   }>({
     query: `
       ${CART_FRAGMENT}
-      mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+      mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) @inContext(country: IN) {
         cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
           cart {
             ...CartFields
@@ -156,7 +156,7 @@ export async function getCart(cartId: string) {
   }>({
     query: `
       ${CART_FRAGMENT}
-      query GetCart($cartId: ID!) {
+      query GetCart($cartId: ID!) @inContext(country: IN) {
         cart(id: $cartId) {
           ...CartFields
         }

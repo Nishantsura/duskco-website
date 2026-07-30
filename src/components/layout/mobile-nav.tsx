@@ -10,8 +10,7 @@ interface MobileNavProps {
 }
 
 const LINKS = [
-  { label: "Shop", href: "/shop" },
-  { label: "About", href: "/about" },
+  { label: "Stage 1", href: "/collections/stage-one" },
   { label: "Contact", href: "/contact" },
 ];
 

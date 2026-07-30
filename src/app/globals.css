@@ -37,7 +37,8 @@
 
   --color-accent-orange: var(--color-accent-orange);
 
-  --font-primary: var(--font-roboto-slab);
+  --font-primary: var(--font-archivo);
+  --font-heading: var(--font-roboto-slab);
   --font-display: var(--font-expansiva);
   --font-street: var(--font-bebas-neue);
 }
@@ -46,10 +47,15 @@
   font-family: var(--font-bebas-neue), "Bebas Neue", sans-serif;
 }
 
+/* Product-name headings keep the original slab face. */
+.font-heading {
+  font-family: var(--font-roboto-slab), "Roboto Slab", serif;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-primary), serif;
+  font-family: var(--font-primary), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Cursor — clickable elements show the pointing-hand gesture */
@@ -135,3 +141,21 @@ button:disabled,
 /* Hide scrollbar for horizontal carousels */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Hold-to-add — moving techwear hazard stripes over the charge fill */
+@keyframes hold-stripes {
+  from { background-position: 0 0; }
+  to   { background-position: 28px 0; }
+}
+.hold-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.16) 0 1px,
+    transparent 1px 7px
+  );
+  background-size: 28px 28px;
+  animation: hold-stripes 0.5s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hold-stripes { animation: none; }
+}

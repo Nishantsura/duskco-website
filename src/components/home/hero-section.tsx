@@ -74,10 +74,10 @@ const SLIDES = [
     type: "image" as const,
     desktopSrc: "/Streetwear landscape.jpg",
     mobileSrc: "/potrait picture.jpg",
-    heading: "A Modern\nExpression\nof Self",
+    heading: "Enter\nStage One",
     headingClass: "font-street text-[clamp(60px,14vw,160px)] font-normal leading-[0.9] tracking-[0.02em]",
     action: "link" as const,
-    href: "/about",
+    href: "/collections/stage-one",
   },
 ];
 

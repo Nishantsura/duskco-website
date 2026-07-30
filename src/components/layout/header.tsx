@@ -15,9 +15,12 @@ export function Header() {
   const pathname = usePathname();
 
   // Routes that open on a dark, full-bleed hero — the nav floats transparent
-  // over them until the user scrolls.
-  const heroRoutes = ["/", "/shop"];
-  const isTransparent = heroRoutes.includes(pathname) && !scrolled;
+  // over them until the user scrolls. Collection pages open on the story hero.
+  const isHeroRoute =
+    pathname === "/" ||
+    pathname === "/shop" ||
+    pathname.startsWith("/collections/");
+  const isTransparent = isHeroRoute && !scrolled;
 
   return (
     <>
@@ -57,7 +60,7 @@ export function Header() {
           {/* Right — Stage 1 + Cart icon */}
           <div className="flex items-center gap-6">
             <Link
-              href="/shop"
+              href="/collections/stage-one"
               className="hidden sm:block font-primary text-[13px] font-bold tracking-[0.08em] uppercase transition-colors duration-200 text-accent-orange hover:opacity-70"
             >
               Stage 1

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
@@ -85,7 +85,22 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const [idx, setIdx] = useState(0);
   const [activeColor, setActiveColor] = useState(0);
   const [isHover, setIsHover] = useState(false);
+  const [swipeIdx, setSwipeIdx] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const swipeRef = useRef<HTMLDivElement>(null);
+  const swipeTicking = useRef(false);
+
+  // Track which slide the mobile swipe carousel is resting on (for the dots).
+  const onSwipeScroll = useCallback(() => {
+    const el = swipeRef.current;
+    if (!el || swipeTicking.current) return;
+    swipeTicking.current = true;
+    requestAnimationFrame(() => {
+      const w = el.offsetWidth;
+      if (w) setSwipeIdx(Math.round(el.scrollLeft / w));
+      swipeTicking.current = false;
+    });
+  }, []);
 
   const hasMultiple = images.length > 1;
   const current = images[idx] ?? product.featuredImage;
@@ -124,13 +139,39 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         href={`/products/${product.handle}`}
         className="relative block aspect-[3/4] w-full overflow-hidden rounded-[0.2rem] bg-white"
       >
+        {/* Mobile / touch — swipeable carousel of every image */}
+        {images.length > 0 && (
+          <div
+            ref={swipeRef}
+            onScroll={onSwipeScroll}
+            className="no-scrollbar absolute inset-0 flex snap-x snap-mandatory overflow-x-auto md:hidden"
+            style={{ touchAction: "pan-x pan-y" }}
+          >
+            {images.map((img, i) => (
+              <div
+                key={img.url}
+                className="relative h-full w-full flex-shrink-0 snap-center"
+              >
+                <Image
+                  src={img.url}
+                  alt={img.altText || product.title}
+                  fill
+                  sizes="50vw"
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Desktop — single image, cycles on hover */}
         {current ? (
           <Image
             src={current.url}
             alt={current.altText || product.title}
             fill
-            sizes="(max-width: 640px) 100vw, 33vw"
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            sizes="33vw"
+            className="hidden object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] md:block"
           />
         ) : (
           <div className="flex h-full items-center justify-center">
@@ -140,6 +181,20 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           </div>
         )}
 
+        {/* Mobile swipe dots */}
+        {hasMultiple && (
+          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1 md:hidden">
+            {images.map((_, i) => (
+              <span
+                key={i}
+                className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                  i === swipeIdx ? "bg-white" : "bg-white/50"
+                }`}
+                style={{ boxShadow: "0 0 3px rgba(0,0,0,0.4)" }}
+              />
+            ))}
+          </div>
+        )}
       </Link>
 
       {/* Product info */}
@@ -171,7 +226,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         {/* Product name + Cart icon */}
         <div className="mt-1 flex items-center justify-between">
           <Link href={`/products/${product.handle}`}>
-            <h3 className="font-primary text-[13px] font-bold tracking-[0.02em] text-neutral-900 uppercase">
+            <h3 className="font-heading text-[13px] font-bold tracking-[0.02em] text-neutral-900 uppercase">
               {displayName}
             </h3>
           </Link>

@@ -10,10 +10,34 @@ import {
 } from "@/lib/shopify/mutations";
 import type { Cart } from "@/lib/shopify/types";
 import { SEED_PRODUCTS } from "@/lib/seed-products";
+import { ACCESS_COOKIE, isDropOpen } from "@/lib/access/config";
+import { verifySession } from "@/lib/access/session";
+
+// Server-side gate: the storefront is invite-only, so building a cart (and thus
+// reaching checkout) requires a valid access session during an open drop. The
+// proxy hides the UI; this makes the action itself unbypassable.
+async function assertAccess() {
+  const cookieStore = await cookies();
+  const session = await verifySession(cookieStore.get(ACCESS_COOKIE)?.value);
+  if (!session || !isDropOpen(Date.now())) {
+    throw new Error("Access denied: a valid access code is required to shop.");
+  }
+}
 
 const CART_COOKIE = "duskco-cart-id";
 const SEED_CART_COOKIE = "duskco-seed-cart";
 const USE_SEED_DATA = false;
+
+// The storefront sells in INR (India market). A Shopify cart's currency is
+// locked when it's created, so a cart opened under a different market/currency
+// (e.g. a stale USD cart from before the India market existed) stays wrong
+// forever. Treat any non-INR cart as invalid so we transparently start a fresh
+// INR one instead of showing dollar amounts.
+const STORE_CURRENCY = "INR";
+
+function isExpectedCurrency(cart: Cart | null): cart is Cart {
+  return cart?.cost.subtotalAmount.currencyCode === STORE_CURRENCY;
+}
 
 interface SeedCartLine {
   id: string;
@@ -129,6 +153,11 @@ async function setCartId(cartId: string) {
   });
 }
 
+async function clearCartId() {
+  const cookieStore = await cookies();
+  cookieStore.delete(CART_COOKIE);
+}
+
 export async function getCartAction(): Promise<Cart | null> {
   if (USE_SEED_DATA) {
     const lines = await getSeedCart();
@@ -140,7 +169,14 @@ export async function getCartAction(): Promise<Cart | null> {
   if (!cartId) return null;
 
   try {
-    return await getCart(cartId);
+    const cart = await getCart(cartId);
+    // Drop stale carts locked to the wrong currency so the UI never shows,
+    // e.g., a leftover USD cart. Next add creates a fresh INR cart.
+    if (cart && !isExpectedCurrency(cart)) {
+      await clearCartId();
+      return null;
+    }
+    return cart;
   } catch {
     return null;
   }
@@ -150,6 +186,8 @@ export async function addToCartAction(
   merchandiseId: string,
   quantity: number = 1
 ): Promise<Cart> {
+  await assertAccess();
+
   if (USE_SEED_DATA) {
     const lines = await getSeedCart();
     const existing = lines.find((l) => l.merchandiseId === merchandiseId);
@@ -171,7 +209,9 @@ export async function addToCartAction(
   if (cartId) {
     try {
       const existingCart = await getCart(cartId);
-      if (existingCart) {
+      // Only reuse a cart that's in the right currency; otherwise fall through
+      // and create a fresh INR cart (a stale USD cart can't be re-priced).
+      if (isExpectedCurrency(existingCart)) {
         return await addToCart(cartId, [{ merchandiseId, quantity }]);
       }
     } catch {

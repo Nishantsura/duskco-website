@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto_Slab, Bebas_Neue } from "next/font/google";
+import { Archivo, Roboto_Slab, Bebas_Neue } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/header";
 import { NavVisibilityProvider } from "@/components/layout/nav-visibility";
@@ -13,10 +13,18 @@ import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Kept for product-name headings — the original heading face.
 const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
   subsets: ["latin"],
-  weight: ["100", "300", "400", "700"],
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
@@ -55,7 +63,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${robotoSlab.variable} ${expansiva.variable} ${bebasNeue.variable} h-full antialiased`}>
+    <html lang="en" className={`${archivo.variable} ${robotoSlab.variable} ${expansiva.variable} ${bebasNeue.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <PostHogProvider>
         <CartProvider>

@@ -47,12 +47,34 @@ export interface SizeChart {
   rows: { size: string; values: number[] }[];
 }
 
+/**
+ * One scroll-stage of a collection's story. Sourced from a Shopify
+ * `story_stage` metaobject (see getCollectionByHandle), with a baked-in
+ * fallback so the page is never empty.
+ */
+export interface StoryStage {
+  /** "01", "02"… — the chapter marker. */
+  stageNumber: string;
+  /** Short kicker, e.g. "The Signal". */
+  label: string;
+  /** Big display headline. Use "\n" to force line breaks. */
+  headline: string;
+  /** Supporting copy. */
+  body: string;
+  /** Background / feature media. */
+  media: { type: "image" | "video"; url: string; alt?: string } | null;
+  /** "statement" = full-bleed centered; "split" = media beside text. */
+  layout: "statement" | "split";
+}
+
 export interface Collection {
   id: string;
   title: string;
   handle: string;
   description: string;
   image: ShopifyImage | null;
+  /** Editable in Shopify via the `custom.story` metaobject list; may be empty. */
+  story: StoryStage[];
   products: {
     edges: { node: Product }[];
     pageInfo: PageInfo;

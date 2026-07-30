@@ -17,7 +17,7 @@ function formatPrice(amount: string, currencyCode: string) {
 }
 
 function CartLineItemRow({ item }: { item: CartLineItem }) {
-  const { updateItem, removeItem, isPending } = useCart();
+  const { removeItem, isPending } = useCart();
   const { merchandise } = item;
 
   return (
@@ -57,43 +57,19 @@ function CartLineItemRow({ item }: { item: CartLineItem }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center border border-neutral-200 rounded-full">
-            <button
-              onClick={() => updateItem(item.id, item.quantity - 1)}
-              disabled={isPending}
-              className="px-3 py-1 font-primary text-xs text-neutral-700 transition-colors hover:text-neutral-400 disabled:opacity-40"
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span className="min-w-[28px] text-center font-primary text-xs text-neutral-900">
-              {item.quantity}
-            </span>
-            <button
-              onClick={() => updateItem(item.id, item.quantity + 1)}
-              disabled={isPending}
-              className="px-3 py-1 font-primary text-xs text-neutral-700 transition-colors hover:text-neutral-400 disabled:opacity-40"
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="font-primary text-sm font-bold text-neutral-900">
-              {formatPrice(
-                item.cost.totalAmount.amount,
-                item.cost.totalAmount.currencyCode
-              )}
-            </span>
-            <button
-              onClick={() => removeItem(item.id)}
-              disabled={isPending}
-              className="font-primary text-[10px] tracking-[0.1em] text-neutral-400 uppercase transition-colors hover:text-neutral-900 disabled:opacity-40"
-            >
-              Remove
-            </button>
-          </div>
+          <span className="font-primary text-sm font-bold text-neutral-900">
+            {formatPrice(
+              item.cost.totalAmount.amount,
+              item.cost.totalAmount.currencyCode
+            )}
+          </span>
+          <button
+            onClick={() => removeItem(item.id)}
+            disabled={isPending}
+            className="font-primary text-[10px] tracking-[0.1em] text-neutral-400 uppercase transition-colors hover:text-neutral-900 disabled:opacity-40"
+          >
+            Remove
+          </button>
         </div>
       </div>
     </div>

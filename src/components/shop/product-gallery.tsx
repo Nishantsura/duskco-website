@@ -88,7 +88,10 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
     return () => clearInterval(interval);
   }, [isStuck]);
 
+  // Touch devices scroll the track natively (smooth, with momentum + snap).
+  // Only mouse pointers get the JS click-and-drag fallback.
   const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
     const track = trackRef.current;
     if (!track) return;
     isDragging.current = true;
@@ -98,14 +101,14 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging.current || !trackRef.current) return;
+    if (e.pointerType !== "mouse" || !isDragging.current || !trackRef.current) return;
     const dx = e.clientX - startX.current;
     trackRef.current.scrollLeft = startScroll.current - dx;
   }, []);
 
   const onPointerUp = useCallback(
     (e: React.PointerEvent) => {
-      if (!isDragging.current || !trackRef.current) return;
+      if (e.pointerType !== "mouse" || !isDragging.current || !trackRef.current) return;
       isDragging.current = false;
       trackRef.current.releasePointerCapture(e.pointerId);
       const slideWidth = trackRef.current.offsetWidth;
@@ -140,7 +143,7 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto"
-          style={{ scrollSnapType: "x mandatory", touchAction: "pan-y pinch-zoom" }}
+          style={{ scrollSnapType: "x mandatory", touchAction: "pan-x pan-y pinch-zoom" }}
         >
           {images.map((img, i) => (
             <div
@@ -169,7 +172,7 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
               <button
                 key={img.url}
                 onClick={() => scrollToSlide(i)}
-                className={`relative aspect-square w-9 flex-shrink-0 overflow-hidden rounded-[3px] transition-all duration-200 ${
+                className={`relative aspect-square w-14 flex-shrink-0 overflow-hidden transition-all duration-200 ${
                   i === active
                     ? "ring-[1.5px] ring-brand-near-black ring-offset-1"
                     : "opacity-40 ring-1 ring-black/10 hover:opacity-70"
@@ -179,7 +182,7 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
                   src={img.url}
                   alt={img.altText || `Thumbnail ${i + 1}`}
                   fill
-                  sizes="36px"
+                  sizes="56px"
                   className="object-cover"
                 />
               </button>
@@ -205,7 +208,7 @@ export function ProductGallery({ images }: { images: ShopifyImage[] }) {
                 scrollToSlide(i);
                 carouselRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
-              className={`relative aspect-square w-5 flex-shrink-0 overflow-hidden rounded-[2px] transition-all duration-200 ${
+              className={`relative aspect-square w-5 flex-shrink-0 overflow-hidden transition-all duration-200 ${
                 i === active
                   ? "ring-[1px] ring-brand-near-black ring-offset-[0.5px]"
                   : "ring-1 ring-black/5 hover:ring-black/20"

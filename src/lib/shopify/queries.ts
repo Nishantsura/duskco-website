@@ -1,31 +1,9 @@
 import { shopifyFetch } from "./client";
-import type { Product, Collection, SizeChart } from "./types";
+import type { Product, Collection, SizeChart, StoryStage } from "./types";
 import { SEED_PRODUCTS } from "@/lib/seed-products";
+import { getFallbackStory } from "@/lib/collection-story";
 
 const USE_SEED_DATA = false;
-
-// Only show Bluorang-scraped catalogue; hide default/test Shopify products.
-const BLUORANG_HANDLES = new Set([
-  "puyma-t-shirt-red",
-  "tiger-fury-t-shirt-orange",
-  "swan-t-shirt-pink",
-  "fade-flora-ombre-t-shirt",
-  "iced-t-shirt-black",
-  "serpent-bloom-zipper-hoodie-red",
-  "meadow-blue-hoodie",
-  "favourite-child-hoodie-brown",
-  "nocturnal-hoodie-black",
-  "boxy-utility-jacket-brown",
-  "techwear-over-jacket-black",
-  "indigo-bloom-denim-jacket",
-  "ripstop-cargos-black",
-  "ripstop-cargos-olive",
-  "ripstop-cargos-brown",
-]);
-
-function isAllowed(p: { handle: string }) {
-  return BLUORANG_HANDLES.has(p.handle);
-}
 
 interface RawProduct extends Omit<Product, "sizeChart"> {
   metafield?: { value: string; type: string } | null;
@@ -40,6 +18,73 @@ function parseSizeChart(raw: RawProduct): Product {
   }
   const { metafield: _, ...rest } = raw;
   return { ...rest, sizeChart };
+}
+
+/* ── Collection story (metaobject-driven) ──
+ * The story lives in Shopify as a list of `story_stage` metaobjects, referenced
+ * from the collection's `custom.story` metafield. Each metaobject exposes the
+ * fields: stage_number, label, headline, body, media (file ref), layout. */
+interface RawMetaobjectField {
+  key: string;
+  value: string | null;
+  reference?: {
+    image?: { url: string; altText: string | null } | null;
+    sources?: { url: string; mimeType: string }[] | null;
+  } | null;
+}
+interface RawStoryMetafield {
+  references?: {
+    edges: { node: { fields: RawMetaobjectField[] } }[];
+  } | null;
+}
+
+const STORY_METAFIELD_FRAGMENT = `
+  story: metafield(namespace: "custom", key: "story") {
+    references(first: 3) {
+      edges {
+        node {
+          ... on Metaobject {
+            fields {
+              key
+              value
+              reference {
+                ... on MediaImage { image { url altText width height } }
+                ... on Video { sources { url mimeType } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+function parseStory(story: RawStoryMetafield | null | undefined): StoryStage[] {
+  const edges = story?.references?.edges ?? [];
+  return edges
+    .map(({ node }): StoryStage => {
+      const f: Record<string, RawMetaobjectField> = {};
+      for (const field of node.fields) f[field.key] = field;
+
+      const ref = f.media?.reference;
+      let media: StoryStage["media"] = null;
+      if (ref?.image?.url) {
+        media = { type: "image", url: ref.image.url, alt: ref.image.altText ?? undefined };
+      } else if (ref?.sources?.length) {
+        media = { type: "video", url: ref.sources[0].url };
+      }
+
+      return {
+        stageNumber: f.stage_number?.value ?? "",
+        label: f.label?.value ?? "",
+        headline: f.headline?.value ?? "",
+        body: f.body?.value ?? "",
+        media,
+        layout: f.layout?.value === "split" ? "split" : "statement",
+      };
+    })
+    .filter((s) => s.headline.trim().length > 0)
+    .slice(0, 3);
 }
 
 const PRODUCT_FRAGMENT = `
@@ -123,9 +168,6 @@ export async function getProducts(first = 20) {
     return SEED_PRODUCTS.slice(0, first);
   }
 
-  // Fetch a wider window so filtering leaves enough Bluorang items.
-  const fetchCount = Math.max(first, 100);
-
   const data = await shopifyFetch<{
     products: { edges: { node: RawProduct }[] };
   }>({
@@ -141,13 +183,10 @@ export async function getProducts(first = 20) {
         }
       }
     `,
-    variables: { first: fetchCount },
+    variables: { first },
   });
 
-  return data.products.edges
-    .map((e) => parseSizeChart(e.node))
-    .filter(isAllowed)
-    .slice(0, first);
+  return data.products.edges.map((e) => parseSizeChart(e.node));
 }
 
 export async function getProductByHandle(handle: string) {
@@ -204,7 +243,9 @@ export async function getCollections(first = 20) {
 
 export async function getCollectionByHandle(handle: string, first = 50) {
   const data = await shopifyFetch<{
-    collectionByHandle: Collection | null;
+    collectionByHandle:
+      | (Omit<Collection, "story"> & { story: RawStoryMetafield | null })
+      | null;
   }>({
     query: `
       ${PRODUCT_FRAGMENT}
@@ -220,6 +261,7 @@ export async function getCollectionByHandle(handle: string, first = 50) {
             width
             height
           }
+          ${STORY_METAFIELD_FRAGMENT}
           products(first: $first) {
             edges {
               node {
@@ -241,18 +283,19 @@ export async function getCollectionByHandle(handle: string, first = 50) {
 
   if (!data.collectionByHandle) return null;
 
-  // Hide default/test Shopify products from collection listings.
-  const filteredEdges = data.collectionByHandle.products.edges.filter((e) =>
-    isAllowed(e.node)
-  );
+  const raw = data.collectionByHandle;
 
-  return {
-    ...data.collectionByHandle,
-    products: {
-      ...data.collectionByHandle.products,
-      edges: filteredEdges,
-    },
+  // Prefer the Shopify-authored story; fall back to a baked-in Dusk story so
+  // the page is never empty (and stays fully editable once metaobjects exist).
+  const authored = parseStory(raw.story);
+  const story = authored.length > 0 ? authored : getFallbackStory(raw.title);
+
+  const collection: Collection = {
+    ...raw,
+    story,
   };
+
+  return collection;
 }
 
 export async function searchProducts(query: string, first = 20) {
@@ -274,7 +317,5 @@ export async function searchProducts(query: string, first = 20) {
     variables: { query, first },
   });
 
-  return data.products.edges
-    .map((e) => parseSizeChart(e.node))
-    .filter(isAllowed);
+  return data.products.edges.map((e) => parseSizeChart(e.node));
 }

@@ -6,8 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PAGES = [
-  { label: "Shop", href: "/shop" },
-  { label: "About", href: "/about" },
+  { label: "Stage 1", href: "/collections/stage-one" },
   { label: "Contact", href: "/contact" },
   { label: "Privacy Policy", href: "/policies/privacy" },
   { label: "Shipping", href: "/policies/shipping" },
@@ -61,13 +60,18 @@ export function Footer() {
           <AnimatePresence>
             {menuOpen && (
               <motion.div
-                className="absolute bottom-full left-1/2 mb-3 -translate-x-1/2 rounded-2xl bg-[#1C1C1C] px-4 py-3 shadow-xl border border-white/5"
+                className="absolute bottom-full left-1/2 mb-3 -translate-x-1/2 overflow-hidden rounded-2xl border border-white/15 bg-black/40 px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]"
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               >
-                <nav className="flex flex-col gap-2 min-w-[130px]">
+                {/* Top gloss highlight */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                />
+                <nav className="relative flex flex-col gap-2 min-w-[130px]">
                   {PAGES.map((page) => (
                     <Link
                       key={page.href}
@@ -83,17 +87,26 @@ export function Footer() {
             )}
           </AnimatePresence>
 
-          {/* The dock bar */}
+          {/* The dock bar — iOS liquid-glass: translucent, blurred, glossy */}
           <motion.div
-            className="flex items-center gap-0.5 rounded-full bg-[#1C1C1C] px-1.5 py-1 shadow-xl"
+            className="relative flex items-center gap-0.5 rounded-full border border-white/15 bg-black/40 px-1.5 py-1 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]"
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 25, delay: 0.1 }}
           >
+            {/* Gloss — soft top highlight + faint sheen for the glassy feel */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/15 via-white/[0.03] to-transparent"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"
+            />
             {/* Logo */}
             <Link
               href="/"
-              className="flex h-7 items-center justify-center rounded-full bg-white/10 px-3 transition-all hover:bg-white/20"
+              className="relative flex h-7 items-center justify-center rounded-full bg-white/10 px-3 transition-all hover:bg-white/20"
             >
               <span className="font-display text-[8px] font-bold tracking-[0.08em] text-white uppercase">
                 Dusk&Co

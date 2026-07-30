@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   title: "About | DUSK&CO",
   description:
     "Born at the intersection of street culture and raw self-expression. The story and process behind DUSK&CO.",
+  // Hidden for now — unlinked across the site and kept out of search indexes.
+  robots: { index: false, follow: false },
 };
 
 export default function AboutPage() {

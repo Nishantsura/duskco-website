@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useQuickView } from "./quick-view-provider";
 import { useCart } from "@/components/cart/cart-provider";
+import { HoldToAddButton } from "./hold-to-add-button";
 import { capture, productProps } from "@/lib/analytics";
 
 function formatPrice(amount: string, currencyCode: string) {
@@ -18,7 +19,7 @@ function formatPrice(amount: string, currencyCode: string) {
 
 export function QuickViewDrawer() {
   const { product, isOpen, close } = useQuickView();
-  const { addItem, isPending } = useCart();
+  const { addItem, isPending, isInCart, notify } = useCart();
   const [imgIdx, setImgIdx] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -70,8 +71,17 @@ export function QuickViewDrawer() {
     return variant?.availableForSale ?? false;
   }
 
+  const alreadyInBag = product ? isInCart(product.handle) : false;
+
   async function handleAddToCart() {
-    if (!selectedSize || !product) return;
+    if (!product) return;
+    // One unit per product — a second add just reminds the shopper.
+    if (alreadyInBag) {
+      notify("Already in your bag");
+      close();
+      return;
+    }
+    if (!selectedSize) return;
     const variant = getVariantForSize(selectedSize);
     if (!variant) return;
 
@@ -90,6 +100,7 @@ export function QuickViewDrawer() {
   }
 
   const displayName = product?.title?.split("—")[0]?.trim() ?? "";
+  const addActive = !!selectedSize || alreadyInBag;
 
   return (
     <>
@@ -183,7 +194,7 @@ export function QuickViewDrawer() {
               {/* Product info */}
               <div className="px-5 py-5">
                 {/* Name */}
-                <h2 className="font-primary text-[18px] font-bold tracking-[0.01em] text-neutral-900">
+                <h2 className="font-heading text-[18px] font-bold tracking-[0.01em] text-neutral-900">
                   {displayName}
                 </h2>
 
@@ -235,22 +246,26 @@ export function QuickViewDrawer() {
                   </div>
                 )}
 
-                {/* Add to cart */}
-                <button
-                  onClick={handleAddToCart}
-                  disabled={!selectedSize || adding || isPending}
+                {/* Add to cart — hold-to-add on mobile, click on desktop */}
+                <HoldToAddButton
+                  onAdd={handleAddToCart}
+                  disabled={(!addActive) || adding || isPending}
+                  canHold={!!selectedSize && !alreadyInBag && !adding && !isPending}
+                  holdLabel="Hold to Add"
+                  fillClassName="bg-accent-orange"
                   className={`mt-6 flex h-[43px] w-full items-center justify-center rounded-[0.2rem] font-primary text-[11px] font-normal tracking-[0.08em] uppercase transition-all ${
-                    selectedSize
+                    addActive
                       ? "bg-neutral-900 text-white hover:bg-neutral-800"
                       : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
                   }`}
-                >
-                  {adding || isPending
-                    ? "Adding..."
-                    : selectedSize
-                      ? "Add to Cart"
-                      : "Select a Size"}
-                </button>
+                  idleLabel={
+                    adding || isPending
+                      ? "Adding..."
+                      : addActive
+                        ? "Add to Cart"
+                        : "Select a Size"
+                  }
+                />
 
                 {/* Benefits */}
                 <div className="mt-5 space-y-2.5 border-t border-neutral-100 pt-5">
