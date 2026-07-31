@@ -1,0 +1,6 @@
+# Large source assets — not needed at runtime (product shoot lives in Shopify)
+public/Images
+# Source / reference files, not part of the site
+public/expansiva.zip
+public/Hero Inspiration.png
+public/STORY DUSK.docx
