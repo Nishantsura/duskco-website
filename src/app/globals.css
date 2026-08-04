@@ -44,12 +44,18 @@
   --font-heading: var(--font-bebas-neue);
   --font-display: var(--font-bebas-neue);
   --font-street: var(--font-bebas-neue);
+  /* Brand wordmark only — the DUSK&CO logo keeps its original Expansiva face. */
+  --font-logo: var(--font-expansiva);
 }
 
 .font-street,
 .font-heading,
 .font-display {
   font-family: var(--font-bebas-neue), "Bebas Neue", sans-serif;
+}
+
+.font-logo {
+  font-family: var(--font-expansiva), "Bebas Neue", sans-serif;
 }
 
 body {
@@ -158,4 +164,107 @@ button:disabled,
 }
 @media (prefers-reduced-motion: reduce) {
   .hold-stripes { animation: none; }
+}
+
+/* Access terminal — CRT scanlines + subtle flicker over the vault screen */
+@keyframes access-scan {
+  from { background-position: 0 0; }
+  to   { background-position: 0 6px; }
+}
+.access-scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.045) 0 1px,
+    transparent 1px 3px
+  );
+  animation: access-scan 0.5s steps(3) infinite;
+}
+@keyframes access-flicker {
+  0%, 100% { opacity: 0.9; }
+  92% { opacity: 0.9; }
+  94% { opacity: 0.65; }
+  96% { opacity: 0.95; }
+  98% { opacity: 0.75; }
+}
+.access-flicker { animation: access-flicker 4s linear infinite; }
+
+/* Wrong code — shake the input line */
+@keyframes access-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.animate-access-shake { animation: access-shake 0.4s ease-in-out; }
+
+/* Terminal caret — steady blink */
+@keyframes access-caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.access-caret { animation: access-caret-blink 1.05s steps(1) infinite; }
+
+/* Slow vertical scan-sweep, like a terminal boot pass */
+@keyframes access-sweep {
+  0% { transform: translateY(-10vh); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+.access-sweep { animation: access-sweep 7s linear infinite; }
+
+/* Access terminal glitch effects. */
+/* Chromatic-split glitch — bursts a mint + magenta offset copy of the text */
+.glitch { position: relative; display: inline-block; }
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+.glitch::before {
+  color: #5eead4;
+  text-shadow: -1px 0 #5eead4;
+  animation: glitch-a 3.2s infinite steps(1);
+}
+.glitch::after {
+  color: #ff4d9d;
+  text-shadow: 1px 0 #ff4d9d;
+  animation: glitch-b 3.7s infinite steps(1);
+}
+@keyframes glitch-a {
+  0%, 90%, 100% { opacity: 0; transform: translate(0); clip-path: inset(0 0 0 0); }
+  91% { opacity: 0.85; transform: translate(-2px, -1px); clip-path: inset(12% 0 78% 0); }
+  94% { opacity: 0.85; transform: translate(2px, 1px); clip-path: inset(62% 0 16% 0); }
+  97% { opacity: 0.85; transform: translate(-1px, 0); clip-path: inset(34% 0 44% 0); }
+}
+@keyframes glitch-b {
+  0%, 88%, 100% { opacity: 0; transform: translate(0); clip-path: inset(0 0 0 0); }
+  89% { opacity: 0.8; transform: translate(2px, 1px); clip-path: inset(70% 0 8% 0); }
+  92% { opacity: 0.8; transform: translate(-2px, -1px); clip-path: inset(20% 0 62% 0); }
+  96% { opacity: 0.8; transform: translate(1px, 1px); clip-path: inset(46% 0 30% 0); }
+}
+
+/* Feed monitor — occasional horizontal signal-jump */
+@keyframes access-signal-jump {
+  0%, 96%, 100% { transform: translateX(0); filter: none; }
+  97% { transform: translateX(-4px); }
+  98% { transform: translateX(5px); filter: brightness(1.25); }
+  99% { transform: translateX(-2px); }
+}
+.access-signal { animation: access-signal-jump 5.5s infinite steps(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .access-scanlines,
+  .access-flicker,
+  .animate-access-shake,
+  .access-caret,
+  .access-sweep,
+  .access-signal { animation: none; }
+  .glitch::before,
+  .glitch::after { display: none; }
 }

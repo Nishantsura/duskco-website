@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Bebas_Neue } from "next/font/google";
+import localFont from "next/font/local";
 import { Header } from "@/components/layout/header";
 import { NavVisibilityProvider } from "@/components/layout/nav-visibility";
 import { Footer } from "@/components/layout/footer";
@@ -26,6 +27,17 @@ const bebasNeue = Bebas_Neue({
   display: "swap",
 });
 
+// Brand wordmark only — the DUSK&CO logo (header, footer dock, mobile nav).
+// Deliberately NOT used for body/heading type; those stay Bebas + Archivo.
+const expansiva = localFont({
+  src: [
+    { path: "../fonts/Expansiva.otf", weight: "400", style: "normal" },
+    { path: "../fonts/Expansiva-Bold.otf", weight: "700", style: "normal" },
+  ],
+  variable: "--font-expansiva",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "DUSK&CO — Wear The Difference",
@@ -45,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${bebasNeue.variable} h-full antialiased`}>
+    <html lang="en" className={`${archivo.variable} ${bebasNeue.variable} ${expansiva.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <PostHogProvider>
         <CartProvider>

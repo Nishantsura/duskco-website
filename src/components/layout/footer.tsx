@@ -3,20 +3,22 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Sparkles, Mail, Shield, Truck, RotateCcw, type LucideIcon } from "lucide-react";
 
-const PAGES = [
-  { label: "Stage 1", href: "/collections/stage-one" },
-  { label: "Contact", href: "/contact" },
-  { label: "Privacy Policy", href: "/policies/privacy" },
-  { label: "Shipping", href: "/policies/shipping" },
-  { label: "Returns", href: "/policies/refund" },
+const PAGES: { label: string; short: string; href: string; Icon: LucideIcon }[] = [
+  { label: "Stage 1", short: "Stage 1", href: "/collections/stage-one", Icon: Sparkles },
+  { label: "Contact", short: "Contact", href: "/contact", Icon: Mail },
+  { label: "Privacy Policy", short: "Privacy", href: "/policies/privacy", Icon: Shield },
+  { label: "Shipping", short: "Shipping", href: "/policies/shipping", Icon: Truck },
+  { label: "Returns", short: "Returns", href: "/policies/refund", Icon: RotateCcw },
 ];
 
 export function Footer() {
   const [menuOpen, setMenuOpen] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const reduce = useReducedMotion();
   // On the homepage the hero fills the viewport, so the dock floats over it
   // instead of sitting in normal flow — keeps the landing scroll-free.
   const isHome = pathname === "/";
@@ -56,31 +58,44 @@ export function Footer() {
         }
       >
         <div ref={dockRef} className={`relative ${isHome ? "pointer-events-auto" : ""}`}>
-          {/* Pages menu — expands above the dock */}
+          {/* Pages menu — unfolds sideways out of the dock (right-anchored so it
+              grows left from the hamburger), a horizontal row of icon chips. */}
           <AnimatePresence>
             {menuOpen && (
               <motion.div
-                className="absolute bottom-full left-1/2 mb-3 -translate-x-1/2 overflow-hidden rounded-2xl border border-white/15 bg-black/40 px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]"
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="absolute bottom-full right-0 mb-3 origin-bottom-right rounded-2xl border border-white/15 bg-black/40 p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]"
+                initial={{ opacity: 0, scaleX: 0.55, y: 6 }}
+                animate={{ opacity: 1, scaleX: 1, y: 0 }}
+                exit={{ opacity: 0, scaleX: 0.55, y: 6 }}
+                transition={{ type: "spring", stiffness: 420, damping: 32 }}
               >
                 {/* Top gloss highlight */}
                 <span
                   aria-hidden
                   className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 />
-                <nav className="relative flex flex-col gap-2 min-w-[130px]">
-                  {PAGES.map((page) => (
-                    <Link
+                <nav className="relative flex items-stretch gap-0.5">
+                  {PAGES.map((page, i) => (
+                    <motion.div
                       key={page.href}
-                      href={page.href}
-                      onClick={() => setMenuOpen(false)}
-                      className="font-primary text-[11px] font-medium tracking-[0.04em] text-white/60 transition-colors hover:text-white"
+                      initial={reduce ? false : { opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: reduce ? 0 : 0.04 + i * 0.045, duration: 0.25 }}
                     >
-                      {page.label}
-                    </Link>
+                      <Link
+                        href={page.href}
+                        onClick={() => setMenuOpen(false)}
+                        aria-label={page.label}
+                        className="group/chip flex w-[58px] flex-col items-center gap-1.5 rounded-xl px-1 py-2 transition-colors hover:bg-white/10"
+                      >
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white/75 transition-colors group-hover/chip:bg-white/20 group-hover/chip:text-white">
+                          <page.Icon size={15} strokeWidth={1.75} />
+                        </span>
+                        <span className="font-primary text-[8px] font-medium tracking-[0.08em] text-white/55 uppercase transition-colors group-hover/chip:text-white">
+                          {page.short}
+                        </span>
+                      </Link>
+                    </motion.div>
                   ))}
                 </nav>
               </motion.div>
@@ -108,7 +123,7 @@ export function Footer() {
               href="/"
               className="relative flex h-7 items-center justify-center rounded-full bg-white/10 px-3 transition-all hover:bg-white/20"
             >
-              <span className="font-display text-[8px] font-bold tracking-[0.08em] text-white uppercase">
+              <span className="font-logo text-[8px] font-bold tracking-[0.08em] text-white uppercase">
                 Dusk&Co
               </span>
             </Link>

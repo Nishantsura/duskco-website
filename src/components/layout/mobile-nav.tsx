@@ -43,7 +43,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
       >
         {/* Header */}
         <div className="flex h-[60px] items-center justify-between px-8">
-          <span className="font-display text-sm font-bold tracking-[0.08em] text-white uppercase">
+          <span className="font-logo text-sm font-bold tracking-[0.08em] text-white uppercase">
             DUSK&CO
           </span>
           <button onClick={onClose} aria-label="Close menu" className="text-white/60 hover:text-white transition-colors">

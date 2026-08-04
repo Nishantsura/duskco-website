@@ -52,7 +52,7 @@ export function Header() {
           {/* Center — Logo */}
           <Link
             href="/"
-            className={`absolute left-1/2 -translate-x-1/2 font-display text-lg font-bold tracking-[0.08em] uppercase sm:text-xl transition-colors duration-200 ${isTransparent ? "text-white" : "text-black"}`}
+            className={`absolute left-1/2 -translate-x-1/2 font-logo text-lg font-bold tracking-[0.08em] uppercase sm:text-xl transition-colors duration-200 ${isTransparent ? "text-white" : "text-black"}`}
           >
             DUSK&CO
           </Link>
