@@ -124,7 +124,7 @@ export function ProductInfo({ product }: { product: Product }) {
     }
     // One unit per product — a second add just reminds the shopper.
     if (alreadyInBag) {
-      notify("Already in your bag");
+      notify("One per person — that's the drop");
       return;
     }
     if (selectedVariant) {

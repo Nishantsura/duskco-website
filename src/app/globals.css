@@ -37,19 +37,19 @@
 
   --color-accent-orange: var(--color-accent-orange);
 
+  /* Two house faces only: Bebas Neue (display) + Archivo (text).
+     font-heading / font-display are kept as aliases so existing
+     classes resolve to Bebas without touching every component. */
   --font-primary: var(--font-archivo);
-  --font-heading: var(--font-roboto-slab);
-  --font-display: var(--font-expansiva);
+  --font-heading: var(--font-bebas-neue);
+  --font-display: var(--font-bebas-neue);
   --font-street: var(--font-bebas-neue);
 }
 
-.font-street {
+.font-street,
+.font-heading,
+.font-display {
   font-family: var(--font-bebas-neue), "Bebas Neue", sans-serif;
-}
-
-/* Product-name headings keep the original slab face. */
-.font-heading {
-  font-family: var(--font-roboto-slab), "Roboto Slab", serif;
 }
 
 body {

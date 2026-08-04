@@ -77,7 +77,7 @@ export function QuickViewDrawer() {
     if (!product) return;
     // One unit per product — a second add just reminds the shopper.
     if (alreadyInBag) {
-      notify("Already in your bag");
+      notify("One per person — that's the drop");
       close();
       return;
     }

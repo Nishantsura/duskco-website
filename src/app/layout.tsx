@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, Roboto_Slab, Bebas_Neue } from "next/font/google";
-import localFont from "next/font/local";
+import { Archivo, Bebas_Neue } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { NavVisibilityProvider } from "@/components/layout/nav-visibility";
 import { Footer } from "@/components/layout/footer";
@@ -20,27 +19,10 @@ const archivo = Archivo({
   display: "swap",
 });
 
-// Kept for product-name headings — the original heading face.
-const robotoSlab = Roboto_Slab({
-  variable: "--font-roboto-slab",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
-});
-
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas-neue",
   subsets: ["latin"],
   weight: "400",
-  display: "swap",
-});
-
-const expansiva = localFont({
-  src: [
-    { path: "../fonts/Expansiva.otf", weight: "400", style: "normal" },
-    { path: "../fonts/Expansiva-Bold.otf", weight: "700", style: "normal" },
-  ],
-  variable: "--font-expansiva",
   display: "swap",
 });
 
@@ -63,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${robotoSlab.variable} ${expansiva.variable} ${bebasNeue.variable} h-full antialiased`}>
+    <html lang="en" className={`${archivo.variable} ${bebasNeue.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <PostHogProvider>
         <CartProvider>
