@@ -42,3 +42,16 @@ next-env.d.ts
 
 # claude
 .claude/
+
+# Local-only assets not used by the site (keep the repo lean)
+# Product photos live on Shopify's CDN; brand fonts live in src/fonts/.
+/public/Images/
+/public/Hero Inspiration.png
+/public/STORY DUSK.docx
+/public/expansiva.zip
+/public/expansiva/
+
+# Uncompressed source videos — the site serves the compressed ones already tracked
+/public/videos/Hero new video 2 - Mobile.mp4
+/public/videos/New hero video 1 - Desktop.mp4
+/public/videos/Fabric_shards*
