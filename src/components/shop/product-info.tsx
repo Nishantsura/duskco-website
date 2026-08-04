@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import type { Product } from "@/lib/shopify/types";
 import { useCart } from "@/components/cart/cart-provider";
 import { SizeGuide } from "@/components/shop/size-guide";
 import { HoldToAddButton } from "@/components/shop/hold-to-add-button";
+import {
+  DEFAULT_WASH_CARE,
+  DEFAULT_SHIPPING,
+  DEFAULT_SIZE_CHART,
+} from "@/lib/product-copy";
 import { capture, productProps } from "@/lib/analytics";
 
 function formatPrice(amount: string, currencyCode: string) {
@@ -45,15 +51,17 @@ function Accordion({
   children: React.ReactNode;
 }) {
   return (
-    <div className="border-b border-neutral-200">
+    <div className="border-b border-line">
       <button
         onClick={onToggle}
-        className="flex w-full items-center justify-between py-4 text-left"
+        className="group flex w-full items-center justify-between py-4 text-left"
       >
-        <span className="font-primary text-[12px] font-bold tracking-[0.08em] text-neutral-900 uppercase">
+        <span className="font-primary text-[12px] font-bold tracking-[0.08em] text-ink uppercase transition-colors group-hover:text-ink">
           {title}
         </span>
-        <PlusMinus open={open} />
+        <span className={open ? "text-accent" : "text-ink-faint"}>
+          <PlusMinus open={open} />
+        </span>
       </button>
       <div
         className={`grid transition-all duration-300 ease-out ${
@@ -61,7 +69,7 @@ function Accordion({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="pb-5 font-primary text-[13px] font-light leading-[1.7] text-neutral-600">
+          <div className="pb-5 font-primary text-[13px] font-light leading-[1.7] text-ink-muted">
             {children}
           </div>
         </div>
@@ -86,8 +94,16 @@ export function ProductInfo({ product }: { product: Product }) {
   }, [product]);
 
   const [selectedSize, setSelectedSize] = useState("");
-  const [openSection, setOpenSection] = useState<string | null>("details");
+  const [openSection, setOpenSection] = useState<string | null>("washcare");
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [descOpen, setDescOpen] = useState(false);
+
+  // Editable copy — metafield content when present, house defaults otherwise.
+  // (Garment specs render as the gallery's spec card, not here.)
+  const washCare = product.washCare ?? DEFAULT_WASH_CARE;
+  const shipping = product.shippingInfo ?? DEFAULT_SHIPPING;
+  const sizeChart = product.sizeChart ?? DEFAULT_SIZE_CHART;
+  const longDesc = (product.description?.length ?? 0) > 150;
 
   function toggleSection(key: string) {
     setOpenSection((prev) => (prev === key ? null : key));
@@ -109,6 +125,15 @@ export function ProductInfo({ product }: { product: Product }) {
   const selectedVariant = selectedSize
     ? getVariantForSize(selectedSize)
     : variants[0];
+
+  // Discounts are rare on the drop — only surface compare-at when it's actually
+  // higher than the price, and keep it quiet otherwise.
+  const compareAt = selectedVariant?.compareAtPrice ?? variants[0]?.compareAtPrice ?? null;
+  const hasDiscount =
+    !!compareAt && parseFloat(compareAt.amount) > parseFloat(price.amount);
+  const discountPct = hasDiscount
+    ? Math.round((1 - parseFloat(price.amount) / parseFloat(compareAt!.amount)) * 100)
+    : 0;
 
   const displayName = product.title.split("—")[0].trim();
 
@@ -141,53 +166,78 @@ export function ProductInfo({ product }: { product: Product }) {
 
   return (
     <div className="flex flex-col lg:h-full">
+      {/* ── Kicker ── */}
+      <p className="flex items-center gap-2 font-primary text-[10px] font-semibold tracking-[0.24em] text-ink-faint uppercase">
+        <span
+          className="h-1.5 w-1.5 rounded-full"
+          style={{ background: "var(--accent)", boxShadow: "0 0 6px var(--accent)" }}
+        />
+        Stage One · Limited
+      </p>
+
       {/* ── Header: title + price ── */}
-      <div className="flex items-start justify-between gap-6">
-        <h1 className="font-heading text-[19px] font-bold leading-tight tracking-[0.02em] text-neutral-900 uppercase">
+      <div className="mt-3 flex items-end justify-between gap-6">
+        <h1 className="font-street text-[clamp(30px,3.4vw,46px)] font-normal leading-[0.9] tracking-[0.01em] text-ink uppercase">
           {displayName}
         </h1>
-        <p className="whitespace-nowrap font-primary text-[16px] font-medium text-neutral-900">
-          {formatPrice(price.amount, price.currencyCode)}
-        </p>
+        <div className="flex flex-col items-end gap-1">
+          <p className="whitespace-nowrap font-street text-[26px] leading-none tracking-[0.01em] text-ink">
+            {formatPrice(price.amount, price.currencyCode)}
+          </p>
+          {hasDiscount && compareAt && (
+            <div className="flex items-center gap-2">
+              <span className="font-primary text-[13px] text-ink-faint line-through">
+                {formatPrice(compareAt.amount, compareAt.currencyCode)}
+              </span>
+              <span
+                className="rounded-full px-2 py-0.5 font-primary text-[11px] font-bold"
+                style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+              >
+                −{discountPct}%
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ── Description ── */}
+      {/* ── Description — three lines, expandable ── */}
       {product.description && (
-        <p className="mt-5 font-primary text-[13px] font-light leading-[1.7] text-neutral-500">
-          {product.description}
-        </p>
+        <div className="mt-5">
+          <p
+            className={`font-primary text-[13px] font-light leading-[1.7] text-ink-muted ${
+              descOpen ? "" : "line-clamp-3"
+            }`}
+          >
+            {product.description}
+          </p>
+          {longDesc && (
+            <button
+              onClick={() => setDescOpen((v) => !v)}
+              className="mt-2.5 flex items-center gap-1 font-primary text-[11px] font-semibold tracking-[0.12em] text-ink-muted uppercase transition-colors hover:text-accent"
+              aria-expanded={descOpen}
+            >
+              {descOpen ? "View less" : "View more"}
+              <ChevronDown
+                size={13}
+                strokeWidth={2}
+                className={`transition-transform duration-300 ${descOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+          )}
+        </div>
       )}
 
-      {/* ── Accordions ── */}
-      <div className="mt-6 border-t border-neutral-200 lg:flex-1 lg:overflow-y-auto">
-        <Accordion
-          title="Garment Details"
-          open={openSection === "details"}
-          onToggle={() => toggleSection("details")}
-        >
-          {product.productType && (
-            <p className="mb-3 text-[12px] font-medium text-neutral-500">
-              {product.productType}
-            </p>
-          )}
-          <ul className="space-y-1">
-            <li>100% Premium Cotton</li>
-            <li>Weight — 220 gsm</li>
-            <li>Relaxed Fit</li>
-          </ul>
-        </Accordion>
-
+      {/* ── Accordions — all copy editable via custom.* metafields ── */}
+      <div className="mt-6 border-t border-line lg:flex-1 lg:overflow-y-auto">
         <Accordion
           title="Wash Care"
           open={openSection === "washcare"}
           onToggle={() => toggleSection("washcare")}
         >
           <ul className="space-y-1.5">
-            <li>Machine wash cold with similar colours</li>
-            <li>Do not bleach</li>
-            <li>Tumble dry low</li>
-            <li>Iron on low heat if needed</li>
-            <li>Do not dry clean</li>
+            {washCare.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
           </ul>
         </Accordion>
 
@@ -197,11 +247,9 @@ export function ProductInfo({ product }: { product: Product }) {
           onToggle={() => toggleSection("shipping")}
         >
           <ul className="space-y-1.5">
-            <li>Free shipping on orders above ₹2,999</li>
-            <li>Standard delivery: 5–7 business days</li>
-            <li>Express delivery: 2–3 business days</li>
-            <li>Cash on Delivery available</li>
-            <li>Easy returns within 7 days of delivery</li>
+            {shipping.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
           </ul>
         </Accordion>
       </div>
@@ -219,23 +267,21 @@ export function ProductInfo({ product }: { product: Product }) {
         {sizes.length > 0 && (
           <div className="mb-4">
             <div className="mb-2.5 flex items-center justify-between">
-              <span className="font-primary text-[12px] font-bold tracking-[0.08em] text-neutral-900 uppercase">
+              <span className="font-primary text-[12px] font-bold tracking-[0.08em] text-ink uppercase">
                 Size{selectedSize ? `: ${selectedSize}` : ""}
               </span>
-              {product.sizeChart && (
-                <button
-                  onClick={() => {
-                    capture("size_guide_opened", {
-                      product_id: product.id,
-                      product_name: product.title,
-                    });
-                    setSizeGuideOpen(true);
-                  }}
-                  className="font-primary text-[11px] font-medium tracking-[0.04em] text-neutral-500 underline underline-offset-2 transition-colors hover:text-neutral-900"
-                >
-                  Size Guide
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  capture("size_guide_opened", {
+                    product_id: product.id,
+                    product_name: product.title,
+                  });
+                  setSizeGuideOpen(true);
+                }}
+                className="font-primary text-[11px] font-medium tracking-[0.04em] text-ink-faint underline underline-offset-2 transition-colors hover:text-accent"
+              >
+                Size Guide
+              </button>
             </div>
             <div className="flex flex-wrap gap-2">
               {sizes.map((size) => {
@@ -247,13 +293,8 @@ export function ProductInfo({ product }: { product: Product }) {
                     disabled={!available}
                     aria-pressed={active}
                     onClick={() => setSelectedSize(size)}
-                    className={`flex h-11 min-w-[3.25rem] items-center justify-center px-3.5 font-primary text-[12px] font-medium tracking-[0.04em] uppercase transition-all ${
-                      active
-                        ? "border border-neutral-900 bg-neutral-900 text-white"
-                        : available
-                          ? "border border-neutral-300 bg-white text-neutral-900 hover:border-neutral-900"
-                          : "cursor-not-allowed border border-neutral-200 bg-neutral-50 text-neutral-300 line-through"
-                    }`}
+                    data-active={active}
+                    data-available={available}                    className="dusk-size flex h-11 min-w-[3.25rem] items-center justify-center rounded-full border px-4 font-primary text-[12px] font-bold tracking-[0.05em] uppercase transition-all duration-200"
                   >
                     {size}
                   </button>
@@ -264,23 +305,25 @@ export function ProductInfo({ product }: { product: Product }) {
         )}
 
         {/* Add to cart — tap adds instantly, press-and-hold on any device */}
-        <div className="flex items-stretch border-t border-neutral-200">
+        <div className="flex items-stretch">
           <HoldToAddButton
             onAdd={handleAddToCart}
             disabled={soldOut || isPending}
             canHold={!soldOut && !isPending && !needsSize && !alreadyInBag}
-            holdLabel="Hold to Add"
-            fillClassName="bg-accent-orange"
-            className={`flex w-full items-center justify-center px-8 py-5 font-primary text-[11px] font-normal tracking-[0.1em] uppercase transition-all disabled:cursor-not-allowed ${
+            holdLabel="Keep holding"
+            fillClassName="bg-accent"
+            className={`dusk-add flex h-[54px] w-full items-center justify-center rounded-full border font-primary text-[12px] font-bold tracking-[0.18em] uppercase transition-all disabled:cursor-not-allowed ${
               soldOut
-                ? "bg-neutral-200 text-neutral-400"
-                : "bg-neutral-900 text-white hover:bg-neutral-800"
+                ? "border-line text-ink-faint"
+                : needsSize
+                  ? "text-ink-faint"
+                  : "dusk-add--on text-ink"
             }`}
             idleLabel={
               soldOut
                 ? "Sold Out"
                 : isPending
-                  ? "Adding..."
+                  ? "Adding…"
                   : needsSize
                     ? "Select a Size"
                     : "Add to Cart"
@@ -289,13 +332,11 @@ export function ProductInfo({ product }: { product: Product }) {
         </div>
       </div>
 
-      {product.sizeChart && (
-        <SizeGuide
-          chart={product.sizeChart}
-          open={sizeGuideOpen}
-          onClose={() => setSizeGuideOpen(false)}
-        />
-      )}
+      <SizeGuide
+        chart={sizeChart}
+        open={sizeGuideOpen}
+        onClose={() => setSizeGuideOpen(false)}
+      />
     </div>
   );
 }

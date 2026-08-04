@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Archivo, Bebas_Neue } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/header";
 import { NavVisibilityProvider } from "@/components/layout/nav-visibility";
+import { ChromeThemeProvider } from "@/components/layout/chrome-theme";
 import { Footer } from "@/components/layout/footer";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
@@ -51,24 +53,36 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read the theme cookie on the server so the very first paint is correct —
+  // no flash, no client init script.
+  const theme =
+    (await cookies()).get("duskco-theme")?.value === "light" ? "light" : "dark";
+
   return (
-    <html lang="en" className={`${archivo.variable} ${bebasNeue.variable} ${expansiva.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      data-theme={theme}
+      suppressHydrationWarning
+      className={`${archivo.variable} ${bebasNeue.variable} ${expansiva.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
         <PostHogProvider>
         <CartProvider>
           <QuickViewProvider>
             <NavVisibilityProvider>
-              <Header />
-              <div className="flex-1">{children}</div>
-              <Footer />
-              <CartDrawer />
-              <QuickViewDrawer />
-              <CookieConsent />
+              <ChromeThemeProvider initialTheme={theme}>
+                <Header />
+                <div className="flex-1">{children}</div>
+                <Footer />
+                <CartDrawer />
+                <QuickViewDrawer />
+                <CookieConsent />
+              </ChromeThemeProvider>
             </NavVisibilityProvider>
           </QuickViewProvider>
         </CartProvider>

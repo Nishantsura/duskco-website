@@ -5,19 +5,44 @@ import { getFallbackStory } from "@/lib/collection-story";
 
 const USE_SEED_DATA = false;
 
-interface RawProduct extends Omit<Product, "sizeChart"> {
-  metafield?: { value: string; type: string } | null;
+interface RawProduct
+  extends Omit<Product, "sizeChart" | "garmentDetails" | "washCare" | "shippingInfo"> {
+  sizeChartMeta?: { value: string; type: string } | null;
+  // metafields(identifiers:) returns a list aligned to the requested order,
+  // with null holes for keys the merchant hasn't set.
+  copyMeta?: ({ key: string; value: string | null } | null)[] | null;
 }
 
-function parseSizeChart(raw: RawProduct): Product {
+// One bullet per line — the shape merchants get from a multi_line_text_field.
+function splitLines(value: string | null | undefined): string[] | null {
+  if (!value) return null;
+  const lines = value
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return lines.length > 0 ? lines : null;
+}
+
+function parseProduct(raw: RawProduct): Product {
   let sizeChart: SizeChart | null = null;
-  if (raw.metafield?.value) {
+  if (raw.sizeChartMeta?.value) {
     try {
-      sizeChart = JSON.parse(raw.metafield.value);
+      sizeChart = JSON.parse(raw.sizeChartMeta.value);
     } catch {}
   }
-  const { metafield: _, ...rest } = raw;
-  return { ...rest, sizeChart };
+
+  const byKey = new Map(
+    (raw.copyMeta ?? []).filter(Boolean).map((m) => [m!.key, m!.value])
+  );
+
+  const { sizeChartMeta: _s, copyMeta: _c, ...rest } = raw;
+  return {
+    ...rest,
+    sizeChart,
+    garmentDetails: splitLines(byKey.get("garment_details")),
+    washCare: splitLines(byKey.get("wash_care")),
+    shippingInfo: splitLines(byKey.get("shipping_info")),
+  };
 }
 
 /* ── Collection story (metaobject-driven) ──
@@ -156,9 +181,17 @@ const PRODUCT_FRAGMENT = `
       name
       values
     }
-    metafield(namespace: "custom", key: "size_chart") {
+    sizeChartMeta: metafield(namespace: "custom", key: "size_chart") {
       value
       type
+    }
+    copyMeta: metafields(identifiers: [
+      { namespace: "custom", key: "garment_details" }
+      { namespace: "custom", key: "wash_care" }
+      { namespace: "custom", key: "shipping_info" }
+    ]) {
+      key
+      value
     }
   }
 `;
@@ -186,7 +219,7 @@ export async function getProducts(first = 20) {
     variables: { first },
   });
 
-  return data.products.edges.map((e) => parseSizeChart(e.node));
+  return data.products.edges.map((e) => parseProduct(e.node));
 }
 
 export async function getProductByHandle(handle: string) {
@@ -208,7 +241,7 @@ export async function getProductByHandle(handle: string) {
     variables: { handle },
   });
 
-  return data.productByHandle ? parseSizeChart(data.productByHandle) : null;
+  return data.productByHandle ? parseProduct(data.productByHandle) : null;
 }
 
 export async function getCollections(first = 20) {
@@ -317,5 +350,5 @@ export async function searchProducts(query: string, first = 20) {
     variables: { query, first },
   });
 
-  return data.products.edges.map((e) => parseSizeChart(e.node));
+  return data.products.edges.map((e) => parseProduct(e.node));
 }

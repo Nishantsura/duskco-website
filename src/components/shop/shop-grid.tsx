@@ -47,11 +47,11 @@ export function ShopGrid({ products }: { products: Product[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-end border-b border-black/5 py-4">
+      <div className="flex items-center justify-end border-b border-line py-4">
         <div className="relative">
           <button
             onClick={() => setOpen((o) => !o)}
-            className="font-primary text-[11px] font-bold tracking-[0.15em] text-brand-black uppercase"
+            className="font-primary text-[11px] font-bold tracking-[0.15em] text-ink uppercase"
           >
             Sort: {activeLabel} +
           </button>
@@ -62,7 +62,7 @@ export function ShopGrid({ products }: { products: Product[] }) {
                 onClick={() => setOpen(false)}
                 aria-hidden
               />
-              <div className="absolute right-0 top-full z-20 mt-2 min-w-[200px] rounded-[0.2rem] border border-black/10 bg-white shadow-lg overflow-hidden">
+              <div className="absolute right-0 top-full z-20 mt-2 min-w-[200px] rounded-[0.2rem] border border-line bg-surface shadow-lg overflow-hidden">
                 {SORT_OPTIONS.map((opt) => (
                   <button
                     key={opt.key}
@@ -72,8 +72,8 @@ export function ShopGrid({ products }: { products: Product[] }) {
                     }}
                     className={`block w-full px-4 py-2.5 text-left font-primary text-[11px] tracking-[0.12em] uppercase transition-colors ${
                       sort === opt.key
-                        ? "bg-black/5 font-bold text-brand-black"
-                        : "text-neutral-600 hover:bg-black/5"
+                        ? "bg-ink/5 font-bold text-ink"
+                        : "text-ink-muted hover:bg-ink/5"
                     }`}
                   >
                     {opt.label}

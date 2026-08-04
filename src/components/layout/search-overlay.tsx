@@ -70,9 +70,9 @@ export function SearchOverlay({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col bg-white">
+    <div className="fixed inset-0 z-[60] flex flex-col bg-surface">
       {/* Header */}
-      <div className="border-b border-brand-light-grey/30">
+      <div className="border-b border-line">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-6 sm:px-10">
           <svg
             width="20"
@@ -81,7 +81,7 @@ export function SearchOverlay({
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
-            className="flex-shrink-0 text-brand-dark-grey"
+            className="flex-shrink-0 text-ink-muted"
           >
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
@@ -92,11 +92,11 @@ export function SearchOverlay({
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search products..."
-            className="flex-1 font-primary text-lg font-light text-brand-black placeholder:text-brand-light-grey focus:outline-none"
+            className="flex-1 font-primary text-lg font-light text-ink placeholder:text-ink-faint focus:outline-none"
           />
           <button
             onClick={onClose}
-            className="font-primary text-xs font-bold tracking-[0.15em] text-brand-dark-grey uppercase transition-colors hover:text-brand-black"
+            className="font-primary text-xs font-bold tracking-[0.15em] text-ink-muted uppercase transition-colors hover:text-ink"
           >
             Close
           </button>
@@ -107,20 +107,20 @@ export function SearchOverlay({
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-[1440px] px-6 py-8 sm:px-10">
           {loading && (
-            <p className="font-primary text-sm font-light text-brand-medium-grey">
+            <p className="font-primary text-sm font-light text-ink-muted">
               Searching...
             </p>
           )}
 
           {!loading && query.trim().length >= 2 && results.length === 0 && (
-            <p className="font-primary text-sm font-light text-brand-medium-grey">
+            <p className="font-primary text-sm font-light text-ink-muted">
               No results found for &ldquo;{query}&rdquo;
             </p>
           )}
 
           {results.length > 0 && (
             <>
-              <p className="mb-6 font-primary text-[11px] font-bold tracking-[0.15em] text-brand-dark-grey uppercase">
+              <p className="mb-6 font-primary text-[11px] font-bold tracking-[0.15em] text-ink-muted uppercase">
                 {results.length} Result{results.length !== 1 ? "s" : ""}
               </p>
               <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
@@ -131,7 +131,7 @@ export function SearchOverlay({
                     onClick={onClose}
                     className="group block"
                   >
-                    <div className="relative mb-3 aspect-[3/4] w-full overflow-hidden bg-brand-chalk">
+                    <div className="relative mb-3 aspect-[3/4] w-full overflow-hidden bg-surface-2">
                       {product.featuredImage ? (
                         <Image
                           src={product.featuredImage.url}
@@ -144,19 +144,19 @@ export function SearchOverlay({
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center">
-                          <span className="font-primary text-xs font-light text-brand-medium-grey">
+                          <span className="font-primary text-xs font-light text-ink-muted">
                             No image
                           </span>
                         </div>
                       )}
                     </div>
-                    <p className="font-primary text-[10px] font-bold tracking-[0.15em] text-brand-dark-grey uppercase">
+                    <p className="font-primary text-[10px] font-bold tracking-[0.15em] text-ink-muted uppercase">
                       DUSK&CO
                     </p>
-                    <h3 className="mt-0.5 font-primary text-sm font-light text-brand-black">
+                    <h3 className="mt-0.5 font-primary text-sm font-light text-ink">
                       {product.title}
                     </h3>
-                    <p className="mt-0.5 font-primary text-sm font-light text-brand-black">
+                    <p className="mt-0.5 font-primary text-sm font-light text-ink">
                       {formatPrice(
                         product.priceRange.minVariantPrice.amount,
                         product.priceRange.minVariantPrice.currencyCode
@@ -170,7 +170,7 @@ export function SearchOverlay({
 
           {!loading && query.trim().length < 2 && (
             <div className="py-20 text-center">
-              <p className="font-primary text-sm font-light text-brand-medium-grey">
+              <p className="font-primary text-sm font-light text-ink-muted">
                 Start typing to search products
               </p>
             </div>

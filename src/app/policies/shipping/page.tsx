@@ -24,7 +24,7 @@ export default function ShippingPolicyPage() {
       </PolicySection>
 
       <PolicySection heading="Delivery Timelines">
-        <ul className="list-disc space-y-2 pl-5 marker:text-black/30">
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-faint">
           <li>Standard delivery — 5–7 business days after dispatch.</li>
           <li>Express delivery — 2–3 business days after dispatch.</li>
         </ul>
@@ -36,7 +36,7 @@ export default function ShippingPolicyPage() {
       </PolicySection>
 
       <PolicySection heading="Shipping Charges">
-        <ul className="list-disc space-y-2 pl-5 marker:text-black/30">
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-faint">
           <li>Free standard shipping on all orders above ₹2,999.</li>
           <li>
             A flat shipping fee is applied at checkout for orders below ₹2,999
@@ -75,7 +75,7 @@ export default function ShippingPolicyPage() {
           For anything shipping-related, email us at{" "}
           <a
             href="mailto:help@dusk.co"
-            className="text-black underline underline-offset-2 transition-colors hover:text-black/60"
+            className="text-ink underline underline-offset-2 transition-colors hover:text-ink-muted"
           >
             help@dusk.co
           </a>{" "}

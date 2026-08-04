@@ -15,13 +15,61 @@
 
   --color-accent-orange: #FF4500;
 
-  --background: var(--color-page-grey);
-  --foreground: var(--color-black);
+  /* ── Semantic theme tokens ──────────────────────────────────────────────
+     Default is DARK (the "After Hours" brand). Light is the [data-theme]
+     override below. Components read these via the bg-bg / text-ink / border-line
+     / bg-accent utilities so the whole site flips from one attribute — no
+     per-component JS theming, no flash. Accent is mint on dark, a deep teal on
+     light (neon mint is illegible on white). */
+  --bg: #0b0b0c;
+  --surface: #151517;
+  --surface-2: #1c1c1f;
+  --ink: #f5f4f2;
+  --ink-muted: rgba(245, 244, 242, 0.6);
+  --ink-faint: rgba(245, 244, 242, 0.4);
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  --accent: #5eead4;
+  --accent-ink: #06201c;
+  --accent-soft: rgba(94, 234, 212, 0.14);
+  --shadow-card: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  /* the .dusk-* accent helpers track the theme accent */
+  --dusk-glow: var(--accent);
+
+  --background: var(--bg);
+  --foreground: var(--ink);
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f3f1;
+  --surface: #ffffff;
+  --surface-2: #eceae6;
+  --ink: #0a0a0a;
+  --ink-muted: rgba(10, 10, 10, 0.62);
+  --ink-faint: rgba(10, 10, 10, 0.42);
+  --line: rgba(10, 10, 10, 0.12);
+  --line-strong: rgba(10, 10, 10, 0.24);
+  --accent: #0d9488;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(13, 148, 136, 0.12);
+  --shadow-card: 0 24px 60px -30px rgba(0, 0, 0, 0.2);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
 
   --color-brand-black: var(--color-black);
   --color-brand-near-black: var(--color-near-black);
@@ -62,6 +110,133 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-primary), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Full-viewport section snapping — toggled by ChromeThemeProvider on pages that
+   opt in (the drop story). Lives on the window scroller so the fixed header, the
+   footer dock and the nav scroll listener all keep working. Reduced-motion opts
+   out so no one gets forced-scroll they didn't ask for. */
+html.snap-page {
+  scroll-snap-type: y mandatory;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.snap-page {
+    scroll-snap-type: none;
+  }
+}
+
+/* ── Drop-story hover choreography ──────────────────────────────────────── */
+
+/* Product card — a gentle lift and a soft mint ring on hover. Restrained. */
+.dusk-card {
+  --tw-ring-color: color-mix(in srgb, var(--dusk-glow) 24%, transparent);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease;
+}
+.group:hover .dusk-card {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 46px -32px rgba(0, 0, 0, 0.5);
+  --tw-ring-color: color-mix(in srgb, var(--dusk-glow) 62%, transparent);
+}
+
+/* The soft accent glow behind the frame — brightens slightly on hover. */
+.dusk-card-glow {
+  opacity: 0.12;
+  transform: scale(1);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .dusk-card-glow {
+  opacity: 0.2;
+  transform: scale(1.05);
+}
+
+/* Faint diagonal sheen that drifts across the frame on hover. */
+.dusk-shine {
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .dusk-shine {
+  transform: translateX(120%);
+}
+
+/* Primary CTA — outline + a soft mint glow; on hover the border and glow lift
+   just slightly. No fills, no wipes. */
+.dusk-cta {
+  border-color: color-mix(in srgb, var(--dusk-glow) 38%, transparent);
+  box-shadow: 0 4px 16px -12px var(--dusk-glow);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.dusk-cta:hover {
+  border-color: color-mix(in srgb, var(--dusk-glow) 58%, transparent);
+  box-shadow: 0 6px 18px -10px var(--dusk-glow);
+}
+
+/* Secondary — border and text brighten to the ink colour on hover. */
+.dusk-details {
+  transition: border-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+.dusk-details:hover {
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+  color: var(--ink);
+}
+
+/* Size pills — outline at rest, accent fill when picked. */
+.dusk-size {
+  border-color: var(--line-strong);
+  color: var(--ink-muted);
+}
+.dusk-size[data-available="true"]:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+.dusk-size[data-active="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 8px 22px -12px var(--accent);
+}
+.dusk-size[data-available="false"] {
+  border-color: var(--line);
+  color: var(--ink-faint);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+/* Dark add-to-bag — outline + mint glow when a size is chosen; the hold-fill
+   (mint) sweeps over it. Muted while it still needs a size. */
+.dusk-add {
+  border-color: rgba(255, 255, 255, 0.1);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.dusk-add--on {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 10px 30px -16px var(--accent);
+}
+.dusk-add--on:hover {
+  border-color: color-mix(in srgb, var(--accent) 85%, transparent);
+  box-shadow: 0 0 26px -6px var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dusk-card,
+  .dusk-card-glow,
+  .dusk-shine,
+  .dusk-cta {
+    transition: none;
+  }
+  .group:hover .dusk-card {
+    transform: none;
+  }
+  .group:hover .dusk-shine {
+    transform: translateX(-120%);
+  }
 }
 
 /* Cursor — clickable elements show the pointing-hand gesture */

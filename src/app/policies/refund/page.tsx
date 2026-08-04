@@ -16,7 +16,7 @@ export default function RefundPolicyPage() {
     >
       <PolicySection heading="Return Window">
         <p>
-          You may request a return within <span className="text-black/85">7 days
+          You may request a return within <span className="text-ink">7 days
           of delivery</span>. Requests made after this window may not be
           accepted.
         </p>
@@ -24,7 +24,7 @@ export default function RefundPolicyPage() {
 
       <PolicySection heading="Condition of Items">
         <p>To be eligible for a return, items must be:</p>
-        <ul className="list-disc space-y-2 pl-5 marker:text-black/30">
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-faint">
           <li>Unworn, unwashed, and undamaged.</li>
           <li>With all original tags attached.</li>
           <li>In their original packaging.</li>
@@ -40,7 +40,7 @@ export default function RefundPolicyPage() {
           Email us at{" "}
           <a
             href="mailto:help@dusk.co"
-            className="text-black underline underline-offset-2 transition-colors hover:text-black/60"
+            className="text-ink underline underline-offset-2 transition-colors hover:text-ink-muted"
           >
             help@dusk.co
           </a>{" "}
@@ -69,7 +69,7 @@ export default function RefundPolicyPage() {
         <p>
           Once we receive and inspect your returned item, we&apos;ll process your
           refund to your{" "}
-          <span className="text-black/85">original payment method</span> within
+          <span className="text-ink">original payment method</span> within
           5–7 business days. The time for the amount to reflect in your account
           depends on your bank or payment provider.
         </p>
@@ -92,7 +92,7 @@ export default function RefundPolicyPage() {
           For anything about returns or refunds, reach us at{" "}
           <a
             href="mailto:help@dusk.co"
-            className="text-black underline underline-offset-2 transition-colors hover:text-black/60"
+            className="text-ink underline underline-offset-2 transition-colors hover:text-ink-muted"
           >
             help@dusk.co
           </a>

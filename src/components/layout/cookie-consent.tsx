@@ -38,18 +38,18 @@ export function CookieConsent() {
         <motion.div
           role="dialog"
           aria-label="Cookie notice"
-          className="fixed inset-x-3 bottom-3 z-[55] mx-auto max-w-[520px] rounded-2xl bg-[#1C1C1C] px-5 py-4 shadow-2xl border border-white/5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2"
+          className="fixed inset-x-3 bottom-3 z-[55] mx-auto max-w-[520px] rounded-2xl bg-surface px-5 py-4 shadow-2xl border border-line sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ type: "spring", stiffness: 340, damping: 30 }}
         >
-          <p className="font-primary text-[12px] font-light leading-[1.6] tracking-[0.02em] text-white/70">
+          <p className="font-primary text-[12px] font-light leading-[1.6] tracking-[0.02em] text-ink-muted">
             We use essential cookies to keep your bag working, plus analytics to
             understand how the store is used. See our{" "}
             <Link
               href="/policies/privacy"
-              className="text-white underline underline-offset-2 transition-colors hover:text-white/70"
+              className="text-ink underline underline-offset-2 transition-colors hover:text-ink-muted"
             >
               Privacy Policy
             </Link>
@@ -58,13 +58,13 @@ export function CookieConsent() {
           <div className="mt-3 flex items-center justify-end gap-2">
             <button
               onClick={() => choose("declined")}
-              className="rounded-full px-3 py-1.5 font-primary text-[11px] font-medium tracking-[0.08em] text-white/50 uppercase transition-colors hover:text-white"
+              className="rounded-full px-3 py-1.5 font-primary text-[11px] font-medium tracking-[0.08em] text-ink-faint uppercase transition-colors hover:text-ink"
             >
               Decline
             </button>
             <button
               onClick={() => choose("accepted")}
-              className="rounded-full bg-white px-4 py-1.5 font-primary text-[11px] font-bold tracking-[0.08em] text-black uppercase transition-opacity hover:opacity-80"
+              className="rounded-full bg-ink px-4 py-1.5 font-primary text-[11px] font-bold tracking-[0.08em] text-bg uppercase transition-opacity hover:opacity-80"
             >
               Accept
             </button>

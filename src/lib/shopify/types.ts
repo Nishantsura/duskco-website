@@ -39,6 +39,14 @@ export interface Product {
   };
   options: { id: string; name: string; values: string[] }[];
   sizeChart?: SizeChart | null;
+  /**
+   * Editable product copy, sourced from `custom.*` metafields in the Shopify
+   * admin (multi-line text — one bullet per line). Null when the merchant
+   * hasn't filled them in yet; the PDP falls back to sensible defaults.
+   */
+  garmentDetails?: string[] | null;
+  washCare?: string[] | null;
+  shippingInfo?: string[] | null;
 }
 
 export interface SizeChart {

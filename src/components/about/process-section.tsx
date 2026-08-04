@@ -61,15 +61,15 @@ export function ProcessSection() {
   const step = STEPS[active];
 
   return (
-    <section className="bg-white py-20 sm:py-28">
+    <section className="bg-bg py-20 sm:py-28">
       <div className="mx-auto max-w-[1600px] px-6 sm:px-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left column — headline, intro, selector, description */}
           <div className="flex flex-col">
-            <h2 className="font-primary text-[clamp(40px,6vw,72px)] font-light leading-[1.0] tracking-[-0.02em] text-black">
+            <h2 className="font-primary text-[clamp(40px,6vw,72px)] font-light leading-[1.0] tracking-[-0.02em] text-ink">
               Our Process
             </h2>
-            <p className="mt-6 max-w-md font-primary text-[13px] font-light leading-[1.7] tracking-[0.02em] text-black/50 uppercase">
+            <p className="mt-6 max-w-md font-primary text-[13px] font-light leading-[1.7] tracking-[0.02em] text-ink-muted uppercase">
               Every piece in the collection goes through a deliberate process —
               part research, part instinct, part obsession.
             </p>
@@ -82,24 +82,24 @@ export function ProcessSection() {
                   <button
                     key={s.id}
                     onClick={() => setActive(i)}
-                    className={`group flex items-center gap-4 border-b border-black/10 py-4 text-left transition-colors duration-200 ${
-                      isActive ? "border-black/40" : "hover:border-black/20"
+                    className={`group flex items-center gap-4 border-b border-line py-4 text-left transition-colors duration-200 ${
+                      isActive ? "border-line-strong" : "hover:border-line"
                     }`}
                   >
                     <span
                       className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border transition-colors duration-200 ${
-                        isActive ? "border-black" : "border-black/30"
+                        isActive ? "border-ink" : "border-line-strong"
                       }`}
                     >
                       <span
-                        className={`h-2 w-2 rounded-full bg-black transition-opacity duration-200 ${
+                        className={`h-2 w-2 rounded-full bg-ink transition-opacity duration-200 ${
                           isActive ? "opacity-100" : "opacity-0"
                         }`}
                       />
                     </span>
                     <span
                       className={`font-primary text-[clamp(20px,2.4vw,28px)] font-light tracking-[-0.01em] transition-colors duration-200 ${
-                        isActive ? "text-black" : "text-black/35 group-hover:text-black/60"
+                        isActive ? "text-ink" : "text-ink-faint group-hover:text-ink-muted"
                       }`}
                     >
                       {s.label}
@@ -111,17 +111,17 @@ export function ProcessSection() {
 
             {/* Active step description — bottom left, most important */}
             <div className="mt-12 max-w-xl">
-              <p className="font-primary text-[10px] font-normal tracking-[0.2em] text-black/40 uppercase">
+              <p className="font-primary text-[10px] font-normal tracking-[0.2em] text-ink-faint uppercase">
                 {step.caption}
               </p>
-              <p className="mt-4 font-primary text-[clamp(18px,2vw,26px)] font-light leading-[1.45] tracking-[-0.01em] text-black/80">
+              <p className="mt-4 font-primary text-[clamp(18px,2vw,26px)] font-light leading-[1.45] tracking-[-0.01em] text-ink/80">
                 {step.body}
               </p>
             </div>
           </div>
 
           {/* Right column — large image */}
-          <div className="relative aspect-[3/4] w-full overflow-hidden bg-brand-chalk lg:aspect-auto lg:h-full lg:min-h-[640px]">
+          <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-2 lg:aspect-auto lg:h-full lg:min-h-[640px]">
             {STEPS.map((s, i) => (
               <Image
                 key={s.id}

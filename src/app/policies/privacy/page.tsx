@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
     >
       <PolicySection heading="Information We Collect">
         <p>We collect information you give us directly, including:</p>
-        <ul className="list-disc space-y-2 pl-5 marker:text-black/30">
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-faint">
           <li>
             Contact details — your name, email address, phone number, and
             shipping/billing address when you join our waitlist or place an
@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage() {
       </PolicySection>
 
       <PolicySection heading="How We Use Your Information">
-        <ul className="list-disc space-y-2 pl-5 marker:text-black/30">
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-faint">
           <li>To process, fulfil, and deliver your orders.</li>
           <li>To manage our waitlist and notify you about drops and launches.</li>
           <li>To respond to your questions and provide customer support.</li>
@@ -65,22 +65,22 @@ export default function PrivacyPolicyPage() {
           service providers who help us run the store, and only as needed to
           provide our service:
         </p>
-        <ul className="list-disc space-y-2 pl-5 marker:text-black/30">
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-faint">
           <li>
-            <span className="text-black/85">Shopify</span> — our e-commerce and
+            <span className="text-ink">Shopify</span> — our e-commerce and
             payments platform, which processes orders and stores customer and
             order data on our behalf.
           </li>
           <li>
-            <span className="text-black/85">Payment providers</span> — to
+            <span className="text-ink">Payment providers</span> — to
             securely process payments. We never store your full card details.
           </li>
           <li>
-            <span className="text-black/85">Shipping partners</span> — to deliver
+            <span className="text-ink">Shipping partners</span> — to deliver
             your orders and provide tracking.
           </li>
           <li>
-            <span className="text-black/85">Email providers</span> — to send
+            <span className="text-ink">Email providers</span> — to send
             order and waitlist communications.
           </li>
         </ul>
@@ -144,7 +144,7 @@ export default function PrivacyPolicyPage() {
           For any privacy questions or requests, email us at{" "}
           <a
             href="mailto:help@dusk.co"
-            className="text-black underline underline-offset-2 transition-colors hover:text-black/60"
+            className="text-ink underline underline-offset-2 transition-colors hover:text-ink-muted"
           >
             help@dusk.co
           </a>

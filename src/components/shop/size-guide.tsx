@@ -18,14 +18,14 @@ function SizeTable({
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead>
-          <tr className="border-b border-black/10">
-            <th className="py-2.5 pr-4 font-primary text-[11px] font-medium tracking-[0.06em] text-neutral-400 uppercase">
+          <tr className="border-b border-line-strong">
+            <th className="py-2.5 pr-4 font-primary text-[11px] font-medium tracking-[0.06em] text-ink-faint uppercase">
               Size
             </th>
             {chart.columns.map((col) => (
               <th
                 key={col}
-                className="py-2.5 pr-4 font-primary text-[11px] font-medium tracking-[0.06em] text-neutral-400 uppercase"
+                className="py-2.5 pr-4 font-primary text-[11px] font-medium tracking-[0.06em] text-ink-faint uppercase"
               >
                 {col}
               </th>
@@ -34,14 +34,14 @@ function SizeTable({
         </thead>
         <tbody>
           {chart.rows.map((row) => (
-            <tr key={row.size} className="border-b border-black/5">
-              <td className="py-2.5 pr-4 font-primary text-[13px] font-medium text-neutral-800">
+            <tr key={row.size} className="border-b border-line">
+              <td className="py-2.5 pr-4 font-primary text-[13px] font-semibold text-ink">
                 {row.size}
               </td>
               {row.values.map((val, i) => (
                 <td
                   key={i}
-                  className="py-2.5 pr-4 font-primary text-[13px] font-light text-neutral-600"
+                  className="py-2.5 pr-4 font-primary text-[13px] font-light text-ink-muted"
                 >
                   {unit === "CM" ? toMetric(val) : val}
                 </td>
@@ -93,37 +93,38 @@ export function SizeGuide({
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" />
 
       {/* ── Centered popup ── */}
       <div
-        className="relative z-10 flex w-full max-w-[440px] flex-col rounded-[0.2rem] bg-white shadow-2xl"
+        className="relative z-10 flex w-full max-w-[440px] flex-col rounded-2xl border border-line text-ink shadow-[0_40px_100px_-30px_rgba(0,0,0,0.9)]"
+        style={{ background: "var(--surface)" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-black/5 px-6 py-4">
-          <h3 className="font-primary text-[15px] font-medium text-neutral-900">
+        <div className="flex items-center justify-between border-b border-line px-6 py-4">
+          <h3 className="font-primary text-[15px] font-semibold text-ink">
             Size guide
           </h3>
           <div className="flex items-center gap-4">
             {/* Unit toggle */}
-            <div className="flex overflow-hidden rounded-full border border-neutral-200">
+            <div className="flex overflow-hidden rounded-full border border-line-strong">
               <button
                 onClick={() => setUnit("IN")}
-                className={`px-4 py-1.5 font-primary text-[12px] font-medium transition-colors ${
+                className={`px-4 py-1.5 font-primary text-[12px] font-semibold transition-colors ${
                   unit === "IN"
-                    ? "bg-neutral-900 text-white"
-                    : "text-neutral-500 hover:text-neutral-700"
+                    ? "bg-accent text-accent-ink"
+                    : "text-ink-faint hover:text-ink"
                 }`}
               >
                 IN
               </button>
               <button
                 onClick={() => setUnit("CM")}
-                className={`px-4 py-1.5 font-primary text-[12px] font-medium transition-colors ${
+                className={`px-4 py-1.5 font-primary text-[12px] font-semibold transition-colors ${
                   unit === "CM"
-                    ? "bg-neutral-900 text-white"
-                    : "text-neutral-500 hover:text-neutral-700"
+                    ? "bg-accent text-accent-ink"
+                    : "text-ink-faint hover:text-ink"
                 }`}
               >
                 CM
@@ -133,9 +134,9 @@ export function SizeGuide({
             <button
               onClick={onClose}
               aria-label="Close size guide"
-              className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-black/5"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-ink-faint transition-colors hover:bg-ink/10 hover:text-ink"
             >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-500">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M1 1l12 12M13 1L1 13" />
               </svg>
             </button>

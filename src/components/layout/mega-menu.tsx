@@ -30,8 +30,8 @@ export function MegaMenu({ onClose }: MegaMenuProps) {
       className="w-full"
       onMouseLeave={onClose}
     >
-      {/* Gradient fade from black */}
-      <div className="bg-gradient-to-b from-black via-black/95 to-black/90 backdrop-blur-sm">
+      {/* Themed dropdown surface */}
+      <div className="bg-surface/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-[1440px] gap-16 px-6 py-12 sm:px-10">
           {/* Left — Collection links */}
           <nav className="flex flex-col gap-5 pt-2">
@@ -40,7 +40,7 @@ export function MegaMenu({ onClose }: MegaMenuProps) {
                 key={link.label}
                 href={link.href}
                 onClick={onClose}
-                className="font-primary text-sm font-light tracking-[0.05em] text-white/80 transition-colors hover:text-white"
+                className="font-primary text-sm font-light tracking-[0.05em] text-ink-muted transition-colors hover:text-ink"
               >
                 {link.label}
               </Link>
@@ -56,7 +56,7 @@ export function MegaMenu({ onClose }: MegaMenuProps) {
                 onClick={onClose}
                 className="group block w-[220px]"
               >
-                <div className="relative aspect-[3/4] w-full overflow-hidden bg-white/10">
+                <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-2">
                   {card.image ? (
                     <Image
                       src={card.image}
@@ -67,13 +67,13 @@ export function MegaMenu({ onClose }: MegaMenuProps) {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center">
-                      <span className="font-primary text-[10px] tracking-[0.2em] text-white/20 uppercase">
+                      <span className="font-primary text-[10px] tracking-[0.2em] text-ink-faint uppercase">
                         Editorial
                       </span>
                     </div>
                   )}
                 </div>
-                <p className="mt-3 font-primary text-[11px] font-bold tracking-[0.12em] text-white/70 uppercase transition-colors group-hover:text-white">
+                <p className="mt-3 font-primary text-[11px] font-bold tracking-[0.12em] text-ink-muted uppercase transition-colors group-hover:text-ink">
                   {card.title}
                 </p>
               </Link>

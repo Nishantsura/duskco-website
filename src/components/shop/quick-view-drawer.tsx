@@ -3,10 +3,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight, Check } from "lucide-react";
 import { useQuickView } from "./quick-view-provider";
 import { useCart } from "@/components/cart/cart-provider";
 import { HoldToAddButton } from "./hold-to-add-button";
 import { capture, productProps } from "@/lib/analytics";
+
+/* Dark "After Hours" system — mirrors the drop story so the add-to-bag flow
+   lives in the same world. Mint is the single accent. */
+const MINT = "var(--accent)";
 
 function formatPrice(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("en-IN", {
@@ -33,7 +38,6 @@ export function QuickViewDrawer() {
   const sizes = sizeOption?.values ?? [];
 
   const minPrice = product?.priceRange?.minVariantPrice;
-  const maxPrice = product?.priceRange?.maxVariantPrice;
   const compareAt = variants[0]?.compareAtPrice;
   const hasDiscount =
     compareAt && parseFloat(compareAt.amount) > parseFloat(minPrice?.amount ?? "0");
@@ -106,23 +110,34 @@ export function QuickViewDrawer() {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 transition-opacity"
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-[2px] transition-opacity"
           onClick={close}
         />
       )}
 
       <div
-        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col bg-white transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-[430px] flex-col text-ink transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
+        style={{
+          background: "var(--bg)",
+          boxShadow: "-30px 0 80px -40px rgba(0,0,0,0.9)",
+        }}
       >
+        {/* mint hairline down the leading edge */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 w-px"
+          style={{ background: `linear-gradient(to bottom, transparent, color-mix(in srgb, var(--accent) 33%, transparent), transparent)` }}
+        />
+
         {/* Close button */}
         <button
           onClick={close}
-          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900"
+          className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white/60 backdrop-blur-md transition-all hover:border-white/25 hover:text-white"
           aria-label="Close"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
           </svg>
         </button>
@@ -132,13 +147,13 @@ export function QuickViewDrawer() {
           {product && (
             <>
               {/* Image carousel */}
-              <div className="relative aspect-[4/5] w-full bg-[#f0f0f0]">
+              <div className="relative aspect-[4/5] w-full" style={{ background: "var(--surface)" }}>
                 {images[imgIdx] ? (
                   <Image
                     src={images[imgIdx].url}
                     alt={images[imgIdx].altText || product.title}
                     fill
-                    sizes="420px"
+                    sizes="430px"
                     className="object-cover"
                   />
                 ) : product.featuredImage ? (
@@ -146,10 +161,17 @@ export function QuickViewDrawer() {
                     src={product.featuredImage.url}
                     alt={product.title}
                     fill
-                    sizes="420px"
+                    sizes="430px"
                     className="object-cover"
                   />
                 ) : null}
+
+                {/* bottom fade so the image melts into the dark panel */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+                  style={{ background: "linear-gradient(to bottom, transparent, var(--bg))" }}
+                />
 
                 {images.length > 1 && (
                   <>
@@ -157,33 +179,34 @@ export function QuickViewDrawer() {
                       onClick={() =>
                         setImgIdx((i) => (i - 1 + images.length) % images.length)
                       }
-                      className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-700 backdrop-blur-sm transition-opacity hover:bg-white"
+                      className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/40 text-white/80 backdrop-blur-md transition-all hover:border-white/30 hover:text-white"
                       aria-label="Previous"
                     >
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </button>
                     <button
-                      onClick={() =>
-                        setImgIdx((i) => (i + 1) % images.length)
-                      }
-                      className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-700 backdrop-blur-sm transition-opacity hover:bg-white"
+                      onClick={() => setImgIdx((i) => (i + 1) % images.length)}
+                      className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/40 text-white/80 backdrop-blur-md transition-all hover:border-white/30 hover:text-white"
                       aria-label="Next"
                     >
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </button>
 
-                    <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+                    <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
                       {images.map((_, i) => (
                         <button
                           key={i}
                           onClick={() => setImgIdx(i)}
-                          className={`block h-[6px] w-[6px] rounded-full transition-colors ${
-                            i === imgIdx ? "bg-neutral-800" : "bg-neutral-400/50"
-                          }`}
+                          aria-label={`Image ${i + 1}`}
+                          className="h-1.5 rounded-full transition-all duration-300"
+                          style={{
+                            width: i === imgIdx ? 18 : 6,
+                            background: i === imgIdx ? MINT : "rgba(255,255,255,0.4)",
+                          }}
                         />
                       ))}
                     </div>
@@ -192,24 +215,36 @@ export function QuickViewDrawer() {
               </div>
 
               {/* Product info */}
-              <div className="px-5 py-5">
+              <div className="px-6 pb-8 pt-2">
+                {/* kicker */}
+                <p
+                  className="flex items-center gap-2 font-primary text-[10px] font-semibold tracking-[0.24em] uppercase"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: MINT, boxShadow: `0 0 6px ${MINT}` }} />
+                  Stage One · Limited
+                </p>
+
                 {/* Name */}
-                <h2 className="font-heading text-[18px] font-bold tracking-[0.01em] text-neutral-900">
+                <h2 className="mt-3 font-street text-[clamp(30px,8vw,44px)] leading-[0.92] tracking-[0.01em] uppercase">
                   {displayName}
                 </h2>
 
                 {/* Price */}
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="font-primary text-[16px] font-medium text-neutral-900">
+                <div className="mt-3 flex items-baseline gap-3">
+                  <span className="font-street text-[30px] leading-none tracking-[0.01em]">
                     {minPrice && formatPrice(minPrice.amount, minPrice.currencyCode)}
                   </span>
                   {hasDiscount && compareAt && (
                     <>
-                      <span className="font-primary text-[14px] text-neutral-400 line-through">
+                      <span className="font-primary text-[14px] text-ink-faint line-through">
                         {formatPrice(compareAt.amount, compareAt.currencyCode)}
                       </span>
-                      <span className="font-primary text-[13px] font-medium text-red-500">
-                        -{discountPct}%
+                      <span
+                        className="rounded-full px-2 py-0.5 font-primary text-[11px] font-bold"
+                        style={{ background: `var(--accent-soft)`, color: MINT }}
+                      >
+                        −{discountPct}%
                       </span>
                     </>
                   )}
@@ -217,9 +252,9 @@ export function QuickViewDrawer() {
 
                 {/* Size selector */}
                 {sizes.length > 0 && (
-                  <div className="mt-5">
-                    <p className="mb-2.5 font-primary text-[12px] font-medium tracking-[0.06em] text-neutral-600 uppercase">
-                      Size
+                  <div className="mt-7">
+                    <p className="mb-3 font-primary text-[11px] font-semibold tracking-[0.16em] uppercase" style={{ color: "var(--ink-faint)" }}>
+                      Select size
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {sizes.map((size) => {
@@ -230,13 +265,10 @@ export function QuickViewDrawer() {
                             key={size}
                             onClick={() => available && setSelectedSize(size)}
                             disabled={!available}
-                            className={`flex h-[36px] min-w-[48px] items-center justify-center rounded-full border px-4 font-primary text-[10px] transition-all ${
-                              active
-                                ? "border-neutral-900 bg-[#1C1C1C] text-white"
-                                : available
-                                  ? "border-[#DCDCDC] bg-white text-neutral-800 hover:border-neutral-600"
-                                  : "border-neutral-200 bg-neutral-50 text-neutral-300 cursor-not-allowed"
-                            }`}
+                            className="dusk-size flex h-[42px] min-w-[52px] items-center justify-center rounded-full border px-4 font-primary text-[12px] font-bold uppercase tracking-[0.06em] transition-all duration-200"
+                            data-active={active}
+                            data-available={available}
+                            style={{ "--mint": MINT } as React.CSSProperties}
                           >
                             {size}
                           </button>
@@ -249,36 +281,37 @@ export function QuickViewDrawer() {
                 {/* Add to cart — hold-to-add on mobile, click on desktop */}
                 <HoldToAddButton
                   onAdd={handleAddToCart}
-                  disabled={(!addActive) || adding || isPending}
+                  disabled={!addActive || adding || isPending}
                   canHold={!!selectedSize && !alreadyInBag && !adding && !isPending}
-                  holdLabel="Hold to Add"
-                  fillClassName="bg-accent-orange"
-                  className={`mt-6 flex h-[43px] w-full items-center justify-center rounded-[0.2rem] font-primary text-[11px] font-normal tracking-[0.08em] uppercase transition-all ${
-                    addActive
-                      ? "bg-neutral-900 text-white hover:bg-neutral-800"
-                      : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                  holdLabel="Keep holding"
+                  fillClassName="bg-accent"
+                  className={`dusk-add mt-7 flex h-[52px] w-full items-center justify-center gap-2 rounded-full border font-primary text-[12px] font-bold tracking-[0.18em] uppercase transition-all ${
+                    addActive ? "dusk-add--on text-ink" : "text-ink-faint"
                   }`}
                   idleLabel={
                     adding || isPending
-                      ? "Adding..."
+                      ? "Adding…"
                       : addActive
-                        ? "Add to Cart"
-                        : "Select a Size"
+                        ? "Add to bag"
+                        : "Select a size"
                   }
                 />
 
                 {/* Benefits */}
-                <div className="mt-5 space-y-2.5 border-t border-neutral-100 pt-5">
+                <div className="mt-6 space-y-3 border-t pt-6" style={{ borderColor: "var(--line)" }}>
                   {[
                     "Cash on Delivery",
                     "Free Shipping",
-                    "Dispatch within 5 to 7 working days",
+                    "Dispatch within 5–7 working days",
                   ].map((benefit) => (
                     <div key={benefit} className="flex items-center gap-2.5">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="flex-shrink-0 text-neutral-700">
-                        <path d="M3 8.5L6.5 12L13 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <span className="font-primary text-[13px] text-neutral-600">
+                      <span
+                        className="flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full"
+                        style={{ background: `var(--accent-soft)`, color: MINT }}
+                      >
+                        <Check size={11} strokeWidth={3} />
+                      </span>
+                      <span className="font-primary text-[13px]" style={{ color: "var(--ink-muted)" }}>
                         {benefit}
                       </span>
                     </div>
@@ -289,9 +322,16 @@ export function QuickViewDrawer() {
                 <Link
                   href={`/products/${product.handle}`}
                   onClick={close}
-                  className="mt-5 block w-full border-t border-neutral-100 pt-5 text-center font-primary text-[13px] font-bold tracking-[0.06em] text-neutral-900 uppercase transition-colors hover:text-neutral-500"
+                  className="dusk-details mt-6 flex w-full items-center justify-center gap-2 rounded-full border py-3.5 font-primary text-[11px] font-bold tracking-[0.16em] uppercase"
+                  style={
+                    {
+                      borderColor: "var(--line)",
+                      color: "var(--ink-muted)",
+                    } as React.CSSProperties
+                  }
                 >
-                  View Full Details
+                  <ArrowUpRight size={14} strokeWidth={2} />
+                  View full details
                 </Link>
               </div>
             </>

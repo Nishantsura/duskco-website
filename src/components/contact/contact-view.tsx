@@ -38,7 +38,7 @@ export function ContactView() {
   const reduce = useReducedMotion();
 
   return (
-    <main className="relative min-h-svh overflow-hidden bg-black text-white">
+    <main className="relative min-h-svh overflow-hidden bg-bg text-ink">
       {/* Ambient accent glow */}
       <div
         aria-hidden
@@ -96,7 +96,7 @@ export function ContactView() {
             animate="visible"
             variants={FADE}
             transition={{ delay: 0.35 }}
-            className="mt-8 max-w-[46ch] font-primary text-[15px] font-light leading-[1.75] text-white/60 sm:text-[17px]"
+            className="mt-8 max-w-[46ch] font-primary text-[15px] font-light leading-[1.75] text-ink-muted sm:text-[17px]"
           >
             Questions about an order, sizing, or a drop? No bots, no ticket
             queues — a real person gets back to you, usually within 1–2 business
@@ -106,11 +106,11 @@ export function ContactView() {
       </section>
 
       {/* ── Marquee ── */}
-      <div className="relative flex overflow-hidden border-y border-white/10 py-5">
+      <div className="relative flex overflow-hidden border-y border-line py-5">
         <div className="flex shrink-0 animate-marquee items-center gap-10 pr-10 whitespace-nowrap">
           {[...MARQUEE, ...MARQUEE].map((word, i) => (
             <span key={i} className="flex items-center gap-10">
-              <span className="font-street text-[clamp(20px,3.5vw,40px)] tracking-[0.04em] text-white/80 uppercase">
+              <span className="font-street text-[clamp(20px,3.5vw,40px)] tracking-[0.04em] text-ink/80 uppercase">
                 {word}
               </span>
               <span className="text-accent-orange">✦</span>
@@ -128,7 +128,7 @@ export function ContactView() {
           variants={FADE}
           className="mx-auto max-w-[1440px]"
         >
-          <p className="font-primary text-[11px] font-medium tracking-[0.2em] text-white/40 uppercase">
+          <p className="font-primary text-[11px] font-medium tracking-[0.2em] text-ink-faint uppercase">
             Drop us a line
           </p>
           <a
@@ -150,16 +150,16 @@ export function ContactView() {
 
       {/* ── Channels ── */}
       <section className="relative px-6 pb-28 sm:px-10">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3">
           {/* Email */}
           <ChannelCard index={0} reduce={reduce} eyebrow="Email">
             <a
               href="mailto:help@dusk.co"
-              className="font-primary text-[18px] font-light text-white underline decoration-white/20 underline-offset-[6px] transition-colors hover:text-accent-orange hover:decoration-accent-orange"
+              className="font-primary text-[18px] font-light text-ink underline decoration-ink/20 underline-offset-[6px] transition-colors hover:text-accent-orange hover:decoration-accent-orange"
             >
               help@dusk.co
             </a>
-            <p className="mt-4 font-primary text-[13px] font-light leading-[1.7] text-white/45">
+            <p className="mt-4 font-primary text-[13px] font-light leading-[1.7] text-ink-faint">
               For orders, returns, and general enquiries.
             </p>
           </ChannelCard>
@@ -173,16 +173,16 @@ export function ContactView() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group/link flex w-fit items-center gap-2 font-primary text-[18px] font-light text-white transition-colors hover:text-accent-orange"
+                  className="group/link flex w-fit items-center gap-2 font-primary text-[18px] font-light text-ink transition-colors hover:text-accent-orange"
                 >
                   {s.label}
-                  <span className="text-white/30 transition-all group-hover/link:translate-x-1 group-hover/link:text-accent-orange">
+                  <span className="text-ink-faint transition-all group-hover/link:translate-x-1 group-hover/link:text-accent-orange">
                     ↗
                   </span>
                 </a>
               ))}
             </div>
-            <p className="mt-4 font-primary text-[13px] font-light leading-[1.7] text-white/45">
+            <p className="mt-4 font-primary text-[13px] font-light leading-[1.7] text-ink-faint">
               Follow for drops and behind-the-scenes.
             </p>
           </ChannelCard>
@@ -194,13 +194,13 @@ export function ContactView() {
                 <Link
                   key={h.label}
                   href={h.href}
-                  className="w-fit font-primary text-[18px] font-light text-white transition-colors hover:text-accent-orange"
+                  className="w-fit font-primary text-[18px] font-light text-ink transition-colors hover:text-accent-orange"
                 >
                   {h.label}
                 </Link>
               ))}
             </div>
-            <p className="mt-4 font-primary text-[13px] font-light leading-[1.7] text-white/45">
+            <p className="mt-4 font-primary text-[13px] font-light leading-[1.7] text-ink-faint">
               Answers to the most common questions.
             </p>
           </ChannelCard>
@@ -227,10 +227,10 @@ function ChannelCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: index * 0.1 }}
-      className="group relative bg-black p-8 transition-colors duration-300 hover:bg-[#0d0d0d] sm:p-10"
+      className="group relative bg-surface p-8 transition-colors duration-300 hover:bg-surface-2 sm:p-10"
     >
       <span className="absolute left-0 top-0 h-0 w-[2px] bg-accent-orange transition-[height] duration-400 ease-out group-hover:h-full" />
-      <p className="mb-6 flex items-center gap-2 font-primary text-[11px] font-medium tracking-[0.2em] text-white/40 uppercase">
+      <p className="mb-6 flex items-center gap-2 font-primary text-[11px] font-medium tracking-[0.2em] text-ink-faint uppercase">
         <span className="text-accent-orange">0{index + 1}</span>
         {eyebrow}
       </p>

@@ -137,7 +137,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       {/* Image */}
       <Link
         href={`/products/${product.handle}`}
-        className="relative block aspect-[3/4] w-full overflow-hidden rounded-[0.2rem] bg-white"
+        className="relative block aspect-[3/4] w-full overflow-hidden rounded-[0.2rem] bg-surface"
       >
         {/* Mobile / touch — swipeable carousel of every image */}
         {images.length > 0 && (
@@ -175,7 +175,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <span className="font-primary text-[10px] font-light tracking-[0.1em] text-neutral-400 uppercase">
+            <span className="font-primary text-[10px] font-light tracking-[0.1em] text-ink-faint uppercase">
               No image
             </span>
           </div>
@@ -208,8 +208,8 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                 onClick={() => setActiveColor(i)}
                 className={`block h-[22px] w-[22px] rounded-[4px] border transition-all ${
                   i === activeColor
-                    ? "border-neutral-800 ring-1 ring-neutral-800 ring-offset-1"
-                    : "border-neutral-300 hover:border-neutral-500"
+                    ? "border-ink ring-1 ring-ink ring-offset-1 ring-offset-bg"
+                    : "border-line-strong hover:border-ink"
                 }`}
                 style={{ backgroundColor: c.hex }}
                 title={c.name}
@@ -219,21 +219,21 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         )}
 
         {/* Category label */}
-        <p className="font-primary text-[11px] font-light tracking-[0.1em] text-neutral-400 uppercase">
+        <p className="font-primary text-[11px] font-light tracking-[0.1em] text-ink-faint uppercase">
           {category}
         </p>
 
         {/* Product name + Cart icon */}
         <div className="mt-1 flex items-center justify-between">
           <Link href={`/products/${product.handle}`}>
-            <h3 className="font-heading text-[13px] font-bold tracking-[0.02em] text-neutral-900 uppercase">
+            <h3 className="font-heading text-[13px] font-bold tracking-[0.02em] text-ink uppercase">
               {displayName}
             </h3>
           </Link>
           <button
             onClick={() => openQuickView(product)}
             aria-label={justAdded ? "Added" : "Quick view"}
-            className={`transition-colors ${justAdded ? "text-green-600" : "text-neutral-500 hover:text-neutral-900"}`}
+            className={`transition-colors ${justAdded ? "text-accent" : "text-ink-faint hover:text-ink"}`}
           >
             <svg
               width="18"
@@ -262,7 +262,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         </div>
 
         {/* Price */}
-        <p className="mt-1 font-primary text-[13px] font-light text-neutral-600">
+        <p className="mt-1 font-primary text-[13px] font-light text-ink-muted">
           {formatPrice(price.amount, price.currencyCode)}
         </p>
       </div>

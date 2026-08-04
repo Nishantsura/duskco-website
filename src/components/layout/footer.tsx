@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Sparkles, Mail, Shield, Truck, RotateCcw, type LucideIcon } from "lucide-react";
+import { useChromeTheme } from "./chrome-theme";
 
 const PAGES: { label: string; short: string; href: string; Icon: LucideIcon }[] = [
   { label: "Stage 1", short: "Stage 1", href: "/collections/stage-one", Icon: Sparkles },
@@ -19,6 +20,7 @@ export function Footer() {
   const dockRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const reduce = useReducedMotion();
+  const { snap } = useChromeTheme();
   // On the homepage the hero fills the viewport, so the dock floats over it
   // instead of sitting in normal flow — keeps the landing scroll-free.
   const isHome = pathname === "/";
@@ -54,7 +56,9 @@ export function Footer() {
         className={
           isHome
             ? "fixed inset-x-0 bottom-0 z-40 flex justify-center pb-4 pt-0 pointer-events-none"
-            : "flex justify-center py-6 sm:py-10"
+            : snap
+              ? "flex snap-end justify-center py-10 sm:py-12"
+              : "flex justify-center py-6 sm:py-10"
         }
       >
         <div ref={dockRef} className={`relative ${isHome ? "pointer-events-auto" : ""}`}>
