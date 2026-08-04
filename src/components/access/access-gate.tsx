@@ -46,7 +46,15 @@ export function AccessGate() {
   const params = useSearchParams();
   const reduce = useReducedMotion();
 
-  const [value, setValue] = useState("");
+  // Pre-fill from the emailed link (…/access?code=DUSK-XXXXXX) so recipients
+  // just press Unlock. The prefix and any noise are stripped, same as typing.
+  const prefilled = (params.get("code") || "")
+    .toUpperCase()
+    .replace(/^DUSK[-\s]?/, "")
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 10);
+
+  const [value, setValue] = useState(prefilled);
   const [focused, setFocused] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "granted">("idle");
   const [error, setError] = useState("");

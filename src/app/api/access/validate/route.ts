@@ -2,12 +2,22 @@ import { NextResponse } from "next/server";
 import { ACCESS_COOKIE, dropWindow, isDropOpen } from "@/lib/access/config";
 import { lookupCode } from "@/lib/access/codes";
 import { signSession } from "@/lib/access/session";
+import { rateLimit, clientIp } from "@/lib/access/rate-limit";
 
 // Cap a session at 12h even if the drop window is open-ended (dev), so cookies
 // don't live indefinitely.
 const MAX_SESSION_MS = 12 * 60 * 60 * 1000;
 
 export async function POST(request: Request) {
+  // Throttle guessing: 12 attempts per minute per IP.
+  const limit = await rateLimit(`access:validate:${clientIp(request)}`, 12, 60);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many attempts. Wait a minute and try again." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
+  }
+
   let code = "";
   try {
     ({ code = "" } = await request.json());

@@ -18,13 +18,23 @@ export function devCode(): string | null {
   return process.env.ACCESS_DEV_CODE || "DUSK-DEV";
 }
 
-// Signing secret for the session cookie. MUST be set in production; a stable
-// dev default keeps local sessions working without configuration.
+// Signing secret for the session cookie. In production this MUST be set to a
+// strong value — otherwise anyone could forge a session and walk through the
+// gate. We fail closed (throw) rather than silently signing with a public
+// constant. Outside production a stable dev default keeps local work frictionless.
+const INSECURE_SECRET = "dev-only-insecure-secret-change-in-production";
+
 export function sessionSecret(): string {
-  return (
-    process.env.ACCESS_SESSION_SECRET ||
-    "dev-only-insecure-secret-change-in-production"
-  );
+  const secret = process.env.ACCESS_SESSION_SECRET;
+  if (process.env.NODE_ENV === "production") {
+    if (!secret || secret === INSECURE_SECRET) {
+      throw new Error(
+        "ACCESS_SESSION_SECRET must be set to a strong, unique value in production."
+      );
+    }
+    return secret;
+  }
+  return secret || INSECURE_SECRET;
 }
 
 export interface DropWindow {

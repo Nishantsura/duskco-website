@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
+import { rateLimit, clientIp } from "@/lib/access/rate-limit";
 
 export async function POST(request: Request) {
   try {
+    // Throttle signups: 5 per minute per IP (spam / cost control).
+    const limit = await rateLimit(`waitlist:${clientIp(request)}`, 5, 60);
+    if (!limit.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a moment." },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+      );
+    }
+
     const { email, name } = await request.json();
 
     if (!email || !email.includes("@")) {
