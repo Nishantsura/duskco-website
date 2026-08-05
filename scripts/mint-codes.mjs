@@ -42,7 +42,12 @@ const TEST_TO = (() => {
 // Sending implies the codes must exist in Upstash, so --send ensures writes too.
 const PERSIST = WRITE || SEND;
 
-const SITE = ENV.NEXT_PUBLIC_SITE_URL || "https://duskxco.com";
+// The URL emailed to members — must be a LIVE, wired deployment. This is kept
+// separate from NEXT_PUBLIC_SITE_URL (the site's aspirational canonical) so the
+// emailed link always points somewhere that actually validates codes. Set
+// DROP_SITE_URL to duskxco.com once that domain is connected to the project.
+const SITE =
+  ENV.DROP_SITE_URL || ENV.NEXT_PUBLIC_SITE_URL || "https://duskco-website-orpin.vercel.app";
 // Until duskxco.com is verified in Resend, use their shared onboarding sender —
 // which can only deliver to your own Resend account email (perfect for --test-to).
 const FROM = ENV.RESEND_FROM || "DUSK&CO <onboarding@resend.dev>";

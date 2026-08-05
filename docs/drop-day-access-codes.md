@@ -35,6 +35,16 @@ blank on purpose.
    `_TOKEN` in `.env.local` must be the same DB configured in the Vercel project's
    Production env. (They were pushed from this `.env.local`, so they match — verify
    in Vercel → Settings → Environment Variables if unsure.)
+4. **Point the emailed link at a LIVE deployment.** `DROP_SITE_URL` in `.env.local`
+   is the URL put in every code email — it MUST be a deployment that has the Upstash
+   env (i.e. actually validates codes). Currently the customer-facing URL is
+   `https://duskco-website-orpin.vercel.app` (the wired project). Change `DROP_SITE_URL`
+   to `https://duskxco.com` only after that domain is connected to this Vercel project.
+
+> ⚠️ **Lookalike-domain trap.** `https://duskco-website.vercel.app` (no `-orpin`)
+> is a *different, lost* Vercel project on an account we don't control. It serves
+> the same UI but has NO Upstash env, so it rejects every valid code. Never send
+> customers that URL — always the `-orpin` one (or `duskxco.com` once connected).
 
 ## Rehearse first (test mode) — works before the domain is verified
 
