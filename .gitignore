@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# access-code drop send log (emails + codes — never commit)
+/scripts/.mint-send-log.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
