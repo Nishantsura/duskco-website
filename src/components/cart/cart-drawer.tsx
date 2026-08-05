@@ -95,7 +95,7 @@ export function CartDrawer() {
       )}
 
       <div
-        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

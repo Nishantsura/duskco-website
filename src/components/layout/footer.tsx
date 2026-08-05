@@ -20,7 +20,11 @@ export function Footer() {
   const dockRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const reduce = useReducedMotion();
-  const { snap } = useChromeTheme();
+  const { snap, theme } = useChromeTheme();
+  // The dock is a dark liquid-glass pill. Over a dark page its 40% tint reads as
+  // glass; over a light page that goes washed-out grey, so deepen it in light so
+  // the white wordmark/icons stay legible.
+  const dockGlass = theme === "light" ? "bg-black/85" : "bg-black/40";
   // On the homepage the hero fills the viewport, so the dock floats over it
   // instead of sitting in normal flow — keeps the landing scroll-free.
   const isHome = pathname === "/";
@@ -67,7 +71,7 @@ export function Footer() {
           <AnimatePresence>
             {menuOpen && (
               <motion.div
-                className="absolute bottom-full right-0 mb-3 origin-bottom-right rounded-2xl border border-white/15 bg-black/40 p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]"
+                className={`absolute bottom-full right-0 mb-3 origin-bottom-right rounded-2xl border border-white/15 ${dockGlass} p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]`}
                 initial={{ opacity: 0, scaleX: 0.55, y: 6 }}
                 animate={{ opacity: 1, scaleX: 1, y: 0 }}
                 exit={{ opacity: 0, scaleX: 0.55, y: 6 }}
@@ -108,7 +112,7 @@ export function Footer() {
 
           {/* The dock bar — iOS liquid-glass: translucent, blurred, glossy */}
           <motion.div
-            className="relative flex items-center gap-0.5 rounded-full border border-white/15 bg-black/40 px-1.5 py-1 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]"
+            className={`relative flex items-center gap-0.5 rounded-full border border-white/15 ${dockGlass} px-1.5 py-1 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(20px)]`}
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 25, delay: 0.1 }}

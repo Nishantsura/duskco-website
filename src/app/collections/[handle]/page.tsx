@@ -82,16 +82,16 @@ export default async function CollectionPage({
       <CollectionStory stages={collection.story} />
 
       {/* The payoff — the pieces */}
-      <section id="pieces" className="bg-brand-page">
+      <section id="pieces" className="bg-bg">
         <div className="mx-auto max-w-[1440px] px-6 py-20 sm:px-10 sm:py-28">
           <header className="mb-14 text-center">
-            <p className="font-primary text-[11px] font-medium tracking-[0.28em] text-brand-medium-grey uppercase">
+            <p className="font-primary text-[11px] font-medium tracking-[0.28em] text-ink-muted uppercase">
               {collection.title} — The Collection
             </p>
-            <h2 className="mt-3 font-street text-[clamp(44px,8vw,96px)] leading-[0.9] tracking-[0.01em] text-brand-black uppercase">
+            <h2 className="mt-3 font-street text-[clamp(44px,8vw,96px)] leading-[0.9] tracking-[0.01em] text-ink uppercase">
               The Pieces
             </h2>
-            <p className="mx-auto mt-4 max-w-md font-primary text-[14px] font-light leading-[1.7] text-black/55">
+            <p className="mx-auto mt-4 max-w-md font-primary text-[14px] font-light leading-[1.7] text-ink-muted">
               {products.length > 0
                 ? `${products.length} pieces in the drop. Once they're gone, they're gone.`
                 : "The drop lands soon. Join the waitlist to be first."}
@@ -105,7 +105,7 @@ export default async function CollectionPage({
               ))}
             </div>
           ) : (
-            <p className="py-20 text-center font-primary text-sm font-light text-brand-medium-grey">
+            <p className="py-20 text-center font-primary text-sm font-light text-ink-muted">
               No products in this collection yet.
             </p>
           )}

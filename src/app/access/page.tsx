@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AccessPage() {
   return (
-    <Suspense fallback={<div className="min-h-svh bg-black" />}>
+    <Suspense fallback={<div className="min-h-svh bg-bg" />}>
       <AccessGate />
     </Suspense>
   );

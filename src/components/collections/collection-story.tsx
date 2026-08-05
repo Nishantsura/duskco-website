@@ -180,7 +180,7 @@ function StageStatement({ stage }: { stage: StoryStage }) {
 // Media beside text, alternating sides.
 function StageSplit({ stage, reverse }: { stage: StoryStage; reverse?: boolean }) {
   return (
-    <section className="bg-brand-page">
+    <section className="bg-bg">
       <div className="mx-auto grid max-w-[1440px] items-stretch gap-y-8 md:grid-cols-2">
         <div
           className={`relative aspect-[4/5] w-full overflow-hidden md:aspect-auto md:min-h-[78vh] ${
@@ -196,19 +196,19 @@ function StageSplit({ stage, reverse }: { stage: StoryStage; reverse?: boolean }
           }`}
         >
           <Reveal>
-            <div className="text-brand-medium-grey">
+            <div className="text-ink-muted">
               <Kicker stageNumber={stage.stageNumber} label={stage.label} />
             </div>
           </Reveal>
 
           <MaskHeading
             text={stage.headline}
-            className="mt-5 font-street text-[clamp(40px,6vw,76px)] leading-[0.92] tracking-[0.01em] text-brand-black uppercase"
+            className="mt-5 font-street text-[clamp(40px,6vw,76px)] leading-[0.92] tracking-[0.01em] text-ink uppercase"
           />
 
           {stage.body && (
             <Reveal delay={0.1}>
-              <p className="mt-6 max-w-md font-primary text-[15px] font-light leading-[1.75] text-black/60">
+              <p className="mt-6 max-w-md font-primary text-[15px] font-light leading-[1.75] text-ink-muted">
                 {stage.body}
               </p>
             </Reveal>

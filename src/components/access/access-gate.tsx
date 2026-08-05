@@ -8,7 +8,7 @@ import { SpotlightCursor } from "@/components/ui/spotlight-cursor";
 const SAFE_NEXT = /^\/(shop|collections|products)(\/|$)/;
 
 const PREFIX = "DUSK";
-const NEON = "#5EEAD4"; // subtle mint/aqua — the page's only accent
+const NEON = "var(--accent)"; // subtle mint/aqua — the page's only accent
 const DANGER = "#F87171"; // denied state only
 const SCRAMBLE = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789/#*";
 
@@ -111,10 +111,10 @@ export function AccessGate() {
 
   const denied = status === "error";
   const granted = status === "granted";
-  const lineColor = denied ? DANGER : focused || value ? NEON : "rgba(255,255,255,0.18)";
+  const lineColor = denied ? DANGER : focused || value ? NEON : "var(--line-strong)";
 
   return (
-    <main className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-[#050505] px-6 text-white">
+    <main className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-bg px-6 text-ink">
       {/* ── background stack ── */}
       {/* neon core bloom */}
       <div
@@ -145,7 +145,7 @@ export function AccessGate() {
           aria-hidden
           className="access-sweep pointer-events-none absolute inset-x-0 top-0 h-24"
           style={{
-            background: `linear-gradient(to bottom, transparent, ${NEON}14, transparent)`,
+            background: `linear-gradient(to bottom, transparent, color-mix(in srgb, var(--accent) 8%, transparent), transparent)`,
           }}
         />
       )}
@@ -153,7 +153,7 @@ export function AccessGate() {
       <SpotlightCursor config={{ color: NEON, radius: 300, brightness: 0.06 }} />
 
       {/* corner stamps */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 select-none font-primary text-[9px] font-medium tracking-[0.3em] text-white/25 uppercase">
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 select-none font-primary text-[9px] font-medium tracking-[0.3em] text-ink-faint uppercase">
         <span className="absolute left-6 top-24">Stage 01</span>
         <span className="absolute right-6 top-24" style={{ color: NEON, opacity: 0.7 }}>
           ● Classified
@@ -165,7 +165,7 @@ export function AccessGate() {
       {/* ── terminal ── */}
       <div className={`relative z-10 w-full max-w-md ${reduce ? "" : "access-flicker"}`}>
         <div className="text-center">
-          <p className="font-primary text-[10px] font-medium uppercase tracking-[0.4em] text-white/40">
+          <p className="font-primary text-[10px] font-medium uppercase tracking-[0.4em] text-ink-faint">
             <span style={{ color: NEON }}>/</span> Invite Only Terminal
           </p>
           <h1
@@ -176,12 +176,12 @@ export function AccessGate() {
             <span
               className={reduce ? "" : "glitch"}
               data-text={heading}
-              style={{ textShadow: `0 0 26px ${NEON}55` }}
+              style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 33%, transparent)` }}
             >
               {heading}
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-xs font-primary text-[11px] font-light leading-relaxed tracking-wide text-white/45">
+          <p className="mx-auto mt-5 max-w-xs font-primary text-[11px] font-light leading-relaxed tracking-wide text-ink-faint">
             The drop is sealed to waitlist members. Punch in the code sent to your
             inbox to breach the vault.
           </p>
@@ -192,7 +192,7 @@ export function AccessGate() {
         <div className="relative mx-auto mt-8 w-[190px]">
           <div
             className={`relative aspect-[4/3] overflow-hidden rounded-lg ${reduce ? "" : "access-signal"}`}
-            style={{ boxShadow: `inset 0 0 0 1px ${NEON}44, 0 24px 60px -34px ${NEON}` }}
+            style={{ boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--accent) 27%, transparent), 0 24px 60px -34px ${NEON}` }}
           >
             <video
               src="/dusk-video.mp4"
@@ -226,7 +226,7 @@ export function AccessGate() {
               />
               Live
             </span>
-            <span className="absolute bottom-2 right-2 font-primary text-[7px] font-medium uppercase tracking-[0.2em] text-white/50">
+            <span className="absolute bottom-2 right-2 font-primary text-[7px] font-medium uppercase tracking-[0.2em] text-ink-faint">
               Feed 01
             </span>
           </div>
@@ -256,7 +256,7 @@ export function AccessGate() {
               transition: "border-color 0.2s, box-shadow 0.2s",
             }}
           >
-            <span className="font-street text-[26px] leading-none tracking-[0.12em] text-white/45 select-none sm:text-[30px]">
+            <span className="font-street text-[26px] leading-none tracking-[0.12em] text-ink-faint select-none sm:text-[30px]">
               {PREFIX}
             </span>
             <span className="text-[22px] leading-none select-none" style={{ color: NEON }}>
@@ -264,7 +264,7 @@ export function AccessGate() {
             </span>
 
             {/* rendered value + block caret (native caret hidden) */}
-            <span className="relative flex min-w-[5ch] items-center font-street text-[26px] leading-none tracking-[0.22em] text-white sm:text-[30px]">
+            <span className="relative flex min-w-[5ch] items-center font-street text-[26px] leading-none tracking-[0.22em] text-ink sm:text-[30px]">
               {value}
               {(focused || !value) && (
                 <span
@@ -305,7 +305,7 @@ export function AccessGate() {
                 ✓ Access granted — entering
               </p>
             ) : (
-              <p className="font-primary text-[10px] font-light uppercase tracking-[0.28em] text-white/30">
+              <p className="font-primary text-[10px] font-light uppercase tracking-[0.28em] text-ink-faint">
                 {status === "loading" ? "Decrypting…" : "Awaiting input"}
               </p>
             )}
@@ -317,9 +317,9 @@ export function AccessGate() {
             disabled={status === "loading" || granted || !value.trim()}
             className="group mt-6 flex w-full items-center justify-center gap-3 rounded-full border py-4 font-primary text-[12px] font-bold uppercase tracking-[0.28em] transition-all disabled:cursor-not-allowed disabled:opacity-40"
             style={{
-              borderColor: granted ? NEON : `${NEON}55`,
+              borderColor: granted ? NEON : `color-mix(in srgb, var(--accent) 33%, transparent)`,
               color: NEON,
-              background: granted ? `${NEON}1f` : "transparent",
+              background: granted ? `color-mix(in srgb, var(--accent) 12%, transparent)` : "transparent",
             }}
           >
             {status === "loading" ? "Decrypting…" : granted ? "Unlocked" : "Unlock the drop"}
@@ -329,11 +329,11 @@ export function AccessGate() {
           </button>
         </form>
 
-        <p className="mt-8 text-center font-primary text-[10px] font-medium uppercase tracking-[0.2em] text-white/30">
+        <p className="mt-8 text-center font-primary text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint">
           Not on the list?{" "}
           <a
             href="/"
-            className="text-white/60 underline underline-offset-4 transition-colors hover:text-white"
+            className="text-ink-muted underline underline-offset-4 transition-colors hover:text-ink"
           >
             Join the waitlist
           </a>
