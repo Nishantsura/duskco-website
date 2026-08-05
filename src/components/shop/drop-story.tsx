@@ -267,11 +267,17 @@ function PieceChapter({
             </p>
           </Reveal>
 
-          {/* the concept — the piece's real identity on this page */}
-          <MaskHeading
-            text={story.name}
-            className="mt-4 font-street text-[clamp(34px,5vw,72px)] leading-[0.9] tracking-[0.01em] uppercase"
-          />
+          {/* the concept — the piece's real identity on this page; links to PDP */}
+          <Link
+            href={`/products/${product.handle}`}
+            className="group/title inline-block w-fit"
+            aria-label={`View ${story.name}`}
+          >
+            <MaskHeading
+              text={story.name}
+              className="mt-4 font-street text-[clamp(34px,5vw,72px)] leading-[0.9] tracking-[0.01em] uppercase transition-colors duration-300 group-hover/title:text-accent"
+            />
+          </Link>
 
           <Reveal delay={0.08}>
             <p className="mt-3 font-street text-[clamp(15px,1.6vw,20px)] leading-[1.15] tracking-[0.03em] text-ink uppercase">
