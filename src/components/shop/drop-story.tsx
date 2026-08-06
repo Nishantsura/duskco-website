@@ -129,11 +129,15 @@ function MaskHeading({
   text,
   className,
   onMount = false,
+  gradient = false,
+  hoverGradient = false,
   style,
 }: {
   text: string;
   className: string;
   onMount?: boolean;
+  gradient?: boolean;
+  hoverGradient?: boolean;
   style?: React.CSSProperties;
 }) {
   const reduce = useReducedMotion();
@@ -155,7 +159,7 @@ function MaskHeading({
           {...trigger}
         >
           <motion.span
-            className="block"
+            className={`block${gradient ? " dusk-gradient-text" : ""}${hoverGradient ? " dusk-gt-hover" : ""}`}
             variants={variants}
             transition={{ duration: 0.8, ease: EASE, delay: i * 0.09 }}
           >
@@ -233,7 +237,7 @@ function PieceChapter({
           <div className="group relative">
             {/* single soft accent glow — blooms gently on hover */}
             <div
-              className="dusk-card-glow pointer-events-none absolute -inset-6 bg-accent blur-3xl"
+              className="dusk-card-glow pointer-events-none absolute -inset-3 blur-2xl"
               aria-hidden
             />
 
@@ -267,15 +271,17 @@ function PieceChapter({
             </p>
           </Reveal>
 
-          {/* the concept — the piece's real identity on this page; links to PDP */}
+          {/* the concept — the piece's real identity on this page; links to PDP.
+              On hover the title reveals the dusk↔dawn gradient (same as the hero). */}
           <Link
             href={`/products/${product.handle}`}
-            className="group/title inline-block w-fit"
+            className="dusk-title-link inline-block w-fit"
             aria-label={`View ${story.name}`}
           >
             <MaskHeading
+              hoverGradient
               text={story.name}
-              className="mt-4 font-street text-[clamp(34px,5vw,72px)] leading-[0.9] tracking-[0.01em] uppercase transition-colors duration-300 group-hover/title:text-accent"
+              className="mt-4 font-street text-[clamp(34px,5vw,72px)] leading-[0.9] tracking-[0.01em] uppercase"
             />
           </Link>
 
@@ -369,6 +375,7 @@ export function DropStory({ products }: { products: Product[] }) {
 
           <MaskHeading
             onMount
+            gradient
             text={"After\nHours"}
             className="mt-3 font-street text-[clamp(72px,16vw,200px)] leading-[0.82] tracking-[0.01em] text-white uppercase"
           />

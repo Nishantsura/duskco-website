@@ -13,7 +13,9 @@
   --color-off-white: #f4f4f4;
   --color-page-grey: #EFEFEF;
 
-  --color-accent-orange: #FF4500;
+  /* Legacy "accent-orange" now tracks the themed dusk/dawn accent so the
+     header STAGE badge, contact accents, etc. stay in the palette. */
+  --color-accent-orange: var(--accent);
 
   /* ── Semantic theme tokens ──────────────────────────────────────────────
      Default is DARK (the "After Hours" brand). Light is the [data-theme]
@@ -21,17 +23,21 @@
      / bg-accent utilities so the whole site flips from one attribute — no
      per-component JS theming, no flash. Accent is mint on dark, a deep teal on
      light (neon mint is illegible on white). */
-  --bg: #0b0b0c;
-  --surface: #151517;
-  --surface-2: #1c1c1f;
+  --bg: #121214;
+  --surface: #1b1b1e;
+  --surface-2: #232327;
   --ink: #f5f4f2;
   --ink-muted: rgba(245, 244, 242, 0.6);
   --ink-faint: rgba(245, 244, 242, 0.4);
   --line: rgba(255, 255, 255, 0.12);
   --line-strong: rgba(255, 255, 255, 0.22);
-  --accent: #5eead4;
-  --accent-ink: #06201c;
-  --accent-soft: rgba(94, 234, 212, 0.14);
+  /* Dusk & Dawn accent — dawn (warm apricot) is the solid accent; dusk
+     (periwinkle) is the cool end of the statement gradient. Retires the mint. */
+  --accent: #eda075;
+  --accent-2: #8088db;
+  --accent-ink: #1e130b;
+  --accent-soft: rgba(237, 160, 117, 0.14);
+  --accent-gradient: linear-gradient(115deg, #eda075 0%, #8088db 100%);
   --shadow-card: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
   /* the .dusk-* accent helpers track the theme accent */
   --dusk-glow: var(--accent);
@@ -41,17 +47,19 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #f4f3f1;
-  --surface: #ffffff;
-  --surface-2: #eceae6;
+  --bg: #d9d7d1;
+  --surface: #e5e3de;
+  --surface-2: #cdcbc4;
   --ink: #0a0a0a;
   --ink-muted: rgba(10, 10, 10, 0.62);
   --ink-faint: rgba(10, 10, 10, 0.42);
   --line: rgba(10, 10, 10, 0.12);
   --line-strong: rgba(10, 10, 10, 0.24);
-  --accent: #0d9488;
+  --accent: #b85c38;
+  --accent-2: #48579b;
   --accent-ink: #ffffff;
-  --accent-soft: rgba(13, 148, 136, 0.12);
+  --accent-soft: rgba(184, 92, 56, 0.12);
+  --accent-gradient: linear-gradient(115deg, #b85c38 0%, #48579b 100%);
   --shadow-card: 0 24px 60px -30px rgba(0, 0, 0, 0.2);
 }
 
@@ -128,6 +136,25 @@ html.snap-page {
 /* ── Drop-story hover choreography ──────────────────────────────────────── */
 
 /* Product card — a gentle lift and a soft mint ring on hover. Restrained. */
+/* Dusk↔dawn gradient text — reserved for statement headlines. */
+.dusk-gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Same gradient, revealed only when the title's link is hovered. */
+.dusk-gt-hover {
+  transition: color 0.35s ease;
+}
+.dusk-title-link:hover .dusk-gt-hover {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .dusk-card {
   --tw-ring-color: color-mix(in srgb, var(--dusk-glow) 24%, transparent);
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
@@ -139,15 +166,24 @@ html.snap-page {
   --tw-ring-color: color-mix(in srgb, var(--dusk-glow) 62%, transparent);
 }
 
-/* The soft accent glow behind the frame — brightens slightly on hover. */
+/* The soft dusk-sky glow behind the frame — an orange→blue bloom that
+   brightens slightly on hover. */
 .dusk-card-glow {
-  opacity: 0.12;
-  transform: scale(1);
+  background: var(--accent-gradient);
+  opacity: 0.1;
+  transform: scale(0.97);
   transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .group:hover .dusk-card-glow {
-  opacity: 0.2;
-  transform: scale(1.05);
+  opacity: 0.16;
+  transform: scale(1.03);
+}
+/* Lighter on a pale bg so the coloured bloom stays a hint, not a smudge. */
+:root[data-theme="light"] .dusk-card-glow {
+  opacity: 0.07;
+}
+:root[data-theme="light"] .group:hover .dusk-card-glow {
+  opacity: 0.11;
 }
 
 /* Faint diagonal sheen that drifts across the frame on hover. */
@@ -168,13 +204,17 @@ html.snap-page {
 /* Primary CTA — outline + a soft mint glow; on hover the border and glow lift
    just slightly. No fills, no wipes. */
 .dusk-cta {
-  border-color: color-mix(in srgb, var(--dusk-glow) 38%, transparent);
-  box-shadow: 0 4px 16px -12px var(--dusk-glow);
+  border-color: color-mix(in srgb, var(--dusk-glow) 42%, transparent);
+  /* Two-tone dusk shadow: warm dawn (left) → cool dusk (right). Reads as a glow
+     on dark and a tinted shadow on light — visible, but tight, in both. */
+  box-shadow: -3px 2px 8px -6px color-mix(in srgb, var(--accent) 28%, transparent),
+    3px 2px 8px -6px color-mix(in srgb, var(--accent-2) 28%, transparent);
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .dusk-cta:hover {
   border-color: color-mix(in srgb, var(--dusk-glow) 58%, transparent);
-  box-shadow: 0 6px 18px -10px var(--dusk-glow);
+  box-shadow: -4px 3px 12px -6px color-mix(in srgb, var(--accent) 40%, transparent),
+    4px 3px 12px -6px color-mix(in srgb, var(--accent-2) 40%, transparent);
 }
 
 /* Secondary — border and text brighten to the ink colour on hover. */
@@ -217,11 +257,13 @@ html.snap-page {
 }
 .dusk-add--on {
   border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  box-shadow: 0 10px 30px -16px var(--accent);
+  box-shadow: -3px 2px 9px -7px color-mix(in srgb, var(--accent) 28%, transparent),
+    3px 2px 9px -7px color-mix(in srgb, var(--accent-2) 28%, transparent);
 }
 .dusk-add--on:hover {
   border-color: color-mix(in srgb, var(--accent) 85%, transparent);
-  box-shadow: 0 0 26px -6px var(--accent);
+  box-shadow: -4px 3px 13px -7px color-mix(in srgb, var(--accent) 40%, transparent),
+    4px 3px 13px -7px color-mix(in srgb, var(--accent-2) 40%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -354,6 +396,25 @@ button:disabled,
   );
   animation: access-scan 0.5s steps(3) infinite;
 }
+
+/* Terminal vignette — deep on the dark gate (adds cinematic depth); a whisper
+   on light so the cement corners stay clean instead of going muddy grey. */
+.access-vignette {
+  background: radial-gradient(
+    120% 90% at 50% 42%,
+    rgba(255, 255, 255, 0.045) 0%,
+    rgba(5, 5, 5, 0) 42%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+}
+:root[data-theme="light"] .access-vignette {
+  background: radial-gradient(
+    120% 90% at 50% 42%,
+    rgba(255, 255, 255, 0.28) 0%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+}
 @keyframes access-flicker {
   0%, 100% { opacity: 0.9; }
   92% { opacity: 0.9; }
@@ -387,7 +448,7 @@ button:disabled,
   92% { opacity: 1; }
   100% { transform: translateY(110vh); opacity: 0; }
 }
-.access-sweep { animation: access-sweep 7s linear infinite; }
+.access-sweep { animation: access-sweep 16s linear infinite; }
 
 /* Access terminal glitch effects. */
 /* Chromatic-split glitch — bursts a mint + magenta offset copy of the text */
@@ -402,13 +463,13 @@ button:disabled,
   mix-blend-mode: screen;
 }
 .glitch::before {
-  color: #5eead4;
-  text-shadow: -1px 0 #5eead4;
+  color: var(--accent);
+  text-shadow: -1px 0 var(--accent);
   animation: glitch-a 3.2s infinite steps(1);
 }
 .glitch::after {
-  color: #ff4d9d;
-  text-shadow: 1px 0 #ff4d9d;
+  color: var(--accent-2);
+  text-shadow: 1px 0 var(--accent-2);
   animation: glitch-b 3.7s infinite steps(1);
 }
 @keyframes glitch-a {

@@ -119,18 +119,12 @@ export function AccessGate() {
       {/* neon core bloom */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.10] blur-[130px]"
-        style={{ background: NEON }}
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.14] blur-[130px]"
+        style={{ background: "var(--accent-gradient)" }}
       />
-      {/* vignette — lifts the centre, sinks the edges */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 90% at 50% 42%, rgba(255,255,255,0.045) 0%, rgba(5,5,5,0) 42%, rgba(0,0,0,0.75) 100%)",
-        }}
-      />
+      {/* vignette — lifts the centre, sinks the edges (deep on dark, barely
+          there on light so the cement corners don't go muddy) */}
+      <div aria-hidden className="access-vignette pointer-events-none absolute inset-0" />
       {/* film grain */}
       <div
         aria-hidden
@@ -143,9 +137,9 @@ export function AccessGate() {
       {!reduce && (
         <div
           aria-hidden
-          className="access-sweep pointer-events-none absolute inset-x-0 top-0 h-24"
+          className="access-sweep pointer-events-none absolute inset-x-0 top-0 h-40"
           style={{
-            background: `linear-gradient(to bottom, transparent, color-mix(in srgb, var(--accent) 8%, transparent), transparent)`,
+            background: `linear-gradient(to bottom, transparent, color-mix(in srgb, var(--accent) 5%, transparent) 44%, color-mix(in srgb, var(--accent-2) 5%, transparent) 56%, transparent)`,
           }}
         />
       )}
@@ -165,7 +159,7 @@ export function AccessGate() {
       {/* ── terminal ── */}
       <div className={`relative z-10 w-full max-w-md ${reduce ? "" : "access-flicker"}`}>
         <div className="text-center">
-          <p className="font-primary text-[10px] font-medium uppercase tracking-[0.4em] text-ink-faint">
+          <p className="font-primary text-[10px] font-medium uppercase tracking-[0.4em] text-ink-muted">
             <span style={{ color: NEON }}>/</span> Invite Only Terminal
           </p>
           <h1
@@ -174,14 +168,14 @@ export function AccessGate() {
             Enter your
             <br />
             <span
-              className={reduce ? "" : "glitch"}
+              className={`dusk-gradient-text ${reduce ? "" : "glitch"}`}
               data-text={heading}
-              style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 33%, transparent)` }}
+              style={{ textShadow: `0 0 30px color-mix(in srgb, var(--accent) 30%, transparent)` }}
             >
               {heading}
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-xs font-primary text-[11px] font-light leading-relaxed tracking-wide text-ink-faint">
+          <p className="mx-auto mt-5 max-w-xs font-primary text-[11px] font-light leading-relaxed tracking-wide text-ink-muted">
             The drop is sealed to waitlist members. Punch in the code sent to your
             inbox to breach the vault.
           </p>
@@ -311,16 +305,16 @@ export function AccessGate() {
             )}
           </div>
 
-          {/* terminal execute button — hairline neon, subtle fill on hover */}
+          {/* terminal execute button — matches the ADD TO BAG CTA (dusk-cta) */}
           <button
             type="submit"
             disabled={status === "loading" || granted || !value.trim()}
-            className="group mt-6 flex w-full items-center justify-center gap-3 rounded-full border py-4 font-primary text-[12px] font-bold uppercase tracking-[0.28em] transition-all disabled:cursor-not-allowed disabled:opacity-40"
-            style={{
-              borderColor: granted ? NEON : `color-mix(in srgb, var(--accent) 33%, transparent)`,
-              color: NEON,
-              background: granted ? `color-mix(in srgb, var(--accent) 12%, transparent)` : "transparent",
-            }}
+            className="dusk-cta group mx-auto mt-7 flex items-center justify-center gap-2.5 rounded-full border px-10 py-3.5 font-primary text-[12px] font-bold uppercase tracking-[0.16em] text-ink transition-all disabled:cursor-not-allowed disabled:opacity-40"
+            style={
+              granted
+                ? { background: `color-mix(in srgb, var(--accent) 12%, transparent)` }
+                : undefined
+            }
           >
             {status === "loading" ? "Decrypting…" : granted ? "Unlocked" : "Unlock the drop"}
             {!granted && status !== "loading" && (
@@ -329,11 +323,11 @@ export function AccessGate() {
           </button>
         </form>
 
-        <p className="mt-8 text-center font-primary text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint">
+        <p className="mt-8 text-center font-primary text-[10px] font-medium uppercase tracking-[0.2em] text-ink-muted">
           Not on the list?{" "}
           <a
             href="/"
-            className="text-ink-muted underline underline-offset-4 transition-colors hover:text-ink"
+            className="text-ink underline underline-offset-4 transition-colors hover:text-ink-muted"
           >
             Join the waitlist
           </a>

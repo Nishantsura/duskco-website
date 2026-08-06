@@ -53,7 +53,7 @@ export function ContactView() {
         className="pointer-events-none absolute -bottom-1/4 -right-1/4 h-[60vh] w-[60vh] rounded-full opacity-20 blur-[120px]"
         style={{
           background:
-            "radial-gradient(circle, #4a5bff 0%, transparent 65%)",
+            "radial-gradient(circle, var(--accent-2) 0%, transparent 65%)",
         }}
       />
 

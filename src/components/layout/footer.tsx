@@ -25,9 +25,11 @@ export function Footer() {
   // glass; over a light page that goes washed-out grey, so deepen it in light so
   // the white wordmark/icons stay legible.
   const dockGlass = theme === "light" ? "bg-black/85" : "bg-black/40";
-  // On the homepage the hero fills the viewport, so the dock floats over it
-  // instead of sitting in normal flow — keeps the landing scroll-free.
+  // On the homepage AND the access gate the content fills the viewport, so the
+  // dock floats over it instead of sitting in normal flow — keeps those pages
+  // scroll-free with the dock visible inside the viewport.
   const isHome = pathname === "/";
+  const floatOverlay = isHome || pathname === "/access";
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -58,14 +60,14 @@ export function Footer() {
           over the full-viewport hero so the landing has no scroll. */}
       <div
         className={
-          isHome
+          floatOverlay
             ? "fixed inset-x-0 bottom-0 z-40 flex justify-center pb-4 pt-0 pointer-events-none"
             : snap
               ? "flex snap-end justify-center py-10 sm:py-12"
               : "flex justify-center py-6 sm:py-10"
         }
       >
-        <div ref={dockRef} className={`relative ${isHome ? "pointer-events-auto" : ""}`}>
+        <div ref={dockRef} className={`relative ${floatOverlay ? "pointer-events-auto" : ""}`}>
           {/* Pages menu — unfolds sideways out of the dock (right-anchored so it
               grows left from the hamburger), a horizontal row of icon chips. */}
           <AnimatePresence>

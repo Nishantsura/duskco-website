@@ -26,7 +26,11 @@ const MARQUEE = ["Limited Drop", "Invite Only", "Stage One", "Wear The Differenc
 // Declared at module scope so it isn't recreated on every render.
 function GlitchLine({ text, reduce }: { text: string; reduce: boolean | null }) {
   return (
-    <span className={reduce ? "" : "glitch"} data-text={text} style={{ display: "block" }}>
+    <span
+      className={`dusk-gradient-text ${reduce ? "" : "glitch"}`}
+      data-text={text}
+      style={{ display: "block" }}
+    >
       {text}
     </span>
   );
@@ -136,7 +140,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             role="dialog"
             aria-modal="true"
             aria-label="Join the waitlist"
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-4"
+            className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 px-4"
             initial={{ opacity: 0, scale: 0.94, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 24 }}
@@ -146,44 +150,83 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
               className="relative overflow-hidden rounded-[26px] bg-bg"
               style={{ boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--accent) 13%, transparent), 0 40px 120px -28px rgba(0,0,0,0.8)` }}
             >
-              {/* ── background stack ── */}
+              {/* faint film grain over the whole card */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute -top-10 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full opacity-[0.12] blur-[90px]"
-                style={{ background: NEON }}
-              />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-screen"
+                className="pointer-events-none absolute inset-0 z-[1] opacity-[0.05] mix-blend-screen"
                 style={{ backgroundImage: GRAIN, backgroundSize: "140px 140px" }}
               />
-              <div aria-hidden className="access-scanlines pointer-events-none absolute inset-0 opacity-70" />
 
               {/* Close */}
               <button
                 onClick={handleClose}
                 aria-label="Close"
-                className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full text-ink-faint transition-colors hover:bg-ink/10 hover:text-ink"
+                className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/25 text-white/80 backdrop-blur-sm transition-colors hover:bg-black/45 hover:text-white"
               >
                 <X size={16} />
               </button>
 
-              <div className="relative z-10 px-8 pt-8 pb-6">
-                {/* kicker + step counter (no progress bar) */}
-                <div className="flex items-center justify-between pr-8">
-                  <span className="font-primary text-[9px] font-semibold uppercase tracking-[0.32em] text-ink-faint">
-                    <span style={{ color: NEON }}>/</span> Stage One — Waitlist
+              {/* ── LIVE transmission — the waitlist video header ── */}
+              <div className="relative h-44 w-full overflow-hidden sm:h-52">
+                <video
+                  src="/videos/Waitlist video.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="h-full w-full object-cover [filter:grayscale(0.12)_contrast(1.06)_brightness(0.9)]"
+                />
+                {/* dusk↔dawn wash */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-40 mix-blend-soft-light"
+                  style={{ background: "var(--accent-gradient)" }}
+                />
+                {/* scanlines */}
+                <div aria-hidden className="access-scanlines pointer-events-none absolute inset-0 opacity-50" />
+                {/* melt the feed into the modal body */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-bg to-transparent"
+                />
+                {/* viewfinder corner brackets */}
+                {["left-3 top-3 border-l border-t", "right-3 top-3 border-r border-t"].map((pos) => (
+                  <span
+                    key={pos}
+                    aria-hidden
+                    className={`pointer-events-none absolute h-3.5 w-3.5 ${pos}`}
+                    style={{ borderColor: NEON, opacity: 0.75 }}
+                  />
+                ))}
+                {/* kicker + step counter, overlaid on the feed */}
+                <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between pl-8 pr-14 pt-6 sm:pl-9">
+                  <span className="flex items-center gap-2 font-primary text-[9px] font-semibold uppercase tracking-[0.32em] text-white/85 [text-shadow:0_1px_6px_rgba(0,0,0,0.65)]">
+                    <motion.span
+                      aria-hidden
+                      className="inline-block h-[5px] w-[5px] rounded-full"
+                      style={{ background: NEON, boxShadow: `0 0 7px ${NEON}` }}
+                      animate={reduce ? {} : { opacity: [0.35, 1, 0.35] }}
+                      transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    Live — Stage One
                   </span>
                   {!done && (
-                    <span className="font-street text-[15px] leading-none tracking-[0.06em] text-ink-faint tabular-nums">
+                    <span className="font-street text-[15px] leading-none tracking-[0.06em] text-white/70 tabular-nums [text-shadow:0_1px_6px_rgba(0,0,0,0.65)]">
                       0{stepIndex + 1}
-                      <span className="text-ink-faint"> / 02</span>
+                      <span className="text-white/45"> / 02</span>
                     </span>
                   )}
                 </div>
+                {/* feed tag */}
+                <span className="absolute bottom-6 right-8 z-10 font-primary text-[8px] font-medium uppercase tracking-[0.22em] text-white/55 [text-shadow:0_1px_6px_rgba(0,0,0,0.65)] sm:right-9">
+                  Transmission 01
+                </span>
+              </div>
+
+              <div className="relative z-10 px-9 pb-7 pt-1 sm:px-10">
 
                 {/* body */}
-                <div className="mt-7 min-h-[188px]">
+                <div className="mt-3 min-h-[188px]">
                   <AnimatePresence mode="wait" initial={false}>
                     {done ? (
                       <motion.div
@@ -202,10 +245,10 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                         >
                           <Check size={26} strokeWidth={3} className="text-accent-ink" />
                         </motion.div>
-                        <h2 className="font-street text-[40px] leading-[0.9] tracking-[0.02em] text-ink uppercase" style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 27%, transparent)` }}>
+                        <h2 className="font-street text-[clamp(44px,7vw,56px)] leading-[0.9] tracking-[0.02em] text-ink uppercase" style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 27%, transparent)` }}>
                           You&apos;re in.
                         </h2>
-                        <p className="mt-3 max-w-[16rem] font-primary text-[13px] font-light leading-relaxed tracking-[0.02em] text-ink-faint">
+                        <p className="mt-3 max-w-[16rem] font-primary text-[13px] font-light leading-relaxed tracking-[0.02em] text-ink-muted">
                           Locked in, {firstName}. Your access code lands in your
                           inbox before the drop.
                         </p>
@@ -218,7 +261,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       </motion.div>
                     ) : (
                       <div key="form">
-                        <h2 className="font-street text-[40px] leading-[0.88] tracking-[0.02em] text-ink uppercase" style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 20%, transparent)` }}>
+                        <h2 className="font-street text-[clamp(44px,7vw,56px)] leading-[0.88] tracking-[0.02em] text-ink uppercase" style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 20%, transparent)` }}>
                           {step === "name" ? (
                             <>
                               <GlitchLine text="Join The" reduce={reduce} />
@@ -242,7 +285,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                               exit="exit"
                               transition={{ duration: 0.24, ease: EASE }}
                             >
-                              <label htmlFor="wl-name" className="mt-5 block font-primary text-[12px] font-light tracking-[0.03em] text-ink-faint">
+                              <label htmlFor="wl-name" className="mt-5 block font-primary text-[12px] font-light tracking-[0.03em] text-ink-muted">
                                 First, what should we call you?
                               </label>
                               <form onSubmit={handleNameSubmit} className="mt-3 flex flex-col gap-3">
@@ -272,7 +315,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                               exit="exit"
                               transition={{ duration: 0.24, ease: EASE }}
                             >
-                              <label htmlFor="wl-email" className="mt-5 block font-primary text-[12px] font-light tracking-[0.03em] text-ink-faint">
+                              <label htmlFor="wl-email" className="mt-5 block font-primary text-[12px] font-light tracking-[0.03em] text-ink-muted">
                                 Drop your email — first access to every drop.
                               </label>
                               <form onSubmit={handleEmailSubmit} className="mt-3 flex flex-col gap-3">
