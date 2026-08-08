@@ -62,18 +62,21 @@ function HeroHeading({
 const SLIDES = [
   {
     id: "01",
-    type: "video" as const,
-    desktopSrc: "/Landscape video.mp4",
-    mobileSrc: "/videos/Hero video mobile.mp4",
+    desktopSrc: "/Cover%203.png",
+    mobileSrc: "/Cover%203.png",
+    // centred subject — a plain centre crop reads fine on portrait
+    objectPosition: "center",
     heading: "Join The\nWaitlist",
     headingClass: "font-street text-[clamp(60px,14vw,160px)] font-normal leading-[0.9] tracking-[0.02em]",
     action: "waitlist" as const,
   },
   {
     id: "02",
-    type: "image" as const,
-    desktopSrc: "/Streetwear landscape.jpg",
-    mobileSrc: "/potrait picture.jpg",
+    desktopSrc: "/Cover%204.png",
+    mobileSrc: "/Cover%204.png",
+    // subject sits right-of-centre — bias the crop right so he survives the
+    // tall mobile portrait crop
+    objectPosition: "68% center",
     heading: "Enter\nStage One",
     headingClass: "font-street text-[clamp(60px,14vw,160px)] font-normal leading-[0.9] tracking-[0.02em]",
     action: "link" as const,
@@ -83,7 +86,6 @@ const SLIDES = [
 
 export function HeroSection() {
   const [active, setActive] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [settled, setSettled] = useState(false);
   const reduce = useReducedMotion();
@@ -103,14 +105,6 @@ export function HeroSection() {
       setActive((prev) => (prev + 1) % SLIDES.length);
     }, AUTOPLAY_MS);
   }
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -137,28 +131,17 @@ export function HeroSection() {
               className="absolute inset-0 transition-opacity duration-700"
               style={{ opacity: i === active ? 1 : 0 }}
             >
-              {s.type === "video" ? (
-                <video
-                  key={isMobile ? "mobile" : "desktop"}
-                  src={isMobile ? s.mobileSrc : s.desktopSrc}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
+              <picture className="absolute inset-0">
+                <source media="(max-width: 768px)" srcSet={s.mobileSrc} />
+                <source media="(min-width: 769px)" srcSet={s.desktopSrc} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.desktopSrc}
+                  alt=""
                   className="h-full w-full object-cover"
+                  style={{ objectPosition: s.objectPosition }}
                 />
-              ) : (
-                <picture className="absolute inset-0">
-                  <source media="(max-width: 768px)" srcSet={s.mobileSrc} />
-                  <source media="(min-width: 769px)" srcSet={s.desktopSrc} />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={s.desktopSrc}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </picture>
-              )}
+              </picture>
             </div>
           ))}
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50" />

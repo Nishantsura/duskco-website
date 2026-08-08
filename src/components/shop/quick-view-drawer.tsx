@@ -124,12 +124,15 @@ export function QuickViewDrawer() {
           boxShadow: "-30px 0 80px -40px rgba(0,0,0,0.9)",
         }}
       >
-        {/* mint hairline down the leading edge */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-px"
-          style={{ background: `linear-gradient(to bottom, transparent, color-mix(in srgb, var(--accent) 33%, transparent), transparent)` }}
-        />
+        {/* mint hairline down the leading edge — only while open, otherwise the
+            closed drawer's edge bleeds a faint 1px line at the viewport's right */}
+        {isOpen && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 left-0 w-px"
+            style={{ background: `linear-gradient(to bottom, transparent, color-mix(in srgb, var(--accent) 33%, transparent), transparent)` }}
+          />
+        )}
 
         {/* Close button */}
         <button

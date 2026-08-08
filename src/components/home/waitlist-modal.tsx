@@ -208,7 +208,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       animate={reduce ? {} : { opacity: [0.35, 1, 0.35] }}
                       transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
                     />
-                    Live — Stage One
+                    Incoming — Stage One
                   </span>
                   {!done && (
                     <span className="font-street text-[15px] leading-none tracking-[0.06em] text-white/70 tabular-nums [text-shadow:0_1px_6px_rgba(0,0,0,0.65)]">
