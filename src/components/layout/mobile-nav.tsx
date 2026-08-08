@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 
@@ -15,16 +14,6 @@ const LINKS = [
 ];
 
 export function MobileNav({ open, onClose }: MobileNavProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (open) {
-      videoRef.current?.play();
-    } else {
-      videoRef.current?.pause();
-    }
-  }, [open]);
-
   return (
     <>
       {/* Backdrop */}
@@ -67,19 +56,14 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
           ))}
         </nav>
 
-        {/* Video */}
+        {/* Cover still */}
         <div className="mt-6 min-h-[120px] flex-1 overflow-hidden px-8">
-          {open && (
-            <video
-              ref={videoRef}
-              src="/videos/Hero video mobile.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full rounded-lg object-cover"
-            />
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Cover%202.png"
+            alt=""
+            className="h-full w-full rounded-lg object-cover"
+          />
         </div>
 
         {/* Footer — socials + email */}

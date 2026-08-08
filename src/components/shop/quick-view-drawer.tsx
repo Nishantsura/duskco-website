@@ -121,7 +121,9 @@ export function QuickViewDrawer() {
         }`}
         style={{
           background: "var(--bg)",
-          boxShadow: "-30px 0 80px -40px rgba(0,0,0,0.9)",
+          // Only while open — closed at translate-x-full the leftward shadow
+          // spilled a faint vertical band onto the right edge of every page.
+          boxShadow: isOpen ? "-30px 0 80px -40px rgba(0,0,0,0.9)" : "none",
         }}
       >
         {/* mint hairline down the leading edge — only while open, otherwise the

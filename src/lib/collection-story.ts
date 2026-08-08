@@ -13,7 +13,7 @@ const DUSK_FALLBACK_STORY: StoryStage[] = [
     label: "The Signal",
     headline: "When The\nSun Clocks Out",
     body: "Golden hour is a group chat you left on read. Stage One starts where the daylight ends — a tight drop built for the version of you that only loads after dark.",
-    media: { type: "video", url: "/Landscape video.mp4" },
+    media: { type: "image", url: "/Cover%201.png", alt: "Dusk&Co Stage One" },
     layout: "statement",
   },
   {

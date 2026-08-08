@@ -11,6 +11,32 @@ import { useChromeTheme } from "@/components/layout/chrome-theme";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
+// Hero background — the four Cover stills, crossfading every 4s. Replaces the
+// old landscape video. (Spaces URL-encoded so they're safe in an img src.)
+const HERO_COVERS = ["/Cover%201.png", "/Cover%202.png", "/Cover%203.png", "/Cover%204.png"];
+
+function HeroCoverSlideshow() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI((p) => (p + 1) % HERO_COVERS.length), 4000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div aria-hidden className="absolute inset-0">
+      {HERO_COVERS.map((src, idx) => (
+        <div
+          key={src}
+          className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+          style={{ opacity: idx === i ? 1 : 0 }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt="" className="h-full w-full object-cover" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ────────────────────────────────────────────────────────────
  * Stage One — "After Hours"
  * Five pieces, five concepts. One editorial arc on a single
@@ -355,15 +381,7 @@ export function DropStory({ products }: { products: Product[] }) {
     <div className="bg-bg transition-colors duration-500">
       {/* ===== HERO (always dark) ===== */}
       <section className="relative flex h-svh w-full snap-start snap-always flex-col justify-end overflow-hidden bg-black">
-        <video
-          src="/Landscape video.mp4"
-          poster="/Streetwear landscape.jpg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        <HeroCoverSlideshow />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/85" />
 
         <div className={`${SHELL} relative z-10 pb-8 sm:pb-10`}>
