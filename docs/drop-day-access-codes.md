@@ -41,10 +41,7 @@ blank on purpose.
    `https://duskco-website-orpin.vercel.app` (the wired project). Change `DROP_SITE_URL`
    to `https://duskxco.com` only after that domain is connected to this Vercel project.
 
-> ⚠️ **Lookalike-domain trap.** `https://duskco-website.vercel.app` (no `-orpin`)
-> is a *different, lost* Vercel project on an account we don't control. It serves
-> the same UI but has NO Upstash env, so it rejects every valid code. Never send
-> customers that URL — always the `-orpin` one (or `duskxco.com` once connected).
+> ⚠️ Only send customers the `-orpin` URL (or `duskxco.com` once connected) — never `duskco-website.vercel.app` (no `-orpin`), a stranded project with no Upstash that rejects every code.
 
 ## Rehearse first (test mode) — works before the domain is verified
 
