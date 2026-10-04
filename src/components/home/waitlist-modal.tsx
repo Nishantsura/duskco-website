@@ -10,31 +10,11 @@ interface WaitlistModalProps {
   onClose: () => void;
 }
 
-type Step = "name" | "email";
-
 const EASE = [0.32, 0.72, 0, 1] as const;
-const NEON = "var(--accent)"; // mint — shared with the access terminal
+const ACCENT = "var(--accent)";
 const isEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
 
-// Fine static film grain (SVG, no canvas) — same texture as the access page.
-const GRAIN =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
-
-const MARQUEE = ["Limited Drop", "Invite Only", "Stage One", "Wear The Difference"];
-
-// A single glitching heading line (chromatic split, reduced-motion safe).
-// Declared at module scope so it isn't recreated on every render.
-function GlitchLine({ text, reduce }: { text: string; reduce: boolean | null }) {
-  return (
-    <span
-      className={`dusk-gradient-text ${reduce ? "" : "glitch"}`}
-      data-text={text}
-      style={{ display: "block" }}
-    >
-      {text}
-    </span>
-  );
-}
+type Step = "name" | "email";
 
 export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
   const reduce = useReducedMotion();
@@ -47,7 +27,6 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
   const emailRef = useRef<HTMLInputElement>(null);
 
   const firstName = name.trim().split(" ")[0] || "";
-  const stepIndex = step === "name" ? 0 : 1;
   const done = status === "success";
 
   useEffect(() => {
@@ -62,15 +41,15 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     if (!open || done) return;
     const t = setTimeout(() => {
       (step === "name" ? nameRef : emailRef).current?.focus();
-    }, 60);
+    }, 80);
     return () => clearTimeout(t);
-  }, [step, open, done]);
+  }, [open, done, step]);
 
   function handleNameSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    setErrorMsg("");
     setStatus("idle");
+    setErrorMsg("");
     setStep("email");
   }
 
@@ -111,317 +90,281 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
   }
 
   const inputClass =
-    "w-full rounded-xl border border-line bg-ink/[0.03] px-4 py-3.5 font-primary text-[14px] tracking-[0.02em] text-ink caret-accent placeholder:text-ink-faint outline-none transition-all focus:border-accent focus:bg-ink/[0.06] focus:ring-4 focus:ring-accent/10";
+    "w-full border-0 border-b border-line-strong bg-transparent px-1 pb-3 pt-2 font-primary text-[15px] tracking-[0.02em] text-ink caret-accent placeholder:text-ink-faint outline-none transition-colors duration-300 focus:border-accent";
 
-  const primaryBtn =
-    "group flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 py-4 font-primary text-[11px] font-semibold uppercase tracking-[0.18em] text-accent transition-all hover:border-accent/80 hover:bg-accent/10 disabled:pointer-events-none disabled:border-line disabled:text-ink-faint";
+  const ctaClass =
+    "dusk-cta group flex items-center justify-center gap-2.5 rounded-full border px-10 py-4 font-primary text-[12px] font-bold uppercase tracking-[0.16em] text-ink transition-all disabled:cursor-not-allowed disabled:opacity-40";
+
+  const headingClass =
+    "font-street text-[clamp(56px,12vw,104px)] leading-[0.86] tracking-[0.015em] text-ink uppercase";
+  const headingStyle = { textShadow: "0 2px 28px color-mix(in srgb, var(--bg) 70%, transparent)" };
+  const subStyle = { textShadow: "0 1px 14px color-mix(in srgb, var(--bg) 80%, transparent)" };
+  const subClass =
+    "mt-5 max-w-xs font-primary text-[13px] font-light leading-relaxed tracking-[0.03em] text-ink-muted";
 
   const stepVariants = {
-    initial: { opacity: 0, x: reduce ? 0 : 28 },
+    initial: { opacity: 0, x: reduce ? 0 : 26 },
     center: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: reduce ? 0 : -28 },
+    exit: { opacity: 0, x: reduce ? 0 : -26 },
   };
 
   return (
     <AnimatePresence>
       {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleClose}
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Join the waitlist"
+          className="fixed inset-0 z-[60] overflow-hidden bg-bg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: EASE }}
+        >
+          {/* ── Fullscreen background video ── */}
+          <video
+            src="/videos/15609235_3840_2160_25fps.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover [filter:grayscale(0.2)_contrast(1.04)]"
+          />
+          {/* ── Cinematic grade ──────────────────────────────────────────────
+              Edge-anchored, not a floating blob: the top and sides of the
+              video stay fully detailed, while a bottom-up gradient builds a
+              solid legibility bed under the lockup. A whisper-thin global tint
+              + top fade unify the frame and seat the kicker/close. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-bg/15" />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[88%]"
+            style={{
+              background:
+                "linear-gradient(to top, var(--bg) 0%, color-mix(in srgb, var(--bg) 90%, transparent) 20%, color-mix(in srgb, var(--bg) 60%, transparent) 46%, color-mix(in srgb, var(--bg) 22%, transparent) 70%, transparent 100%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-32"
+            style={{ background: "linear-gradient(to bottom, color-mix(in srgb, var(--bg) 55%, transparent), transparent)" }}
+          />
+          {/* faint dusk↔dawn tint for brand mood — barely there, keeps detail */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-20 mix-blend-soft-light"
+            style={{ background: "var(--accent-gradient)" }}
           />
 
-          {/* Modal */}
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Join the waitlist"
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 px-4"
-            initial={{ opacity: 0, scale: 0.94, y: 24 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 24 }}
-            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          {/* Close */}
+          <button
+            onClick={handleClose}
+            aria-label="Close"
+            className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-colors hover:text-ink md:right-8 md:top-8 [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
           >
-            <div
-              className="relative overflow-hidden rounded-[26px] bg-bg"
-              style={{ boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--accent) 13%, transparent), 0 40px 120px -28px rgba(0,0,0,0.8)` }}
-            >
-              {/* faint film grain over the whole card */}
-              <div
+            <X size={22} strokeWidth={1.5} />
+          </button>
+
+          {/* kicker — top center */}
+          <div className="absolute inset-x-0 top-7 z-10 flex justify-center md:top-9">
+            <span className="flex items-center gap-2.5 font-primary text-[10px] font-semibold uppercase tracking-[0.34em] text-ink-muted [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]">
+              <motion.span
                 aria-hidden
-                className="pointer-events-none absolute inset-0 z-[1] opacity-[0.05] mix-blend-screen"
-                style={{ backgroundImage: GRAIN, backgroundSize: "140px 140px" }}
+                className="inline-block h-[5px] w-[5px] rounded-full"
+                style={{ background: ACCENT, boxShadow: `0 0 8px ${ACCENT}` }}
+                animate={reduce ? {} : { opacity: [0.35, 1, 0.35] }}
+                transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
               />
+              Incoming · Stage One
+            </span>
+          </div>
 
-              {/* Close */}
-              <button
-                onClick={handleClose}
-                aria-label="Close"
-                className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/25 text-white/80 backdrop-blur-sm transition-colors hover:bg-black/45 hover:text-white"
-              >
-                <X size={16} />
-              </button>
-
-              {/* ── LIVE transmission — the waitlist video header ── */}
-              <div className="relative h-44 w-full overflow-hidden sm:h-52">
-                <video
-                  src="/videos/Waitlist video.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="h-full w-full object-cover [filter:grayscale(0.12)_contrast(1.06)_brightness(0.9)]"
-                />
-                {/* dusk↔dawn wash */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 opacity-40 mix-blend-soft-light"
-                  style={{ background: "var(--accent-gradient)" }}
-                />
-                {/* scanlines */}
-                <div aria-hidden className="access-scanlines pointer-events-none absolute inset-0 opacity-50" />
-                {/* melt the feed into the modal body */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-bg to-transparent"
-                />
-                {/* viewfinder corner brackets */}
-                {["left-3 top-3 border-l border-t", "right-3 top-3 border-r border-t"].map((pos) => (
-                  <span
-                    key={pos}
-                    aria-hidden
-                    className={`pointer-events-none absolute h-3.5 w-3.5 ${pos}`}
-                    style={{ borderColor: NEON, opacity: 0.75 }}
-                  />
-                ))}
-                {/* kicker + step counter, overlaid on the feed */}
-                <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between pl-8 pr-14 pt-6 sm:pl-9">
-                  <span className="flex items-center gap-2 font-primary text-[9px] font-semibold uppercase tracking-[0.32em] text-white/85 [text-shadow:0_1px_6px_rgba(0,0,0,0.65)]">
-                    <motion.span
-                      aria-hidden
-                      className="inline-block h-[5px] w-[5px] rounded-full"
-                      style={{ background: NEON, boxShadow: `0 0 7px ${NEON}` }}
-                      animate={reduce ? {} : { opacity: [0.35, 1, 0.35] }}
-                      transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
-                    />
-                    Incoming — Stage One
-                  </span>
-                  {!done && (
-                    <span className="font-street text-[15px] leading-none tracking-[0.06em] text-white/70 tabular-nums [text-shadow:0_1px_6px_rgba(0,0,0,0.65)]">
-                      0{stepIndex + 1}
-                      <span className="text-white/45"> / 02</span>
-                    </span>
-                  )}
-                </div>
-                {/* feed tag */}
-                <span className="absolute bottom-6 right-8 z-10 font-primary text-[8px] font-medium uppercase tracking-[0.22em] text-white/55 [text-shadow:0_1px_6px_rgba(0,0,0,0.65)] sm:right-9">
-                  Transmission 01
-                </span>
-              </div>
-
-              <div className="relative z-10 px-9 pb-7 pt-1 sm:px-10">
-
-                {/* body */}
-                <div className="mt-3 min-h-[188px]">
+          {/* ── Content — anchored into the graded lower zone ── */}
+          <div className="relative z-10 flex min-h-full flex-col items-center justify-end px-6 pb-16 pt-28 md:pb-20">
+            <AnimatePresence mode="wait" initial={false}>
+              {done ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease: EASE }}
+                  className="flex w-full max-w-md flex-col items-center text-center"
+                >
+                  <motion.div
+                    initial={reduce ? false : { scale: 0, rotate: -20 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 320, damping: 16, delay: 0.05 }}
+                    className="mb-7 flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{ background: ACCENT, boxShadow: `0 0 36px -4px ${ACCENT}` }}
+                  >
+                    <Check size={30} strokeWidth={3} className="text-accent-ink" />
+                  </motion.div>
+                  <h2 className="font-street text-[clamp(56px,11vw,96px)] leading-[0.9] tracking-[0.015em] text-ink uppercase">
+                    You&apos;re in.
+                  </h2>
+                  <p className="mt-4 max-w-xs font-primary text-[14px] font-light leading-relaxed tracking-[0.02em] text-ink-muted">
+                    Locked in, {firstName}. Your access code lands in your inbox before the drop.
+                  </p>
+                  <button
+                    onClick={handleClose}
+                    className="mt-8 font-primary text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-faint underline underline-offset-[6px] transition-colors hover:text-ink"
+                  >
+                    Back to the site
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="form"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease: EASE }}
+                  className="w-full max-w-md"
+                >
                   <AnimatePresence mode="wait" initial={false}>
-                    {done ? (
+                    {step === "name" ? (
+                      /* ── Step 1 — name ── */
                       <motion.div
-                        key="success"
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="flex flex-col items-center pt-2 text-center"
+                        key="step-name"
+                        variants={stepVariants}
+                        initial="initial"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.3, ease: EASE }}
+                        className="flex w-full flex-col items-center text-center"
                       >
-                        <motion.div
-                          initial={reduce ? false : { scale: 0, rotate: -20 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ type: "spring", stiffness: 320, damping: 16, delay: 0.05 }}
-                          className="mb-5 flex h-14 w-14 items-center justify-center rounded-full"
-                          style={{ background: NEON, boxShadow: `0 0 30px -4px ${NEON}` }}
-                        >
-                          <Check size={26} strokeWidth={3} className="text-accent-ink" />
-                        </motion.div>
-                        <h2 className="font-street text-[clamp(44px,7vw,56px)] leading-[0.9] tracking-[0.02em] text-ink uppercase" style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 27%, transparent)` }}>
-                          You&apos;re in.
+                        <h2 className={headingClass} style={headingStyle}>
+                          Join The
+                          <br />
+                          Waitlist
                         </h2>
-                        <p className="mt-3 max-w-[16rem] font-primary text-[13px] font-light leading-relaxed tracking-[0.02em] text-ink-muted">
-                          Locked in, {firstName}. Your access code lands in your
-                          inbox before the drop.
+                        <p className={subClass} style={subStyle}>
+                          Invite only. First access to every Stage One drop.
                         </p>
-                        <button
-                          onClick={handleClose}
-                          className="mt-6 font-primary text-[10px] font-semibold uppercase tracking-[0.22em] text-ink-faint underline underline-offset-4 transition-colors hover:text-ink"
-                        >
-                          Back to the site
-                        </button>
+
+                        <form onSubmit={handleNameSubmit} className="mt-10 flex w-full flex-col gap-7">
+                          <input
+                            ref={nameRef}
+                            type="text"
+                            placeholder="Your name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            autoComplete="given-name"
+                            required
+                            className={inputClass}
+                          />
+                          <button type="submit" disabled={!name.trim()} className={`${ctaClass} mt-2 w-full`}>
+                            Next
+                            <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
+                          </button>
+                        </form>
                       </motion.div>
                     ) : (
-                      <div key="form">
-                        <h2 className="font-street text-[clamp(44px,7vw,56px)] leading-[0.88] tracking-[0.02em] text-ink uppercase" style={{ textShadow: `0 0 26px color-mix(in srgb, var(--accent) 20%, transparent)` }}>
-                          {step === "name" ? (
-                            <>
-                              <GlitchLine text="Join The" reduce={reduce} />
-                              <GlitchLine text="Waitlist" reduce={reduce} />
-                            </>
-                          ) : (
-                            <>
-                              <GlitchLine text={`Hey${firstName ? "," : ""}`} reduce={reduce} />
-                              <GlitchLine text={firstName || "there"} reduce={reduce} />
-                            </>
-                          )}
+                      /* ── Step 2 — email ── */
+                      <motion.div
+                        key="step-email"
+                        variants={stepVariants}
+                        initial="initial"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.3, ease: EASE }}
+                        className="flex w-full flex-col items-center text-center"
+                      >
+                        <h2 className={headingClass} style={headingStyle}>
+                          Hi, {firstName || "there"}
                         </h2>
+                        <p className={subClass} style={subStyle}>
+                          Add your email and you&apos;re locked in for first access.
+                        </p>
 
-                        <AnimatePresence mode="wait" initial={false}>
-                          {step === "name" ? (
-                            <motion.div
-                              key="step-name"
-                              variants={stepVariants}
-                              initial="initial"
-                              animate="center"
-                              exit="exit"
-                              transition={{ duration: 0.24, ease: EASE }}
+                        <form onSubmit={handleEmailSubmit} className="mt-10 flex w-full flex-col gap-7">
+                          <div className="relative">
+                            <input
+                              ref={emailRef}
+                              type="email"
+                              placeholder="you@email.com"
+                              value={email}
+                              onChange={(e) => {
+                                setEmail(e.target.value);
+                                if (status === "error") { setStatus("idle"); setErrorMsg(""); }
+                              }}
+                              autoComplete="email"
+                              required
+                              className={`${inputClass} pr-8`}
+                            />
+                            <AnimatePresence>
+                              {isEmail(email) && (
+                                <motion.span
+                                  initial={{ scale: 0, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  exit={{ scale: 0, opacity: 0 }}
+                                  className="absolute right-1 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full"
+                                  style={{ background: ACCENT }}
+                                >
+                                  <Check size={12} strokeWidth={3} className="text-accent-ink" />
+                                </motion.span>
+                              )}
+                            </AnimatePresence>
+                          </div>
+
+                          {status === "error" && (
+                            <motion.p
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="-mt-3 font-primary text-[12px]"
+                              style={{ color: "#F87171" }}
                             >
-                              <label htmlFor="wl-name" className="mt-5 block font-primary text-[12px] font-light tracking-[0.03em] text-ink-muted">
-                                First, what should we call you?
-                              </label>
-                              <form onSubmit={handleNameSubmit} className="mt-3 flex flex-col gap-3">
-                                <input
-                                  id="wl-name"
-                                  ref={nameRef}
-                                  type="text"
-                                  placeholder="Your name"
-                                  value={name}
-                                  onChange={(e) => setName(e.target.value)}
-                                  autoComplete="given-name"
-                                  required
-                                  className={inputClass}
-                                />
-                                <button type="submit" disabled={!name.trim()} className={primaryBtn}>
-                                  Continue
-                                  <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
-                                </button>
-                              </form>
-                            </motion.div>
-                          ) : (
-                            <motion.div
-                              key="step-email"
-                              variants={stepVariants}
-                              initial="initial"
-                              animate="center"
-                              exit="exit"
-                              transition={{ duration: 0.24, ease: EASE }}
-                            >
-                              <label htmlFor="wl-email" className="mt-5 block font-primary text-[12px] font-light tracking-[0.03em] text-ink-muted">
-                                Drop your email — first access to every drop.
-                              </label>
-                              <form onSubmit={handleEmailSubmit} className="mt-3 flex flex-col gap-3">
-                                <div className="relative">
-                                  <input
-                                    id="wl-email"
-                                    ref={emailRef}
-                                    type="email"
-                                    placeholder="you@email.com"
-                                    value={email}
-                                    onChange={(e) => {
-                                      setEmail(e.target.value);
-                                      if (status === "error") { setStatus("idle"); setErrorMsg(""); }
-                                    }}
-                                    required
-                                    className={`${inputClass} pr-11`}
-                                  />
-                                  <AnimatePresence>
-                                    {isEmail(email) && (
-                                      <motion.span
-                                        initial={{ scale: 0, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        exit={{ scale: 0, opacity: 0 }}
-                                        className="absolute right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full"
-                                        style={{ background: NEON, boxShadow: `0 0 12px -2px ${NEON}` }}
-                                      >
-                                        <Check size={13} strokeWidth={3} className="text-accent-ink" />
-                                      </motion.span>
-                                    )}
-                                  </AnimatePresence>
-                                </div>
-
-                                {status === "error" && (
-                                  <motion.p
-                                    initial={{ opacity: 0, y: -4 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="px-1 font-primary text-[12px]"
-                                    style={{ color: "#F87171" }}
-                                  >
-                                    {errorMsg}
-                                  </motion.p>
-                                )}
-
-                                <div className="mt-1 flex items-center gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => { setStatus("idle"); setErrorMsg(""); setStep("name"); }}
-                                    aria-label="Back"
-                                    className="flex h-[52px] shrink-0 items-center justify-center rounded-xl border border-line px-4 text-ink-faint transition-colors hover:border-accent/60 hover:text-accent"
-                                  >
-                                    <ArrowLeft size={16} />
-                                  </button>
-                                  <button type="submit" disabled={status === "loading" || !isEmail(email)} className={primaryBtn}>
-                                    {status === "loading" ? (
-                                      <span className="flex items-center gap-1.5">
-                                        Joining
-                                        <span className="flex gap-0.5">
-                                          {[0, 1, 2].map((i) => (
-                                            <motion.span
-                                              key={i}
-                                              className="h-1 w-1 rounded-full"
-                                              style={{ background: NEON }}
-                                              animate={reduce ? {} : { opacity: [0.3, 1, 0.3] }}
-                                              transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }}
-                                            />
-                                          ))}
-                                        </span>
-                                      </span>
-                                    ) : (
-                                      "Join the drop"
-                                    )}
-                                  </button>
-                                </div>
-                              </form>
-                            </motion.div>
+                              {errorMsg}
+                            </motion.p>
                           )}
-                        </AnimatePresence>
-                      </div>
+
+                          <div className="mt-2 flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => { setStatus("idle"); setErrorMsg(""); setStep("name"); }}
+                              aria-label="Back"
+                              className="dusk-cta flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-full border text-ink-muted transition-colors hover:text-ink"
+                            >
+                              <ArrowLeft size={16} />
+                            </button>
+                            <button
+                              type="submit"
+                              disabled={status === "loading" || !isEmail(email)}
+                              className={`${ctaClass} flex-1`}
+                            >
+                              {status === "loading" ? (
+                                <span className="flex items-center gap-1.5">
+                                  Joining
+                                  <span className="flex gap-0.5">
+                                    {[0, 1, 2].map((i) => (
+                                      <motion.span
+                                        key={i}
+                                        className="h-1 w-1 rounded-full"
+                                        style={{ background: ACCENT }}
+                                        animate={reduce ? {} : { opacity: [0.3, 1, 0.3] }}
+                                        transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }}
+                                      />
+                                    ))}
+                                  </span>
+                                </span>
+                              ) : (
+                                <>
+                                  Join the drop
+                                  <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </form>
+                      </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
-              </div>
-
-              {/* live marquee footer — pulsing blip separators */}
-              <div className="relative z-10 overflow-hidden border-t border-line py-2.5">
-                <div className={`flex w-max whitespace-nowrap ${reduce ? "" : "animate-marquee"}`}>
-                  {[0, 1].map((dup) => (
-                    <span key={dup} className="flex items-center" aria-hidden={dup === 1}>
-                      {MARQUEE.map((w) => (
-                        <span key={w} className="flex items-center font-primary text-[9px] font-semibold uppercase tracking-[0.24em] text-ink-faint">
-                          {w}
-                          <motion.span
-                            className="mx-3 inline-block h-[5px] w-[5px] rounded-[1px]"
-                            style={{ background: NEON }}
-                            animate={reduce ? {} : { opacity: [0.3, 1, 0.3], scale: [0.8, 1.35, 0.8] }}
-                            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                          />
-                        </span>
-                      ))}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

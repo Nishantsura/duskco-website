@@ -3,44 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useReducedMotion } from "framer-motion";
-import { SpotlightCursor } from "@/components/ui/spotlight-cursor";
 
 const SAFE_NEXT = /^\/(shop|collections|products)(\/|$)/;
 
 const PREFIX = "DUSK";
-const NEON = "var(--accent)"; // subtle mint/aqua — the page's only accent
-const DANGER = "#F87171"; // denied state only
-const SCRAMBLE = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789/#*";
-
-// Fine static film grain, kept off the main thread (SVG, no canvas).
-const GRAIN =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
-
-/** Decode-in scramble: cycles random glyphs, then resolves left→right. */
-function useScramble(text: string, enabled: boolean) {
-  const [out, setOut] = useState(enabled ? "" : text);
-  useEffect(() => {
-    if (!enabled) {
-      setOut(text);
-      return;
-    }
-    let frame = 0;
-    const id = setInterval(() => {
-      frame++;
-      const revealed = Math.floor(frame / 2);
-      let s = "";
-      for (let i = 0; i < text.length; i++) {
-        if (text[i] === " ") s += " ";
-        else if (i < revealed) s += text[i];
-        else s += SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)];
-      }
-      setOut(s);
-      if (revealed >= text.length) clearInterval(id);
-    }, 45);
-    return () => clearInterval(id);
-  }, [text, enabled]);
-  return out;
-}
+const NEON = "var(--accent)";
+const DANGER = "#F87171";
 
 export function AccessGate() {
   const params = useSearchParams();
@@ -64,7 +32,6 @@ export function AccessGate() {
   const destination = SAFE_NEXT.test(nextParam) ? nextParam : "/collections/stage-one";
 
   const code = `${PREFIX}-${value}`;
-  const heading = useScramble("ACCESS CODE", !reduce);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -105,7 +72,7 @@ export function AccessGate() {
       setTimeout(() => window.location.assign(destination), reduce ? 0 : 750);
     } catch {
       setStatus("error");
-      setError("SIGNAL LOST — TRY AGAIN");
+      setError("SIGNAL LOST. TRY AGAIN");
     }
   }
 
@@ -114,151 +81,84 @@ export function AccessGate() {
   const lineColor = denied ? DANGER : focused || value ? NEON : "var(--line-strong)";
 
   return (
-    <main className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-bg px-6 text-ink">
-      {/* ── background stack ── */}
-      {/* neon core bloom */}
+    <main className="relative flex min-h-svh flex-col items-center justify-end overflow-hidden bg-bg px-6 pb-24 pt-32 text-ink">
+      {/* ── Fullscreen background video ── */}
+      <video
+        src="/videos/15609235_3840_2160_25fps.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 h-full w-full object-cover [filter:grayscale(0.2)_contrast(1.04)]"
+      />
+      {/* ── Cinematic grade — edge-anchored, matches the waitlist modal ── */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-bg/15" />
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.14] blur-[130px]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[92%]"
+        style={{
+          background:
+            "linear-gradient(to top, var(--bg) 0%, color-mix(in srgb, var(--bg) 92%, transparent) 24%, color-mix(in srgb, var(--bg) 62%, transparent) 50%, color-mix(in srgb, var(--bg) 24%, transparent) 74%, transparent 100%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-32"
+        style={{ background: "linear-gradient(to bottom, color-mix(in srgb, var(--bg) 55%, transparent), transparent)" }}
+      />
+      {/* faint dusk↔dawn tint for brand mood */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-20 mix-blend-soft-light"
         style={{ background: "var(--accent-gradient)" }}
       />
-      {/* vignette — lifts the centre, sinks the edges (deep on dark, barely
-          there on light so the cement corners don't go muddy) */}
-      <div aria-hidden className="access-vignette pointer-events-none absolute inset-0" />
-      {/* film grain */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-screen"
-        style={{ backgroundImage: GRAIN, backgroundSize: "140px 140px" }}
-      />
-      {/* CRT scanlines */}
-      <div aria-hidden className="access-scanlines pointer-events-none absolute inset-0" />
-      {/* slow scan-sweep */}
-      {!reduce && (
-        <div
-          aria-hidden
-          className="access-sweep pointer-events-none absolute inset-x-0 top-0 h-40"
-          style={{
-            background: `linear-gradient(to bottom, transparent, color-mix(in srgb, var(--accent) 5%, transparent) 44%, color-mix(in srgb, var(--accent-2) 5%, transparent) 56%, transparent)`,
-          }}
-        />
-      )}
-      {/* cursor-following neon glow */}
-      <SpotlightCursor config={{ color: NEON, radius: 300, brightness: 0.06 }} />
 
-      {/* corner stamps */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 select-none font-primary text-[9px] font-medium tracking-[0.3em] text-ink-faint uppercase">
-        <span className="absolute left-6 top-24">Stage 01</span>
-        <span className="absolute right-6 top-24" style={{ color: NEON, opacity: 0.7 }}>
-          ● Classified
-        </span>
-        <span className="absolute bottom-6 left-6">No. 001 / 500</span>
-        <span className="absolute bottom-6 right-6">After Hours</span>
-      </div>
+      {/* ── Content — anchored into the graded lower zone ── */}
+      <div className="relative z-10 flex w-full max-w-md flex-col items-center text-center">
+        <p className="flex items-center gap-2.5 font-primary text-[10px] font-semibold uppercase tracking-[0.34em] text-ink-muted [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]">
+          <span
+            aria-hidden
+            className={`inline-block h-[5px] w-[5px] rounded-full ${reduce ? "" : "access-caret"}`}
+            style={{ background: NEON, boxShadow: `0 0 8px ${NEON}` }}
+          />
+          Invite Only Terminal
+        </p>
 
-      {/* ── terminal ── */}
-      <div className={`relative z-10 w-full max-w-md ${reduce ? "" : "access-flicker"}`}>
-        <div className="text-center">
-          <p className="font-primary text-[10px] font-medium uppercase tracking-[0.4em] text-ink-muted">
-            <span style={{ color: NEON }}>/</span> Invite Only Terminal
-          </p>
-          <h1
-            className="mt-6 font-street text-[clamp(46px,9vw,74px)] leading-[0.85] uppercase tracking-[0.01em]"
-          >
-            Enter your
-            <br />
-            <span
-              className={`dusk-gradient-text ${reduce ? "" : "glitch"}`}
-              data-text={heading}
-              style={{ textShadow: `0 0 30px color-mix(in srgb, var(--accent) 30%, transparent)` }}
-            >
-              {heading}
-            </span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-xs font-primary text-[11px] font-light leading-relaxed tracking-wide text-ink-muted">
-            The drop is sealed to waitlist members. Punch in the code sent to your
-            inbox to breach the vault.
-          </p>
-        </div>
+        <h1
+          className="mt-6 font-street text-[clamp(52px,11vw,96px)] leading-[0.86] tracking-[0.015em] text-ink uppercase"
+          style={{ textShadow: "0 2px 28px color-mix(in srgb, var(--bg) 70%, transparent)" }}
+        >
+          Enter Your
+          <br />
+          Access Code
+        </h1>
 
-        {/* live feed — a small surveillance monitor to sit between the copy and
-            the code line. Tinted + scanlined to match the terminal. */}
-        <div className="relative mx-auto mt-8 w-[190px]">
-          <div
-            className={`relative aspect-[4/3] overflow-hidden rounded-lg ${reduce ? "" : "access-signal"}`}
-            style={{ boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--accent) 27%, transparent), 0 24px 60px -34px ${NEON}` }}
-          >
-            <video
-              src="/dusk-video.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full object-cover [filter:grayscale(0.25)_contrast(1.05)_brightness(0.95)]"
-            />
-            {/* mint tint */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-40 mix-blend-soft-light"
-              style={{ background: NEON }}
-            />
-            {/* scanlines + inner vignette */}
-            <div aria-hidden className="access-scanlines pointer-events-none absolute inset-0 opacity-60" />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              style={{ boxShadow: "inset 0 0 42px rgba(0,0,0,0.65)" }}
-            />
-            {/* tags */}
-            <span
-              className="absolute left-2 top-2 flex items-center gap-1 font-primary text-[8px] font-bold uppercase tracking-[0.2em]"
-              style={{ color: NEON }}
-            >
-              <span
-                className={`h-1 w-1 rounded-full ${reduce ? "" : "access-caret"}`}
-                style={{ background: NEON, boxShadow: `0 0 6px ${NEON}` }}
-              />
-              Live
-            </span>
-            <span className="absolute bottom-2 right-2 font-primary text-[7px] font-medium uppercase tracking-[0.2em] text-ink-faint">
-              Feed 01
-            </span>
-          </div>
-          {/* viewfinder corner brackets */}
-          {[
-            "-left-1 -top-1 border-l border-t",
-            "-right-1 -top-1 border-r border-t",
-            "-left-1 -bottom-1 border-l border-b",
-            "-right-1 -bottom-1 border-r border-b",
-          ].map((pos) => (
-            <span
-              key={pos}
-              aria-hidden
-              className={`pointer-events-none absolute h-3 w-3 ${pos}`}
-              style={{ borderColor: NEON, opacity: 0.8 }}
-            />
-          ))}
-        </div>
+        <p
+          className="mt-5 max-w-xs font-primary text-[13px] font-light leading-relaxed tracking-[0.02em] text-ink-muted"
+          style={{ textShadow: "0 1px 14px color-mix(in srgb, var(--bg) 80%, transparent)" }}
+        >
+          The drop is sealed to waitlist members. Punch in the code sent to your inbox to breach the vault.
+        </p>
 
-        <form onSubmit={onSubmit} className="mt-8">
-          {/* single terminal line — DUSK- prefix + one growing field */}
+        <form onSubmit={onSubmit} className="mt-10 w-full">
+          {/* single terminal line — DUSK prefix + one growing field */}
           <label
-            className={`mx-auto flex w-fit max-w-full cursor-text items-center gap-2 border-b pb-3 ${denied ? "animate-access-shake" : ""}`}
+            className={`mx-auto flex w-fit max-w-full cursor-text items-center gap-2.5 border-b pb-3 ${denied ? "animate-access-shake" : ""}`}
             style={{
               borderColor: lineColor,
               boxShadow: focused && !denied ? `0 10px 30px -18px ${NEON}` : "none",
               transition: "border-color 0.2s, box-shadow 0.2s",
             }}
           >
-            <span className="font-street text-[26px] leading-none tracking-[0.12em] text-ink-faint select-none sm:text-[30px]">
+            <span className="font-street text-[30px] leading-none tracking-[0.12em] text-ink-faint select-none sm:text-[34px]">
               {PREFIX}
             </span>
-            <span className="text-[22px] leading-none select-none" style={{ color: NEON }}>
-              –
+            <span className="text-[20px] leading-none select-none" style={{ color: NEON }}>
+              ·
             </span>
 
             {/* rendered value + block caret (native caret hidden) */}
-            <span className="relative flex min-w-[5ch] items-center font-street text-[26px] leading-none tracking-[0.22em] text-ink sm:text-[30px]">
+            <span className="relative flex min-w-[5ch] items-center font-street text-[30px] leading-none tracking-[0.22em] text-ink sm:text-[34px]">
               {value}
               {(focused || !value) && (
                 <span
@@ -296,7 +196,7 @@ export function AccessGate() {
               </p>
             ) : granted ? (
               <p className="font-primary text-[11px] font-medium uppercase tracking-[0.2em]" style={{ color: NEON }}>
-                ✓ Access granted — entering
+                ✓ Access granted. Entering
               </p>
             ) : (
               <p className="font-primary text-[10px] font-light uppercase tracking-[0.28em] text-ink-faint">
@@ -305,11 +205,10 @@ export function AccessGate() {
             )}
           </div>
 
-          {/* terminal execute button — matches the ADD TO BAG CTA (dusk-cta) */}
           <button
             type="submit"
             disabled={status === "loading" || granted || !value.trim()}
-            className="dusk-cta group mx-auto mt-7 flex items-center justify-center gap-2.5 rounded-full border px-10 py-3.5 font-primary text-[12px] font-bold uppercase tracking-[0.16em] text-ink transition-all disabled:cursor-not-allowed disabled:opacity-40"
+            className="dusk-cta group mx-auto mt-7 flex items-center justify-center gap-2.5 rounded-full border px-10 py-4 font-primary text-[12px] font-bold uppercase tracking-[0.16em] text-ink transition-all disabled:cursor-not-allowed disabled:opacity-40"
             style={
               granted
                 ? { background: `color-mix(in srgb, var(--accent) 12%, transparent)` }
@@ -323,7 +222,7 @@ export function AccessGate() {
           </button>
         </form>
 
-        <p className="mt-8 text-center font-primary text-[10px] font-medium uppercase tracking-[0.2em] text-ink-muted">
+        <p className="mt-8 font-primary text-[10px] font-medium uppercase tracking-[0.2em] text-ink-muted">
           Not on the list?{" "}
           <a
             href="/"
