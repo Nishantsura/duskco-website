@@ -84,7 +84,7 @@ export function AccessGate() {
     <main className="relative flex min-h-svh flex-col items-center justify-end overflow-hidden bg-bg px-6 pb-24 pt-32 text-ink">
       {/* ── Fullscreen background video ── */}
       <video
-        src="/videos/15609235_3840_2160_25fps.mp4"
+        src="/videos/Waitlist%20video.mp4"
         autoPlay
         muted
         loop
@@ -141,24 +141,30 @@ export function AccessGate() {
         </p>
 
         <form onSubmit={onSubmit} className="mt-10 w-full">
-          {/* single terminal line — DUSK prefix + one growing field */}
+          {/* DUSK prefix + boxed code field (dusk↔dawn glow on focus) */}
           <label
-            className={`mx-auto flex w-fit max-w-full cursor-text items-center gap-2.5 border-b pb-3 ${denied ? "animate-access-shake" : ""}`}
-            style={{
-              borderColor: lineColor,
-              boxShadow: focused && !denied ? `0 10px 30px -18px ${NEON}` : "none",
-              transition: "border-color 0.2s, box-shadow 0.2s",
-            }}
+            className={`mx-auto flex w-fit max-w-full cursor-text items-center gap-3 ${denied ? "animate-access-shake" : ""}`}
           >
             <span className="font-street text-[30px] leading-none tracking-[0.12em] text-ink-faint select-none sm:text-[34px]">
               {PREFIX}
             </span>
-            <span className="text-[20px] leading-none select-none" style={{ color: NEON }}>
+            <span className="text-[22px] leading-none select-none" style={{ color: NEON }}>
               ·
             </span>
 
-            {/* rendered value + block caret (native caret hidden) */}
-            <span className="relative flex min-w-[5ch] items-center font-street text-[30px] leading-none tracking-[0.22em] text-ink sm:text-[34px]">
+            {/* rendered value + block caret inside an interactive box */}
+            <span
+              className="relative flex min-w-[6ch] items-center rounded-2xl border bg-bg/35 px-5 py-3 font-street text-[30px] leading-none tracking-[0.22em] text-ink backdrop-blur-md sm:text-[34px]"
+              style={{
+                borderColor: lineColor,
+                boxShadow: denied
+                  ? "none"
+                  : focused || value
+                    ? "-5px 5px 22px -12px color-mix(in srgb, var(--accent) 60%, transparent), 5px 5px 22px -12px color-mix(in srgb, var(--accent-2) 60%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent)"
+                    : "none",
+                transition: "border-color 0.2s, box-shadow 0.25s",
+              }}
+            >
               {value}
               {(focused || !value) && (
                 <span

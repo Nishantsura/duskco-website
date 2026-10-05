@@ -90,7 +90,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
   }
 
   const inputClass =
-    "w-full border-0 border-b border-line-strong bg-transparent px-1 pb-3 pt-2 font-primary text-[15px] tracking-[0.02em] text-ink caret-accent placeholder:text-ink-faint outline-none transition-colors duration-300 focus:border-accent";
+    "w-full rounded-2xl border border-line-strong bg-bg/35 px-5 py-4 font-primary text-[15px] tracking-[0.02em] text-ink caret-accent placeholder:text-ink-faint outline-none backdrop-blur-md transition-all duration-300 focus:border-accent focus:bg-bg/45 focus:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--accent)_55%,transparent),0_14px_36px_-20px_color-mix(in_srgb,var(--accent)_50%,transparent)]";
 
   const ctaClass =
     "dusk-cta group flex items-center justify-center gap-2.5 rounded-full border px-10 py-4 font-primary text-[12px] font-bold uppercase tracking-[0.16em] text-ink transition-all disabled:cursor-not-allowed disabled:opacity-40";
@@ -291,7 +291,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                               }}
                               autoComplete="email"
                               required
-                              className={`${inputClass} pr-8`}
+                              className={`${inputClass} pr-12`}
                             />
                             <AnimatePresence>
                               {isEmail(email) && (
@@ -299,7 +299,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                                   initial={{ scale: 0, opacity: 0 }}
                                   animate={{ scale: 1, opacity: 1 }}
                                   exit={{ scale: 0, opacity: 0 }}
-                                  className="absolute right-1 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full"
+                                  className="absolute right-4 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full"
                                   style={{ background: ACCENT }}
                                 >
                                   <Check size={12} strokeWidth={3} className="text-accent-ink" />
