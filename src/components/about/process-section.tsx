@@ -87,12 +87,12 @@ export function ProcessSection() {
                     }`}
                   >
                     <span
-                      className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border transition-colors duration-200 ${
+                      className={`flex h-3 w-3 flex-shrink-0 items-center justify-center border transition-colors duration-200 ${
                         isActive ? "border-ink" : "border-line-strong"
                       }`}
                     >
                       <span
-                        className={`h-2 w-2 rounded-full bg-ink transition-opacity duration-200 ${
+                        className={`h-1.5 w-1.5 bg-ink transition-opacity duration-200 ${
                           isActive ? "opacity-100" : "opacity-0"
                         }`}
                       />

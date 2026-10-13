@@ -38,33 +38,33 @@ export function CookieConsent() {
         <motion.div
           role="dialog"
           aria-label="Cookie notice"
-          className="fixed inset-x-3 bottom-3 z-[55] mx-auto max-w-[520px] rounded-2xl bg-surface px-5 py-4 shadow-2xl border border-line sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 24 }}
-          transition={{ type: "spring", stiffness: 340, damping: 30 }}
+          className="fixed inset-x-3 bottom-3 z-[55] mx-auto max-w-[480px] border border-line bg-bg px-5 py-4 text-ink sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          <p className="font-primary text-[12px] font-light leading-[1.6] tracking-[0.02em] text-ink-muted">
+          <p className="t-body text-ink-muted">
             We use essential cookies to keep your bag working, plus analytics to
             understand how the store is used. See our{" "}
             <Link
               href="/policies/privacy"
-              className="text-ink underline underline-offset-2 transition-colors hover:text-ink-muted"
+              className="link text-ink"
             >
               Privacy Policy
             </Link>
             .
           </p>
-          <div className="mt-3 flex items-center justify-end gap-2">
+          <div className="mt-4 flex items-center justify-end gap-2">
             <button
               onClick={() => choose("declined")}
-              className="rounded-full px-3 py-1.5 font-primary text-[11px] font-medium tracking-[0.08em] text-ink-faint uppercase transition-colors hover:text-ink"
+              className="btn h-9 px-4 text-ink-muted hover:text-ink"
             >
               Decline
             </button>
             <button
               onClick={() => choose("accepted")}
-              className="rounded-full bg-ink px-4 py-1.5 font-primary text-[11px] font-bold tracking-[0.08em] text-bg uppercase transition-opacity hover:opacity-80"
+              className="btn btn-primary h-9 px-5"
             >
               Accept
             </button>

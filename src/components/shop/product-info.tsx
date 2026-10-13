@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
 import type { Product } from "@/lib/shopify/types";
 import { useCart } from "@/components/cart/cart-provider";
 import { SizeGuide } from "@/components/shop/size-guide";
-import { HoldToAddButton } from "@/components/shop/hold-to-add-button";
 import {
   DEFAULT_WASH_CARE,
   DEFAULT_SHIPPING,
@@ -25,12 +23,12 @@ function formatPrice(amount: string, currencyCode: string) {
 function PlusMinus({ open }: { open: boolean }) {
   return (
     <svg
-      width="16"
-      height="16"
+      width="12"
+      height="12"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="1.25"
       className="flex-shrink-0"
     >
       <line x1="5" y1="12" x2="19" y2="12" strokeLinecap="round" />
@@ -56,20 +54,18 @@ function Accordion({
         onClick={onToggle}
         className="group flex w-full items-center justify-between py-4 text-left"
       >
-        <span className="font-primary text-[12px] font-bold tracking-[0.08em] text-ink uppercase transition-colors group-hover:text-ink">
-          {title}
-        </span>
-        <span className={open ? "text-accent" : "text-ink-faint"}>
+        <span className="t-label">{title}</span>
+        <span className="text-ink-muted">
           <PlusMinus open={open} />
         </span>
       </button>
       <div
-        className={`grid transition-all duration-300 ease-out ${
+        className={`grid transition-[grid-template-rows,opacity] duration-500 ease-out ${
           open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
         <div className="overflow-hidden">
-          <div className="pb-5 font-primary text-[13px] font-light leading-[1.7] text-ink-muted">
+          <div className="t-body pb-5 text-ink-muted">
             {children}
           </div>
         </div>
@@ -149,7 +145,7 @@ export function ProductInfo({ product }: { product: Product }) {
     }
     // One unit per product — a second add just reminds the shopper.
     if (alreadyInBag) {
-      notify("One per person — that's the drop");
+      notify("One per person. That's the drop.");
       return;
     }
     if (selectedVariant) {
@@ -166,75 +162,48 @@ export function ProductInfo({ product }: { product: Product }) {
 
   return (
     <div className="flex flex-col lg:h-full">
-      {/* ── Kicker ── */}
-      <p className="flex items-center gap-2 font-primary text-[10px] font-semibold tracking-[0.24em] text-ink-faint uppercase">
-        <span
-          className="h-1.5 w-1.5 rounded-full"
-          style={{ background: "var(--accent)", boxShadow: "0 0 6px var(--accent)" }}
-        />
-        Stage One · Limited
-      </p>
+      <p className="t-label text-ink-muted">Stage One · Limited</p>
 
-      {/* ── Header: title + price ── */}
-      <div className="mt-3 flex items-end justify-between gap-6">
-        <h1 className="font-street text-[clamp(30px,3.4vw,46px)] font-normal leading-[0.9] tracking-[0.01em] text-ink uppercase">
-          {displayName}
-        </h1>
-        <div className="flex flex-col items-end gap-1">
-          <p className="whitespace-nowrap font-street text-[26px] leading-none tracking-[0.01em] text-ink">
-            {formatPrice(price.amount, price.currencyCode)}
-          </p>
-          {hasDiscount && compareAt && (
-            <div className="flex items-center gap-2">
-              <span className="font-primary text-[13px] text-ink-faint line-through">
-                {formatPrice(compareAt.amount, compareAt.currencyCode)}
-              </span>
-              <span
-                className="rounded-full px-2 py-0.5 font-primary text-[11px] font-bold"
-                style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
-              >
-                −{discountPct}%
-              </span>
-            </div>
-          )}
-        </div>
+      {/* Title + price */}
+      <h1 className="t-title mt-3 uppercase">{displayName}</h1>
+      <div className="t-body mt-2 flex items-baseline gap-3">
+        <span>{formatPrice(price.amount, price.currencyCode)}</span>
+        {hasDiscount && compareAt && (
+          <>
+            <span className="text-ink-faint line-through">
+              {formatPrice(compareAt.amount, compareAt.currencyCode)}
+            </span>
+            <span className="text-ink-muted">{discountPct}% off</span>
+          </>
+        )}
       </div>
 
-      {/* ── Description — three lines, expandable ── */}
+      {/* Description — three lines, expandable */}
       {product.description && (
-        <div className="mt-5">
-          <p
-            className={`font-primary text-[13px] font-light leading-[1.7] text-ink-muted ${
-              descOpen ? "" : "line-clamp-3"
-            }`}
-          >
+        <div className="mt-6">
+          <p className={`t-body text-ink-muted ${descOpen ? "" : "line-clamp-3"}`}>
             {product.description}
           </p>
           {longDesc && (
             <button
               onClick={() => setDescOpen((v) => !v)}
-              className="mt-2.5 flex items-center gap-1 font-primary text-[11px] font-semibold tracking-[0.12em] text-ink-muted uppercase transition-colors hover:text-accent"
+              className="t-label link mt-2 text-ink-muted"
               aria-expanded={descOpen}
             >
-              {descOpen ? "View less" : "View more"}
-              <ChevronDown
-                size={13}
-                strokeWidth={2}
-                className={`transition-transform duration-300 ${descOpen ? "rotate-180" : ""}`}
-              />
+              {descOpen ? "Show less" : "Read more"}
             </button>
           )}
         </div>
       )}
 
-      {/* ── Accordions — all copy editable via custom.* metafields ── */}
-      <div className="mt-6 border-t border-line lg:flex-1 lg:overflow-y-auto">
+      {/* Accordions — all copy editable via custom.* metafields */}
+      <div className="mt-8 border-t border-line lg:flex-1 lg:overflow-y-auto">
         <Accordion
           title="Wash Care"
           open={openSection === "washcare"}
           onToggle={() => toggleSection("washcare")}
         >
-          <ul className="space-y-1.5">
+          <ul className="space-y-1">
             {washCare.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -246,7 +215,7 @@ export function ProductInfo({ product }: { product: Product }) {
           open={openSection === "shipping"}
           onToggle={() => toggleSection("shipping")}
         >
-          <ul className="space-y-1.5">
+          <ul className="space-y-1">
             {shipping.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -261,15 +230,12 @@ export function ProductInfo({ product }: { product: Product }) {
         </span>
       )}
 
-      {/* ── Bottom: size selector + add to cart ── */}
-      <div className="mt-6 lg:mt-4">
-        {/* Size selector — inline buttons */}
+      {/* Size + add to bag */}
+      <div className="mt-8 lg:mt-6">
         {sizes.length > 0 && (
-          <div className="mb-4">
-            <div className="mb-2.5 flex items-center justify-between">
-              <span className="font-primary text-[12px] font-bold tracking-[0.08em] text-ink uppercase">
-                Size{selectedSize ? `: ${selectedSize}` : ""}
-              </span>
+          <div className="mb-5">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="t-label">Size{selectedSize ? ` · ${selectedSize}` : ""}</span>
               <button
                 onClick={() => {
                   capture("size_guide_opened", {
@@ -278,9 +244,9 @@ export function ProductInfo({ product }: { product: Product }) {
                   });
                   setSizeGuideOpen(true);
                 }}
-                className="font-primary text-[11px] font-medium tracking-[0.04em] text-ink-faint underline underline-offset-2 transition-colors hover:text-accent"
+                className="t-label link text-ink-muted"
               >
-                Size Guide
+                Size guide
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -294,7 +260,8 @@ export function ProductInfo({ product }: { product: Product }) {
                     aria-pressed={active}
                     onClick={() => setSelectedSize(size)}
                     data-active={active}
-                    data-available={available}                    className="dusk-size flex h-11 min-w-[3.25rem] items-center justify-center rounded-full border px-4 font-primary text-[12px] font-bold tracking-[0.05em] uppercase transition-all duration-200"
+                    data-available={available}
+                    className="size-cell"
                   >
                     {size}
                   </button>
@@ -304,32 +271,19 @@ export function ProductInfo({ product }: { product: Product }) {
           </div>
         )}
 
-        {/* Add to cart — tap adds instantly, press-and-hold on any device */}
-        <div className="flex items-stretch">
-          <HoldToAddButton
-            onAdd={handleAddToCart}
-            disabled={soldOut || isPending}
-            canHold={!soldOut && !isPending && !needsSize && !alreadyInBag}
-            holdLabel="Keep holding"
-            fillClassName="bg-accent"
-            className={`dusk-add flex h-[54px] w-full items-center justify-center rounded-full border font-primary text-[12px] font-bold tracking-[0.18em] uppercase transition-all disabled:cursor-not-allowed ${
-              soldOut
-                ? "border-line text-ink-faint"
-                : needsSize
-                  ? "text-ink-faint"
-                  : "dusk-add--on text-ink"
-            }`}
-            idleLabel={
-              soldOut
-                ? "Sold Out"
-                : isPending
-                  ? "Adding…"
-                  : needsSize
-                    ? "Select a Size"
-                    : "Add to Cart"
-            }
-          />
-        </div>
+        <button
+          onClick={handleAddToCart}
+          disabled={soldOut || isPending}
+          className={`btn h-12 w-full ${needsSize ? "btn-outline" : "btn-primary"}`}
+        >
+          {soldOut
+            ? "Sold out"
+            : isPending
+              ? "Adding"
+              : needsSize
+                ? "Select a size"
+                : "Add to bag"}
+        </button>
       </div>
 
       <SizeGuide

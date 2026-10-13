@@ -52,7 +52,7 @@ export default async function ProductPage({
         <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr]">
           <ProductGallery images={images} specs={product.garmentDetails ?? DEFAULT_GARMENT} />
 
-          <div className="px-5 py-8 sm:px-8 lg:sticky lg:top-11 lg:h-[calc(100vh-2.75rem)] lg:self-start lg:py-12 lg:pr-10 lg:pl-10 xl:py-14 xl:pl-14 xl:pr-16">
+          <div className="px-5 py-10 sm:px-8 lg:sticky lg:top-11 lg:h-[calc(100vh-2.75rem)] lg:self-start lg:py-12 lg:pr-10 lg:pl-10 xl:py-14 xl:pl-14 xl:pr-16">
             <ProductInfo product={product} />
           </div>
         </div>
@@ -61,10 +61,8 @@ export default async function ProductPage({
       {/* Related Products */}
       <section className="mt-16 border-t border-line sm:mt-20">
         <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-10 sm:py-16">
-          <h2 className="mb-8 text-center font-primary text-[11px] font-bold tracking-[0.2em] text-ink-muted uppercase sm:mb-10">
-            You May Also Like
-          </h2>
-          <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 md:grid-cols-3 lg:grid-cols-4">
+          <h2 className="t-label mb-8 text-ink-muted sm:mb-10">You may also like</h2>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-4 md:grid-cols-3 lg:grid-cols-4">
             {relatedProducts
               .filter((p) => p.handle !== handle)
               .slice(0, 4)

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Archivo, Bebas_Neue } from "next/font/google";
+import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/header";
 import { NavVisibilityProvider } from "@/components/layout/nav-visibility";
@@ -15,22 +15,14 @@ import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+// The one house typeface for all text.
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const bebasNeue = Bebas_Neue({
-  variable: "--font-bebas-neue",
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-});
-
-// Brand wordmark only — the DUSK&CO logo (header, footer dock, mobile nav).
-// Deliberately NOT used for body/heading type; those stay Bebas + Archivo.
+// Brand wordmark only: the DUSK&CO logo. Never used for other text.
 const expansiva = localFont({
   src: [
     { path: "../fonts/Expansiva.otf", weight: "400", style: "normal" },
@@ -58,17 +50,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Read the theme cookie on the server so the very first paint is correct —
-  // no flash, no client init script.
+  // Read the theme cookie on the server so the very first paint is correct.
+  // Light is the default; dark only when the visitor chose it.
   const theme =
-    (await cookies()).get("duskco-theme")?.value === "light" ? "light" : "dark";
+    (await cookies()).get("duskco-theme")?.value === "dark" ? "dark" : "light";
 
   return (
     <html
       lang="en"
       data-theme={theme}
       suppressHydrationWarning
-      className={`${archivo.variable} ${bebasNeue.variable} ${expansiva.variable} h-full antialiased`}
+      className={`${inter.variable} ${expansiva.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <PostHogProvider>

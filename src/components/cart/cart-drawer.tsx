@@ -24,7 +24,7 @@ function CartLineItemRow({ item }: { item: CartLineItem }) {
     <div className="flex gap-4 py-5">
       <Link
         href={`/products/${merchandise.product.handle}`}
-        className="relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-[0.5rem] bg-surface-2"
+        className="relative h-28 w-[84px] flex-shrink-0 overflow-hidden bg-surface"
       >
         {merchandise.image ? (
           <Image
@@ -36,7 +36,7 @@ function CartLineItemRow({ item }: { item: CartLineItem }) {
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <span className="text-[10px] text-ink-faint">No img</span>
+            <span className="t-label text-ink-faint">No image</span>
           </div>
         )}
       </Link>
@@ -45,19 +45,19 @@ function CartLineItemRow({ item }: { item: CartLineItem }) {
         <div>
           <Link
             href={`/products/${merchandise.product.handle}`}
-            className="font-primary text-sm font-light text-ink hover:text-ink-muted transition-colors"
+            className="t-label transition-opacity hover:opacity-60"
           >
             {merchandise.product.title}
           </Link>
           {merchandise.title !== "Default Title" && (
-            <p className="mt-0.5 font-primary text-[11px] font-light text-ink-faint">
+            <p className="t-body mt-1 text-ink-muted">
               {merchandise.selectedOptions.map((o) => o.value).join(" / ")}
             </p>
           )}
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="font-primary text-sm font-bold text-ink">
+          <span className="t-body">
             {formatPrice(
               item.cost.totalAmount.amount,
               item.cost.totalAmount.currencyCode
@@ -66,7 +66,7 @@ function CartLineItemRow({ item }: { item: CartLineItem }) {
           <button
             onClick={() => removeItem(item.id)}
             disabled={isPending}
-            className="font-primary text-[10px] tracking-[0.1em] text-ink-faint uppercase transition-colors hover:text-ink disabled:opacity-40"
+            className="t-label link text-ink-muted disabled:opacity-40"
           >
             Remove
           </button>
@@ -87,46 +87,43 @@ export function CartDrawer() {
 
   return (
     <>
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/60 transition-opacity"
-          onClick={closeCart}
-        />
-      )}
+      <div
+        className={`fixed inset-0 z-40 bg-black/30 transition-opacity duration-500 ${
+          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={closeCart}
+      />
 
       <div
-        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-bg text-ink transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
+          isOpen ? "translate-x-0 border-l border-line" : "translate-x-full"
         }`}
+        aria-hidden={!isOpen}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-line px-6 py-4">
-          <h2 className="font-primary text-[13px] font-bold tracking-[0.08em] text-ink uppercase">
-            Your Bag ({cart?.totalQuantity ?? 0})
+        <div className="flex h-11 items-center justify-between border-b border-line px-5">
+          <h2 className="t-label">
+            Bag ({cart?.totalQuantity ?? 0})
           </h2>
           <button
             onClick={closeCart}
-            className="text-ink-faint transition-colors hover:text-ink"
-            aria-label="Close cart"
+            className="t-label transition-opacity hover:opacity-60"
+            aria-label="Close bag"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
+            Close
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6">
+        <div className="flex-1 overflow-y-auto px-5">
           {lines.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <p className="font-primary text-sm font-light text-ink-faint">
-                Your bag is empty.
-              </p>
+              <p className="t-body text-ink-muted">Your bag is empty.</p>
               <button
                 onClick={closeCart}
-                className="mt-6 rounded-full border border-ink px-8 py-3 font-primary text-[11px] font-normal tracking-[0.08em] text-ink uppercase transition-all duration-200 hover:bg-ink hover:text-bg"
+                className="btn btn-outline mt-6"
               >
-                Continue Shopping
+                Continue shopping
               </button>
             </div>
           ) : (
@@ -140,19 +137,17 @@ export function CartDrawer() {
 
         {/* Footer */}
         {lines.length > 0 && cart && (
-          <div className="border-t border-line px-6 py-5">
+          <div className="border-t border-line px-5 py-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="font-primary text-[13px] font-bold tracking-[0.08em] text-ink uppercase">
-                Subtotal
-              </span>
-              <span className="font-primary text-base font-bold text-ink">
+              <span className="t-label">Subtotal</span>
+              <span className="t-body">
                 {formatPrice(
                   cart.cost.subtotalAmount.amount,
                   cart.cost.subtotalAmount.currencyCode
                 )}
               </span>
             </div>
-            <p className="mb-4 font-primary text-[11px] font-light text-ink-faint">
+            <p className="t-body mb-5 text-ink-muted">
               Shipping and taxes calculated at checkout.
             </p>
             <a
@@ -164,11 +159,11 @@ export function CartDrawer() {
                   currency: cart.cost.subtotalAmount.currencyCode,
                 })
               }
-              className={`block w-full rounded-full bg-ink py-3.5 text-center font-primary text-[11px] font-normal tracking-[0.08em] text-bg uppercase transition-all duration-200 hover:opacity-90 ${
+              className={`btn btn-primary h-12 w-full ${
                 isPending ? "pointer-events-none opacity-60" : ""
               }`}
             >
-              {isPending ? "Updating..." : "Checkout"}
+              {isPending ? "Updating" : "Checkout"}
             </a>
           </div>
         )}

@@ -16,25 +16,21 @@ export function PolicyPage({
   children,
 }: PolicyPageProps) {
   return (
-    <main className="bg-bg">
+    <main className="bg-bg text-ink">
       <section className="pt-32 pb-24 sm:pt-40 sm:pb-32">
-        <div className="mx-auto max-w-[900px] px-6 sm:px-10">
-          <p className="font-primary text-[11px] font-normal tracking-[0.2em] text-ink-faint uppercase">
-            {eyebrow}
-          </p>
+        <div className="mx-auto max-w-[760px] px-5 sm:px-10">
+          <p className="t-label text-ink-muted">{eyebrow}</p>
 
-          <h1 className="mt-8 font-primary text-[clamp(30px,5vw,56px)] font-light leading-[1.08] tracking-[-0.02em] text-ink sm:mt-10">
+          <h1 className="t-title mt-4">
             {title}
           </h1>
 
           {updated && (
-            <p className="mt-6 font-primary text-[11px] font-light tracking-[0.08em] text-ink-faint uppercase">
-              Last updated — {updated}
-            </p>
+            <p className="t-label mt-4 text-ink-faint">Last updated · {updated}</p>
           )}
 
           {intro && (
-            <p className="mt-10 max-w-[62ch] font-primary text-[15px] font-light leading-[1.75] tracking-[0.01em] text-ink-muted">
+            <p className="t-body mt-10 max-w-[62ch] text-ink-muted">
               {intro}
             </p>
           )}
@@ -55,10 +51,8 @@ export function PolicySection({
 }) {
   return (
     <section>
-      <h2 className="font-primary text-[13px] font-medium tracking-[0.12em] text-ink uppercase">
-        {heading}
-      </h2>
-      <div className="mt-5 space-y-4 font-primary text-[14px] font-light leading-[1.75] tracking-[0.01em] text-ink-muted">
+      <h2 className="t-label">{heading}</h2>
+      <div className="t-body mt-4 space-y-4 text-ink-muted">
         {children}
       </div>
     </section>

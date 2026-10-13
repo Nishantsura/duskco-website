@@ -14,18 +14,14 @@ export default async function ShopPage() {
   return (
     <main>
       {/* Dark title band — gives the transparent navbar contrast on landing */}
-      <section className="flex min-h-[42vh] items-end overflow-hidden bg-black px-6 pb-12 sm:px-10">
-        <div className="mx-auto w-full max-w-[1440px]">
-          <p className="mb-3 font-primary text-[11px] font-medium tracking-[0.28em] text-white/60 uppercase">
-            DUSK&CO — The Archive
-          </p>
-          <h1 className="font-street text-[clamp(48px,10vw,120px)] leading-[0.9] tracking-[0.01em] text-white uppercase">
-            Shop All
-          </h1>
+      <section className="flex min-h-[42vh] items-end overflow-hidden bg-black px-5 pb-12 sm:px-10">
+        <div className="mx-auto w-full max-w-[1440px] text-white">
+          <p className="t-label mb-3 text-white/70">Archive</p>
+          <h1 className="t-display">Shop all</h1>
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1440px] px-6 sm:px-10">
+      <div className="mx-auto max-w-[1440px] px-5 sm:px-10">
         <ShopGrid products={products} />
       </div>
     </main>

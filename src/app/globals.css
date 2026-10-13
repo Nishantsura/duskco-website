@@ -1,66 +1,40 @@
 @import "tailwindcss";
 
+/* ── Dusk&Co design tokens ────────────────────────────────────────────────
+   Monochrome by design: black, white and the greys between. No accent colour.
+   Default is LIGHT; [data-theme="dark"] flips the whole site from one attribute
+   on <html>. Components read these via bg-bg / text-ink / border-line etc.
+   `--accent` is kept as an alias of ink so any accent utility stays monochrome. */
 :root {
-  --color-black: #000000;
-  --color-near-black: #1C1C1C;
-  --color-slate-grey: #363636;
-  --color-dark-grey: #636464;
-  --color-medium-grey: #808081;
-  --color-light-grey: #ababab;
-  --color-border-grey: #DCDCDC;
-  --color-chalk-white: #dededd;
-  --color-pure-white: #ffffff;
-  --color-off-white: #f4f4f4;
-  --color-page-grey: #EFEFEF;
+  --bg: #ffffff;
+  --surface: #f4f4f4;
+  --surface-2: #eaeaea;
+  --ink: #0a0a0a;
+  --ink-muted: rgba(10, 10, 10, 0.6);
+  --ink-faint: rgba(10, 10, 10, 0.4);
+  --line: rgba(10, 10, 10, 0.1);
+  --line-strong: rgba(10, 10, 10, 0.28);
+  --danger: #b42318;
 
-  /* Legacy "accent-orange" now tracks the themed dusk/dawn accent so the
-     header STAGE badge, contact accents, etc. stay in the palette. */
-  --color-accent-orange: var(--accent);
-
-  /* ── Semantic theme tokens ──────────────────────────────────────────────
-     Default is DARK (the "After Hours" brand). Light is the [data-theme]
-     override below. Components read these via the bg-bg / text-ink / border-line
-     / bg-accent utilities so the whole site flips from one attribute — no
-     per-component JS theming, no flash. Accent is mint on dark, a deep teal on
-     light (neon mint is illegible on white). */
-  --bg: #121214;
-  --surface: #1b1b1e;
-  --surface-2: #232327;
-  --ink: #f5f4f2;
-  --ink-muted: rgba(245, 244, 242, 0.6);
-  --ink-faint: rgba(245, 244, 242, 0.4);
-  --line: rgba(255, 255, 255, 0.12);
-  --line-strong: rgba(255, 255, 255, 0.22);
-  /* Dusk & Dawn accent — dawn (warm apricot) is the solid accent; dusk
-     (periwinkle) is the cool end of the statement gradient. Retires the mint. */
-  --accent: #eda075;
-  --accent-2: #8088db;
-  --accent-ink: #1e130b;
-  --accent-soft: rgba(237, 160, 117, 0.14);
-  --accent-gradient: linear-gradient(115deg, #eda075 0%, #8088db 100%);
-  --shadow-card: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
-  /* the .dusk-* accent helpers track the theme accent */
-  --dusk-glow: var(--accent);
+  --accent: var(--ink);
+  --accent-ink: var(--bg);
+  --accent-soft: rgba(10, 10, 10, 0.05);
 
   --background: var(--bg);
   --foreground: var(--ink);
 }
 
-:root[data-theme="light"] {
-  --bg: #d9d7d1;
-  --surface: #e5e3de;
-  --surface-2: #cdcbc4;
-  --ink: #0a0a0a;
-  --ink-muted: rgba(10, 10, 10, 0.62);
-  --ink-faint: rgba(10, 10, 10, 0.42);
-  --line: rgba(10, 10, 10, 0.12);
-  --line-strong: rgba(10, 10, 10, 0.24);
-  --accent: #b85c38;
-  --accent-2: #48579b;
-  --accent-ink: #ffffff;
-  --accent-soft: rgba(184, 92, 56, 0.12);
-  --accent-gradient: linear-gradient(115deg, #b85c38 0%, #48579b 100%);
-  --shadow-card: 0 24px 60px -30px rgba(0, 0, 0, 0.2);
+:root[data-theme="dark"] {
+  --bg: #0b0b0b;
+  --surface: #141414;
+  --surface-2: #1d1d1d;
+  --ink: #f2f2f2;
+  --ink-muted: rgba(242, 242, 242, 0.6);
+  --ink-faint: rgba(242, 242, 242, 0.4);
+  --line: rgba(242, 242, 242, 0.12);
+  --line-strong: rgba(242, 242, 242, 0.3);
+  --danger: #f97066;
+  --accent-soft: rgba(242, 242, 242, 0.06);
 }
 
 @theme inline {
@@ -75,55 +49,34 @@
   --color-ink-faint: var(--ink-faint);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
+  --color-danger: var(--danger);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
 
-  --color-brand-black: var(--color-black);
-  --color-brand-near-black: var(--color-near-black);
-  --color-brand-slate: var(--color-slate-grey);
-  --color-brand-dark-grey: var(--color-dark-grey);
-  --color-brand-medium-grey: var(--color-medium-grey);
-  --color-brand-light-grey: var(--color-light-grey);
-  --color-brand-border: var(--color-border-grey);
-  --color-brand-chalk: var(--color-chalk-white);
-  --color-brand-white: var(--color-pure-white);
-  --color-brand-off-white: var(--color-off-white);
-  --color-brand-page: var(--color-page-grey);
-
-  --color-accent-orange: var(--color-accent-orange);
-
-  /* Two house faces only: Bebas Neue (display) + Archivo (text).
-     font-heading / font-display are kept as aliases so existing
-     classes resolve to Bebas without touching every component. */
-  --font-primary: var(--font-archivo);
-  --font-heading: var(--font-bebas-neue);
-  --font-display: var(--font-bebas-neue);
-  --font-street: var(--font-bebas-neue);
-  /* Brand wordmark only — the DUSK&CO logo keeps its original Expansiva face. */
+  /* One typeface for everything. The DUSK&CO wordmark keeps Expansiva. */
+  --font-primary: var(--font-inter);
   --font-logo: var(--font-expansiva);
 }
 
-.font-street,
-.font-heading,
-.font-display {
-  font-family: var(--font-bebas-neue), "Bebas Neue", sans-serif;
-}
-
 .font-logo {
-  font-family: var(--font-expansiva), "Bebas Neue", sans-serif;
+  font-family: var(--font-expansiva), var(--font-inter), sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-primary), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--bg);
 }
 
 /* Full-viewport section snapping — toggled by ChromeThemeProvider on pages that
-   opt in (the drop story). Lives on the window scroller so the fixed header, the
-   footer dock and the nav scroll listener all keep working. Reduced-motion opts
-   out so no one gets forced-scroll they didn't ask for. */
+   opt in (the drop story). Reduced-motion opts out. */
 html.snap-page {
   scroll-snap-type: y mandatory;
 }
@@ -133,155 +86,145 @@ html.snap-page {
   }
 }
 
-/* ── Drop-story hover choreography ──────────────────────────────────────── */
-
-/* Product card — a gentle lift and a soft mint ring on hover. Restrained. */
-/* Dusk↔dawn gradient text — reserved for statement headlines. */
-.dusk-gradient-text {
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* ── Type roles ─────────────────────────────────────────────────────────
+   A small, strict scale. Labels are uppercase and lightly tracked; body is
+   sentence case; display type is large, light and tight. */
+.t-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.t-body {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+.t-title {
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+.t-display {
+  font-size: clamp(36px, 6vw, 80px);
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
 }
 
-/* Same gradient, revealed only when the title's link is hovered. */
-.dusk-gt-hover {
-  transition: color 0.35s ease;
+/* ── Buttons ────────────────────────────────────────────────────────────
+   Square, quiet, uppercase. Solid ink for the one primary action on a
+   screen; hairline outline for everything else. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 28px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
 }
-.dusk-title-link:hover .dusk-gt-hover {
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.btn:disabled {
+  opacity: 0.35;
 }
-
-.dusk-card {
-  --tw-ring-color: color-mix(in srgb, var(--dusk-glow) 24%, transparent);
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.5s ease;
+.btn-primary {
+  background: var(--ink);
+  color: var(--bg);
 }
-.group:hover .dusk-card {
-  transform: translateY(-6px);
-  box-shadow: 0 22px 46px -32px rgba(0, 0, 0, 0.5);
-  --tw-ring-color: color-mix(in srgb, var(--dusk-glow) 62%, transparent);
+.btn-primary:not(:disabled):hover {
+  opacity: 0.85;
 }
-
-/* The soft dusk-sky glow behind the frame — an orange→blue bloom that
-   brightens slightly on hover. */
-.dusk-card-glow {
-  background: var(--accent-gradient);
-  opacity: 0.1;
-  transform: scale(0.97);
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.group:hover .dusk-card-glow {
-  opacity: 0.16;
-  transform: scale(1.03);
-}
-/* Lighter on a pale bg so the coloured bloom stays a hint, not a smudge. */
-:root[data-theme="light"] .dusk-card-glow {
-  opacity: 0.07;
-}
-:root[data-theme="light"] .group:hover .dusk-card-glow {
-  opacity: 0.11;
-}
-
-/* Faint diagonal sheen that drifts across the frame on hover. */
-.dusk-shine {
-  background: linear-gradient(
-    115deg,
-    transparent 38%,
-    rgba(255, 255, 255, 0.12) 50%,
-    transparent 62%
-  );
-  transform: translateX(-120%);
-  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.group:hover .dusk-shine {
-  transform: translateX(120%);
-}
-
-/* Primary CTA — outline + a soft mint glow; on hover the border and glow lift
-   just slightly. No fills, no wipes. */
-.dusk-cta {
-  border-color: color-mix(in srgb, var(--dusk-glow) 42%, transparent);
-  /* Two-tone dusk shadow: warm dawn (left) → cool dusk (right). Reads as a glow
-     on dark and a tinted shadow on light — visible, but tight, in both. */
-  box-shadow: -3px 2px 8px -6px color-mix(in srgb, var(--accent) 28%, transparent),
-    3px 2px 8px -6px color-mix(in srgb, var(--accent-2) 28%, transparent);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-}
-.dusk-cta:hover {
-  border-color: color-mix(in srgb, var(--dusk-glow) 58%, transparent);
-  box-shadow: -4px 3px 12px -6px color-mix(in srgb, var(--accent) 40%, transparent),
-    4px 3px 12px -6px color-mix(in srgb, var(--accent-2) 40%, transparent);
-}
-
-/* Secondary — border and text brighten to the ink colour on hover. */
-.dusk-details {
-  transition: border-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
-}
-.dusk-details:hover {
-  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
-  color: var(--ink);
-}
-
-/* Size pills — outline at rest, accent fill when picked. */
-.dusk-size {
+.btn-outline {
   border-color: var(--line-strong);
-  color: var(--ink-muted);
-}
-.dusk-size[data-available="true"]:hover {
-  border-color: var(--accent);
   color: var(--ink);
-  transform: translateY(-1px);
 }
-.dusk-size[data-active="true"] {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: 0 8px 22px -12px var(--accent);
+.btn-outline:not(:disabled):hover {
+  border-color: var(--ink);
 }
-.dusk-size[data-available="false"] {
-  border-color: var(--line);
+/* Over photography — always white on the image, theme independent. */
+.btn-light {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+.btn-light:hover {
+  opacity: 0.85;
+}
+.btn-ghost-light {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+}
+.btn-ghost-light:hover {
+  border-color: #ffffff;
+}
+
+/* Text link with a hairline underline. */
+.link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color 0.2s ease;
+}
+.link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Form field — a single hairline underneath, no box. */
+.field {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  padding: 0;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.field::placeholder {
+  color: var(--ink-faint);
+}
+.field:focus {
+  border-bottom-color: var(--ink);
+}
+
+/* Size options — square cells, ink fill when picked. */
+.size-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  min-width: 52px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink);
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.size-cell[data-available="true"]:hover {
+  border-color: var(--ink);
+}
+.size-cell[data-active="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.size-cell[data-available="false"] {
   color: var(--ink-faint);
   text-decoration: line-through;
   cursor: not-allowed;
 }
 
-/* Dark add-to-bag — outline + mint glow when a size is chosen; the hold-fill
-   (mint) sweeps over it. Muted while it still needs a size. */
-.dusk-add {
-  border-color: rgba(255, 255, 255, 0.1);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-.dusk-add--on {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  box-shadow: -3px 2px 9px -7px color-mix(in srgb, var(--accent) 28%, transparent),
-    3px 2px 9px -7px color-mix(in srgb, var(--accent-2) 28%, transparent);
-}
-.dusk-add--on:hover {
-  border-color: color-mix(in srgb, var(--accent) 85%, transparent);
-  box-shadow: -4px 3px 13px -7px color-mix(in srgb, var(--accent) 40%, transparent),
-    4px 3px 13px -7px color-mix(in srgb, var(--accent-2) 40%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dusk-card,
-  .dusk-card-glow,
-  .dusk-shine,
-  .dusk-cta {
-    transition: none;
-  }
-  .group:hover .dusk-card {
-    transform: none;
-  }
-  .group:hover .dusk-shine {
-    transform: translateX(-120%);
-  }
-}
-
-/* Cursor — clickable elements show the pointing-hand gesture */
+/* Cursor — clickable elements show the pointing hand */
 button:not(:disabled),
 a[href],
 [role="button"],
@@ -306,201 +249,20 @@ button:disabled,
 /* Scrollbar — minimal */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 9999px; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); }
 
-/* Animations — fast, purposeful, no bouncing/spinning */
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* The one entrance animation: a slow, quiet fade. Used sparingly. */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
-@keyframes slide-in-left {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.animate-fade-up {
-  animation: fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
 .animate-fade-in {
-  animation: fade-in 0.4s ease-out forwards;
+  animation: fade-in 1.2s ease-out both;
 }
-
-.animate-fade-in-delayed {
-  animation: fade-in 0.4s ease-out 0.3s both;
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in { animation: none; }
 }
-
-.animate-fade-in-delayed-2 {
-  animation: fade-in 0.4s ease-out 0.5s both;
-}
-
-.animate-slide-in-left {
-  animation: slide-in-left 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-}
-
-.animate-marquee {
-  animation: marquee 25s linear infinite;
-}
-
-/* Stagger children for nav drawer */
-.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.10s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.20s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.30s; }
 
 /* Hide scrollbar for horizontal carousels */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Hold-to-add — moving techwear hazard stripes over the charge fill */
-@keyframes hold-stripes {
-  from { background-position: 0 0; }
-  to   { background-position: 28px 0; }
-}
-.hold-stripes {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(255, 255, 255, 0.16) 0 1px,
-    transparent 1px 7px
-  );
-  background-size: 28px 28px;
-  animation: hold-stripes 0.5s linear infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .hold-stripes { animation: none; }
-}
-
-/* Access terminal — CRT scanlines + subtle flicker over the vault screen */
-@keyframes access-scan {
-  from { background-position: 0 0; }
-  to   { background-position: 0 6px; }
-}
-.access-scanlines {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.045) 0 1px,
-    transparent 1px 3px
-  );
-  animation: access-scan 0.5s steps(3) infinite;
-}
-
-/* Terminal vignette — deep on the dark gate (adds cinematic depth); a whisper
-   on light so the cement corners stay clean instead of going muddy grey. */
-.access-vignette {
-  background: radial-gradient(
-    120% 90% at 50% 42%,
-    rgba(255, 255, 255, 0.045) 0%,
-    rgba(5, 5, 5, 0) 42%,
-    rgba(0, 0, 0, 0.75) 100%
-  );
-}
-:root[data-theme="light"] .access-vignette {
-  background: radial-gradient(
-    120% 90% at 50% 42%,
-    rgba(255, 255, 255, 0.28) 0%,
-    transparent 55%,
-    rgba(0, 0, 0, 0.04) 100%
-  );
-}
-@keyframes access-flicker {
-  0%, 100% { opacity: 0.9; }
-  92% { opacity: 0.9; }
-  94% { opacity: 0.65; }
-  96% { opacity: 0.95; }
-  98% { opacity: 0.75; }
-}
-.access-flicker { animation: access-flicker 4s linear infinite; }
-
-/* Wrong code — shake the input line */
-@keyframes access-shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-7px); }
-  40% { transform: translateX(7px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-}
-.animate-access-shake { animation: access-shake 0.4s ease-in-out; }
-
-/* Terminal caret — steady blink */
-@keyframes access-caret-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-.access-caret { animation: access-caret-blink 1.05s steps(1) infinite; }
-
-/* Slow vertical scan-sweep, like a terminal boot pass */
-@keyframes access-sweep {
-  0% { transform: translateY(-10vh); opacity: 0; }
-  8% { opacity: 1; }
-  92% { opacity: 1; }
-  100% { transform: translateY(110vh); opacity: 0; }
-}
-.access-sweep { animation: access-sweep 16s linear infinite; }
-
-/* Access terminal glitch effects. */
-/* Chromatic-split glitch — bursts a mint + magenta offset copy of the text */
-.glitch { position: relative; display: inline-block; }
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: screen;
-}
-.glitch::before {
-  color: var(--accent);
-  text-shadow: -1px 0 var(--accent);
-  animation: glitch-a 3.2s infinite steps(1);
-}
-.glitch::after {
-  color: var(--accent-2);
-  text-shadow: 1px 0 var(--accent-2);
-  animation: glitch-b 3.7s infinite steps(1);
-}
-@keyframes glitch-a {
-  0%, 90%, 100% { opacity: 0; transform: translate(0); clip-path: inset(0 0 0 0); }
-  91% { opacity: 0.85; transform: translate(-2px, -1px); clip-path: inset(12% 0 78% 0); }
-  94% { opacity: 0.85; transform: translate(2px, 1px); clip-path: inset(62% 0 16% 0); }
-  97% { opacity: 0.85; transform: translate(-1px, 0); clip-path: inset(34% 0 44% 0); }
-}
-@keyframes glitch-b {
-  0%, 88%, 100% { opacity: 0; transform: translate(0); clip-path: inset(0 0 0 0); }
-  89% { opacity: 0.8; transform: translate(2px, 1px); clip-path: inset(70% 0 8% 0); }
-  92% { opacity: 0.8; transform: translate(-2px, -1px); clip-path: inset(20% 0 62% 0); }
-  96% { opacity: 0.8; transform: translate(1px, 1px); clip-path: inset(46% 0 30% 0); }
-}
-
-/* Feed monitor — occasional horizontal signal-jump */
-@keyframes access-signal-jump {
-  0%, 96%, 100% { transform: translateX(0); filter: none; }
-  97% { transform: translateX(-4px); }
-  98% { transform: translateX(5px); filter: brightness(1.25); }
-  99% { transform: translateX(-2px); }
-}
-.access-signal { animation: access-signal-jump 5.5s infinite steps(1); }
-
-@media (prefers-reduced-motion: reduce) {
-  .access-scanlines,
-  .access-flicker,
-  .animate-access-shake,
-  .access-caret,
-  .access-sweep,
-  .access-signal { animation: none; }
-  .glitch::before,
-  .glitch::after { display: none; }
-}

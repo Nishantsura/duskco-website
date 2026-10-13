@@ -11,7 +11,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "featured", label: "Featured" },
   { key: "price-asc", label: "Price: Low to High" },
   { key: "price-desc", label: "Price: High to Low" },
-  { key: "name-asc", label: "Name: A–Z" },
+  { key: "name-asc", label: "Name: A to Z" },
 ];
 
 function priceOf(p: Product) {
@@ -51,9 +51,9 @@ export function ShopGrid({ products }: { products: Product[] }) {
         <div className="relative">
           <button
             onClick={() => setOpen((o) => !o)}
-            className="font-primary text-[11px] font-bold tracking-[0.15em] text-ink uppercase"
+            className="t-label text-ink"
           >
-            Sort: {activeLabel} +
+            Sort: {activeLabel}
           </button>
           {open && (
             <>
@@ -62,7 +62,7 @@ export function ShopGrid({ products }: { products: Product[] }) {
                 onClick={() => setOpen(false)}
                 aria-hidden
               />
-              <div className="absolute right-0 top-full z-20 mt-2 min-w-[200px] rounded-[0.2rem] border border-line bg-surface shadow-lg overflow-hidden">
+              <div className="absolute right-0 top-full z-20 mt-2 min-w-[200px] border border-line bg-bg py-1">
                 {SORT_OPTIONS.map((opt) => (
                   <button
                     key={opt.key}
@@ -70,10 +70,8 @@ export function ShopGrid({ products }: { products: Product[] }) {
                       setSort(opt.key);
                       setOpen(false);
                     }}
-                    className={`block w-full px-4 py-2.5 text-left font-primary text-[11px] tracking-[0.12em] uppercase transition-colors ${
-                      sort === opt.key
-                        ? "bg-ink/5 font-bold text-ink"
-                        : "text-ink-muted hover:bg-ink/5"
+                    className={`t-label block w-full px-4 py-2.5 text-left transition-colors ${
+                      sort === opt.key ? "text-ink" : "text-ink-muted hover:text-ink"
                     }`}
                   >
                     {opt.label}
@@ -85,9 +83,9 @@ export function ShopGrid({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-10 py-8 sm:grid-cols-3 lg:grid-cols-4">
-        {sorted.map((product, i) => (
-          <ProductCard key={product.id} product={product} index={i} />
+      <div className="grid grid-cols-2 gap-x-3 gap-y-10 py-8 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4">
+        {sorted.map((product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </>

@@ -148,17 +148,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         {toast && (
           <motion.div
             key={toast.id}
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 24, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="pointer-events-none fixed inset-x-0 bottom-24 z-[80] flex justify-center px-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="pointer-events-none fixed inset-x-0 bottom-20 z-[80] flex justify-center px-5"
           >
-            <div className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-white/15 bg-black/70 px-5 py-3 font-primary text-[12px] font-medium tracking-[0.04em] text-white shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent-orange">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
-              </svg>
+            <div className="t-label pointer-events-auto bg-ink px-5 py-3 text-bg">
               {toast.message}
             </div>
           </motion.div>

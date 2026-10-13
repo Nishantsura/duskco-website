@@ -29,7 +29,7 @@ interface ChromeCtx {
 }
 
 const Ctx = createContext<ChromeCtx>({
-  theme: "dark",
+  theme: "light",
   toggle: () => {},
   setTheme: () => {},
   snap: false,
@@ -41,7 +41,7 @@ export function useChromeTheme() {
 }
 
 export function ChromeThemeProvider({
-  initialTheme = "dark",
+  initialTheme = "light",
   children,
 }: {
   initialTheme?: Theme;

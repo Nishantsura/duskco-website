@@ -2,90 +2,33 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { Maximize2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { ShopifyImage } from "@/lib/shopify/types";
 import { parseSpec } from "@/lib/product-copy";
 import { useNavVisibility, NAVBAR_HEIGHT } from "@/components/layout/nav-visibility";
 
-const LENS = 184; // magnifier diameter (px)
-const ZOOM = 2.4; // magnification factor
-
-type Lens = { left: number; top: number; tx: number; ty: number; w: number; h: number };
-
-// Hover magnifier — a circular loupe follows the cursor and shows the garment
-// magnified under it. Mouse only (touch has no hover); the mobile flow keeps the
-// tap-to-open lightbox instead.
+// A gallery image that opens the full screen viewer when clicked.
 function ZoomImage({
   src,
   alt,
   sizes,
   priority,
+  onOpen,
 }: {
   src: string;
   alt: string;
   sizes: string;
   priority?: boolean;
+  onOpen: () => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [lens, setLens] = useState<Lens | null>(null);
-
-  function onMove(e: React.MouseEvent) {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    if (x < 0 || y < 0 || x > r.width || y > r.height) {
-      setLens(null);
-      return;
-    }
-    const R = LENS / 2;
-    const w = r.width * ZOOM;
-    const h = r.height * ZOOM;
-    // Keep the loupe circle fully on the image…
-    const left = Math.min(Math.max(x, R), r.width - R) - R;
-    const top = Math.min(Math.max(y, R), r.height - R) - R;
-    // …while the magnified content still tracks the true cursor point.
-    const tx = Math.min(0, Math.max(LENS - w, R - x * ZOOM));
-    const ty = Math.min(0, Math.max(LENS - h, R - y * ZOOM));
-    setLens({ left, top, tx, ty, w, h });
-  }
-
   return (
-    <div
-      ref={ref}
-      onMouseMove={onMove}
-      onMouseLeave={() => setLens(null)}
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label="View larger"
       className="absolute inset-0 cursor-zoom-in"
     >
       <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
-      {lens && (
-        <div
-          className="pointer-events-none absolute z-10 overflow-hidden rounded-full"
-          style={{
-            width: LENS,
-            height: LENS,
-            left: lens.left,
-            top: lens.top,
-            boxShadow:
-              "0 12px 34px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,255,255,0.75)",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt=""
-            style={{
-              width: lens.w,
-              height: lens.h,
-              maxWidth: "none",
-              objectFit: "cover",
-              transform: `translate(${lens.tx}px, ${lens.ty}px)`,
-            }}
-          />
-        </div>
-      )}
-    </div>
+    </button>
   );
 }
 
@@ -94,15 +37,9 @@ function SpecCard({ specs, className = "" }: { specs: string[]; className?: stri
   if (specs.length === 0) return null;
   return (
     <div
-      className={`rounded-[2px] border border-line bg-ink/[0.03] px-4 py-3.5 ${className}`}
+      className={`border border-line px-4 py-4 ${className}`}
     >
-      <p className="mb-2.5 flex items-center gap-1.5 font-primary text-[9px] font-bold tracking-[0.24em] text-ink-faint uppercase">
-        <span
-          className="h-1 w-1 rounded-full"
-          style={{ background: "var(--accent)", boxShadow: "0 0 5px var(--accent)" }}
-        />
-        The Spec
-      </p>
+      <p className="t-label mb-3 text-ink-muted">Specification</p>
       <dl className="space-y-2">
         {specs.slice(0, 4).map((line) => {
           const { label, value } = parseSpec(line);
@@ -113,15 +50,15 @@ function SpecCard({ specs, className = "" }: { specs: string[]; className?: stri
             >
               {label ? (
                 <>
-                  <dt className="font-primary text-[10px] tracking-[0.1em] text-ink-faint uppercase">
+                  <dt className="t-label text-ink-muted">
                     {label}
                   </dt>
-                  <dd className="text-right font-primary text-[11px] font-medium text-ink">
+                  <dd className="t-body text-right">
                     {value}
                   </dd>
                 </>
               ) : (
-                <dd className="font-primary text-[11px] font-medium text-ink">
+                <dd className="t-body">
                   {value}
                 </dd>
               )}
@@ -274,9 +211,7 @@ export function ProductGallery({
   if (images.length === 0) {
     return (
       <div className="flex aspect-[3/4] items-center justify-center bg-surface">
-        <span className="font-primary text-sm font-light text-ink-faint">
-          No images available
-        </span>
+        <span className="t-label text-ink-faint">No images available</span>
       </div>
     );
   }
@@ -310,34 +245,24 @@ export function ProductGallery({
                 sizes="100vw"
                 className="object-cover"
                 priority={i === 0}
+                onClick={() => setZoomIdx(i)}
               />
             </div>
           ))}
         </div>
-
-        {/* Zoom affordance */}
-        <button
-          onClick={() => setZoomIdx(active)}
-          aria-label="Zoom image"
-          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 backdrop-blur-md transition-colors hover:text-white"
-        >
-          <Maximize2 size={15} strokeWidth={1.75} />
-        </button>
 
         {/* Sentinel — marks the natural position of the dock */}
         <div ref={sentinelRef} className="h-0 w-full" />
 
         {/* In-flow thumbnails — shown only when NOT stuck */}
         {images.length > 1 && !isStuck && (
-          <div className="flex gap-1.5 px-5 py-2.5">
+          <div className="flex gap-1.5 px-5 py-3">
             {images.map((img, i) => (
               <button
                 key={img.url}
                 onClick={() => scrollToSlide(i)}
-                className={`relative aspect-square w-14 flex-shrink-0 overflow-hidden transition-all duration-200 ${
-                  i === active
-                    ? "ring-[1.5px] ring-accent ring-offset-1 ring-offset-bg"
-                    : "opacity-40 ring-1 ring-line hover:opacity-70"
+                className={`relative aspect-[4/5] w-12 flex-shrink-0 overflow-hidden transition-opacity duration-300 ${
+                  i === active ? "opacity-100" : "opacity-40 hover:opacity-70"
                 }`}
               >
                 <Image
@@ -359,9 +284,9 @@ export function ProductGallery({
       {/* Fixed thumbnail dock — sits flush under the navbar and hides/shows with it (mobile only) */}
       {images.length > 1 && (
         <div
-          className={`fixed left-0 right-0 z-40 flex items-center gap-1.5 bg-bg/95 px-3 py-1.5 backdrop-blur-sm transition-transform duration-300 lg:hidden ${
+          className={`fixed left-0 right-0 z-40 flex items-center gap-1.5 border-b border-line bg-bg px-5 py-1.5 transition-transform duration-500 lg:hidden ${
             isStuck && !navHidden
-              ? "translate-y-0 shadow-[0_8px_20px_-12px_rgba(0,0,0,0.8)]"
+              ? "translate-y-0"
               : "pointer-events-none -translate-y-[calc(100%+44px)]"
           }`}
           style={{ top: NAVBAR_H }}
@@ -373,10 +298,8 @@ export function ProductGallery({
                 scrollToSlide(i);
                 carouselRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
-              className={`relative aspect-square w-5 flex-shrink-0 overflow-hidden transition-all duration-200 ${
-                i === active
-                  ? "ring-[1px] ring-accent ring-offset-[0.5px] ring-offset-bg"
-                  : "ring-1 ring-line hover:ring-line-strong"
+              className={`relative aspect-[4/5] w-5 flex-shrink-0 overflow-hidden ${
+                i === active ? "opacity-100" : "opacity-40"
               }`}
             >
               <Image
@@ -390,17 +313,7 @@ export function ProductGallery({
           ))}
 
           {selectedSize && (
-            <div className="ml-auto flex items-center">
-              <span
-                className="flex h-6 items-center gap-1 rounded-full pl-2.5 pr-2 font-street text-[11px] tracking-[0.08em] uppercase"
-                style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
-              >
-                {selectedSize}
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </span>
-            </div>
+            <span className="t-label ml-auto">Size · {selectedSize}</span>
           )}
         </div>
       )}
@@ -409,12 +322,13 @@ export function ProductGallery({
       <div className="hidden gap-2 p-2 lg:grid lg:grid-cols-2">
         {/* Left — sticky cover, spec card filling the space below */}
         <div className="sticky top-11 flex h-[calc(100vh-2.75rem-1rem)] flex-col gap-3 self-start">
-          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2px] bg-surface">
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface">
             <ZoomImage
               src={cover.url}
               alt={cover.altText || "Product cover"}
               sizes="30vw"
               priority
+              onOpen={() => setZoomIdx(0)}
             />
           </div>
 
@@ -428,12 +342,13 @@ export function ProductGallery({
             return (
               <div
                 key={img.url}
-                className="relative aspect-[4/5] w-full overflow-hidden rounded-[2px] bg-surface"
+                className="relative aspect-[4/5] w-full overflow-hidden bg-surface"
               >
                 <ZoomImage
                   src={img.url}
                   alt={img.altText || `Product image ${idx + 1}`}
                   sizes="30vw"
+                  onOpen={() => setZoomIdx(idx)}
                 />
               </div>
             );
@@ -444,7 +359,7 @@ export function ProductGallery({
       {/* ── Lightbox ── */}
       {zoomIdx !== null && images[zoomIdx] && (
         <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/92 backdrop-blur-sm"
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-bg text-ink"
           onClick={() => setZoomIdx(null)}
           role="dialog"
           aria-modal="true"
@@ -453,9 +368,9 @@ export function ProductGallery({
           <button
             onClick={() => setZoomIdx(null)}
             aria-label="Close"
-            className="absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/70 backdrop-blur-md transition-colors hover:border-white/30 hover:text-white"
+            className="t-label absolute right-5 top-4 z-10 transition-opacity hover:opacity-60 sm:right-10"
           >
-            <X size={20} strokeWidth={1.75} />
+            Close
           </button>
 
           {images.length > 1 && (
@@ -466,9 +381,9 @@ export function ProductGallery({
                   setZoomIdx((i) => (i === null ? i : (i - 1 + images.length) % images.length));
                 }}
                 aria-label="Previous"
-                className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 backdrop-blur-md transition-colors hover:border-white/30 hover:text-white sm:left-8"
+                className="t-label absolute left-5 top-1/2 z-10 -translate-y-1/2 transition-opacity hover:opacity-60 sm:left-10"
               >
-                <ChevronLeft size={22} strokeWidth={1.75} />
+                Prev
               </button>
               <button
                 onClick={(e) => {
@@ -476,15 +391,15 @@ export function ProductGallery({
                   setZoomIdx((i) => (i === null ? i : (i + 1) % images.length));
                 }}
                 aria-label="Next"
-                className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 backdrop-blur-md transition-colors hover:border-white/30 hover:text-white sm:right-8"
+                className="t-label absolute right-5 top-1/2 z-10 -translate-y-1/2 transition-opacity hover:opacity-60 sm:right-10"
               >
-                <ChevronRight size={22} strokeWidth={1.75} />
+                Next
               </button>
             </>
           )}
 
           <div
-            className="relative h-[84vh] w-[92vw] max-w-[1100px]"
+            className="relative h-[80vh] w-[76vw] max-w-[1000px]"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -497,7 +412,7 @@ export function ProductGallery({
             />
           </div>
 
-          <span className="absolute bottom-6 left-1/2 -translate-x-1/2 font-primary text-[11px] font-medium tracking-[0.2em] text-white/50">
+          <span className="t-label absolute bottom-6 left-1/2 -translate-x-1/2 tabular-nums text-ink-muted">
             {zoomIdx + 1} / {images.length}
           </span>
         </div>

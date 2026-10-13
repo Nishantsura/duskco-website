@@ -50,21 +50,19 @@ export default async function CollectionPage({
       <main>
         <ListViewTracker listType="collection" collection={handle} productCount={allProducts.length} />
 
-        <section className="flex min-h-[42vh] items-end overflow-hidden bg-black px-6 pb-12 sm:px-10">
+        <section className="flex min-h-[42vh] items-end overflow-hidden bg-black px-5 pb-12 sm:px-10">
           <div className="mx-auto w-full max-w-[1440px]">
-            <p className="mb-3 font-primary text-[11px] font-medium tracking-[0.28em] text-white/60 uppercase">
-              DUSK&CO — The Archive
-            </p>
-            <h1 className="font-street text-[clamp(48px,10vw,120px)] leading-[0.9] tracking-[0.01em] text-white uppercase">
+            <p className="t-label mb-3 text-white/70">Archive</p>
+            <h1 className="t-display capitalize text-white">
               {handle.replace(/-/g, " ")}
             </h1>
           </div>
         </section>
 
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-10">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10 py-14 sm:grid-cols-3 lg:grid-cols-4">
-            {allProducts.map((product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-10">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-10 py-14 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4">
+            {allProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
@@ -83,29 +81,22 @@ export default async function CollectionPage({
 
       {/* The payoff — the pieces */}
       <section id="pieces" className="bg-bg">
-        <div className="mx-auto max-w-[1440px] px-6 py-20 sm:px-10 sm:py-28">
-          <header className="mb-14 text-center">
-            <p className="font-primary text-[11px] font-medium tracking-[0.28em] text-ink-muted uppercase">
-              {collection.title} — The Collection
-            </p>
-            <h2 className="mt-3 font-street text-[clamp(44px,8vw,96px)] leading-[0.9] tracking-[0.01em] text-ink uppercase">
-              The Pieces
-            </h2>
-            <p className="mx-auto mt-4 max-w-md font-primary text-[14px] font-light leading-[1.7] text-ink-muted">
-              {products.length > 0
-                ? `${products.length} pieces in the drop. Once they're gone, they're gone.`
-                : "The drop lands soon. Join the waitlist to be first."}
+        <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-10 sm:py-24">
+          <header className="mb-12 flex items-end justify-between gap-6 border-b border-line pb-4">
+            <h2 className="t-label">{collection.title}</h2>
+            <p className="t-label text-ink-muted">
+              {products.length > 0 ? `${products.length} pieces` : "Coming soon"}
             </p>
           </header>
 
           {products.length > 0 ? (
-            <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-              {products.map((product, i) => (
-                <ProductCard key={product.id} product={product} index={i} />
+            <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <p className="py-20 text-center font-primary text-sm font-light text-ink-muted">
+            <p className="t-body py-20 text-center text-ink-muted">
               No products in this collection yet.
             </p>
           )}
