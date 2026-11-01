@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/shopify/types";
@@ -10,8 +10,9 @@ import { useChromeTheme } from "@/components/layout/chrome-theme";
 /* ────────────────────────────────────────────────────────────
  * Stage One · After Hours
  * One hero, then five pieces, one full viewport each (snapped).
- * Monochrome and still: the garments are the only colour, and
- * nothing moves except a quiet second image on hover.
+ * Silver white and mono, in the gate's voice (DESIGN.md): the
+ * garments are the only colour, and nothing moves except a quiet
+ * second image on hover.
  * ──────────────────────────────────────────────────────────── */
 
 // One shared grid shell so every section lines up on the same rails.
@@ -149,7 +150,16 @@ function PieceChapter({
 export function DropStory({ products }: { products: Product[] }) {
   const { setSnap } = useChromeTheme();
 
-  // Full-viewport section snapping while this page is mounted.
+  // Full-viewport section snapping while this page is mounted. The html class
+  // is toggled in a layout effect so it is gone before Next scrolls the next
+  // page to the top; a mandatory snap still on <html> pins it to the bottom.
+  useLayoutEffect(() => {
+    const el = document.documentElement;
+    el.classList.add("snap-page");
+    return () => el.classList.remove("snap-page");
+  }, []);
+
+  // The footer reads this to snap its own bar.
   useEffect(() => {
     setSnap(true);
     return () => setSnap(false);
@@ -162,17 +172,20 @@ export function DropStory({ products }: { products: Product[] }) {
   })).filter((p): p is { story: Story; product: Product } => Boolean(p.product));
 
   return (
-    <div className="bg-bg">
-      {/* Hero — always over the photograph */}
-      <section className="relative flex h-svh w-full snap-start snap-always flex-col justify-end overflow-hidden bg-black">
+    <div className="gate-scope bg-bg">
+      {/* Hero — the photograph bare, the title centred on it */}
+      <section className="relative flex h-dvh w-full snap-start snap-always items-center justify-center overflow-hidden bg-pearl text-graphite">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={HERO_IMAGE} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
+        <img
+          src={HERO_IMAGE}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
 
-        <div className={`${SHELL} animate-fade-in relative z-10 pb-20 text-white sm:pb-24`}>
-          <p className="t-label text-white/75">Stage One</p>
-          <h1 className="t-display mt-3">After Hours</h1>
-          <p className="t-body mt-4 text-white/75">Five pieces. Five worlds. One night.</p>
+        <div className="animate-fade-in relative z-10 px-5 text-center">
+          <p className="t-label">Stage 01</p>
+          <h1 className="t-display mt-5">After Hours</h1>
+          <p className="t-label mt-5 opacity-60">Five pieces · Five worlds · One night</p>
         </div>
       </section>
 

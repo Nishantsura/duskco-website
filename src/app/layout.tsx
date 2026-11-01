@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Inter } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/header";
 import { NavVisibilityProvider } from "@/components/layout/nav-visibility";
@@ -18,6 +18,14 @@ import "./globals.css";
 // The one house typeface for all text.
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// The gate and the shop pages: monospaced, industrial, restrained.
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  weight: ["400", "500"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -60,7 +68,7 @@ export default async function RootLayout({
       lang="en"
       data-theme={theme}
       suppressHydrationWarning
-      className={`${inter.variable} ${expansiva.variable} h-full antialiased`}
+      className={`${inter.variable} ${plexMono.variable} ${expansiva.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <PostHogProvider>

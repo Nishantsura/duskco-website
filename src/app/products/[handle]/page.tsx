@@ -47,7 +47,7 @@ export default async function ProductPage({
   const relatedProducts = await getProducts(4);
 
   return (
-    <main className="bg-bg pt-11 text-ink">
+    <main className="gate-scope bg-bg pt-11 text-ink">
       <div className="mx-auto max-w-[1600px]">
         <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr]">
           <ProductGallery images={images} specs={product.garmentDetails ?? DEFAULT_GARMENT} />

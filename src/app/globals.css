@@ -1,27 +1,35 @@
 @import "tailwindcss";
 
 /* ── Dusk&Co design tokens ────────────────────────────────────────────────
-   Monochrome by design: black, white and the greys between. No accent colour.
+   Silver white and graphite: cool whites, steel greys, near black. No accent
+   colour.
    Default is LIGHT; [data-theme="dark"] flips the whole site from one attribute
    on <html>. Components read these via bg-bg / text-ink / border-line etc.
    `--accent` is kept as an alias of ink so any accent utility stays monochrome. */
 :root {
-  --bg: #ffffff;
-  --surface: #f4f4f4;
-  --surface-2: #eaeaea;
-  --ink: #0a0a0a;
-  --ink-muted: rgba(10, 10, 10, 0.6);
-  --ink-faint: rgba(10, 10, 10, 0.4);
-  --line: rgba(10, 10, 10, 0.1);
-  --line-strong: rgba(10, 10, 10, 0.28);
+  --bg: #f4f5f6;
+  --surface: #e9eaec;
+  --surface-2: #dfe1e4;
+  --ink: #121314;
+  --ink-muted: rgba(18, 19, 20, 0.6);
+  --ink-faint: rgba(18, 19, 20, 0.4);
+  --line: rgba(18, 19, 20, 0.1);
+  --line-strong: rgba(18, 19, 20, 0.28);
   --danger: #b42318;
 
   --accent: var(--ink);
   --accent-ink: var(--bg);
-  --accent-soft: rgba(10, 10, 10, 0.05);
+  --accent-soft: rgba(18, 19, 20, 0.05);
 
   --background: var(--bg);
   --foreground: var(--ink);
+
+  /* The gate palette. Fixed over the photograph, so it does not flip with the
+     theme. */
+  --pearl: #f4f5f6;
+  --silver: #dfe1e4;
+  --steel: #8b8f94;
+  --graphite: #121314;
 }
 
 :root[data-theme="dark"] {
@@ -54,9 +62,16 @@
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
 
+  --color-pearl: var(--pearl);
+  --color-silver: var(--silver);
+  --color-steel: var(--steel);
+  --color-graphite: var(--graphite);
+
   /* One typeface for everything. The DUSK&CO wordmark keeps Expansiva. */
   --font-primary: var(--font-inter);
   --font-logo: var(--font-expansiva);
+  /* The gate only. */
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
 .font-logo {
@@ -75,7 +90,7 @@ body {
   color: var(--bg);
 }
 
-/* Full-viewport section snapping — toggled by ChromeThemeProvider on pages that
+/* Full-viewport section snapping — toggled by the page itself (DropStory) on pages that
    opt in (the drop story). Reduced-motion opts out. */
 html.snap-page {
   scroll-snap-type: y mandatory;
@@ -261,6 +276,137 @@ button:disabled,
 }
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in { animation: none; }
+}
+
+/* ── The gate (home, waitlist, access) ──────────────────────────────────
+   Mono, uppercase, graphite on the photograph. See DESIGN.md. */
+.gate-title {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+.gate-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: color-mix(in srgb, var(--graphite) 60%, transparent);
+}
+/* Text link, not a button. The primary carries its underline; the rest
+   show it on hover. */
+.gate-action {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: underline 1px transparent;
+  text-underline-offset: 6px;
+  transition: text-decoration-color 0.2s ease, opacity 0.2s ease;
+}
+.gate-action:not(:disabled):hover,
+.gate-action-primary {
+  text-decoration-color: currentColor;
+}
+.gate-action-primary:not(:disabled):hover {
+  opacity: 0.6;
+}
+.gate-action:disabled {
+  opacity: 0.35;
+}
+/* Field — one hairline underneath, centred mono. */
+.gate-field {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--graphite) 35%, transparent);
+  border-radius: 0;
+  padding: 0;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--graphite);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.gate-field::placeholder {
+  color: color-mix(in srgb, var(--graphite) 35%, transparent);
+}
+.gate-field:focus,
+.gate-field:focus-within {
+  border-bottom-color: var(--graphite);
+}
+@media (min-width: 640px) {
+  .gate-title { font-size: 20px; }
+  .gate-label { font-size: 12px; }
+  .gate-action { font-size: 14px; }
+}
+
+/* The headline types itself in: letters cut on in a scattered order, some
+   flickering once. Hard steps, no easing. --d is set per letter. */
+@keyframes gate-cut {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  45% { opacity: 0; }
+  60%, 100% { opacity: 1; }
+}
+.gate-cut {
+  opacity: 0;
+  animation: gate-cut 0.42s steps(1, end) var(--d, 0s) forwards;
+}
+@keyframes gate-on {
+  to { opacity: 1; }
+}
+.gate-after {
+  opacity: 0;
+  animation: gate-on 0s linear var(--d, 0s) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gate-cut,
+  .gate-after {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* Collections and product pages: the shop in the gate's voice. Wrap a page in
+   .gate-scope and its type roles and controls switch to mono. */
+.gate-scope {
+  font-family: var(--font-mono);
+}
+.gate-scope .t-label {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+}
+/* Running copy and prices: sized to be read, not glanced at. */
+.gate-scope .t-body {
+  font-size: 13px;
+  line-height: 1.8;
+  letter-spacing: 0;
+}
+@media (min-width: 640px) {
+  .gate-scope .t-body { font-size: 14px; }
+}
+.gate-scope .t-title {
+  font-size: clamp(17px, 1.8vw, 22px);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.gate-scope .t-display {
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.gate-scope .btn {
+  font-weight: 400;
+  letter-spacing: 0.16em;
+}
+.gate-scope .size-cell {
+  font-size: 11px;
+  letter-spacing: 0.08em;
 }
 
 /* Hide scrollbar for horizontal carousels */

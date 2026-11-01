@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useChromeTheme } from "./chrome-theme";
@@ -13,33 +12,38 @@ const PAGES = [
   { label: "Privacy", href: "/policies/privacy" },
 ];
 
+// What the visible bar links to, in reading order.
+const BAR_LINKS = [
+  { label: "Shipping", href: "/policies/shipping" },
+  { label: "Returns", href: "/policies/refund" },
+  { label: "Privacy", href: "/policies/privacy" },
+  { label: "Help", href: "/contact" },
+];
+
 const SOCIALS = [
   { label: "Instagram", href: "https://instagram.com/duskandco" },
   { label: "Snapchat", href: "https://snapchat.com/add/duskandco" },
 ];
 
+const INSTAGRAM = SOCIALS[0].href;
+
+// The Instagram glyph, drawn at the weight of the header icons.
+function InstagramIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" aria-hidden>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function Footer() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const barRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { snap } = useChromeTheme();
 
-  // On the homepage and the access page the content fills the viewport, so
-  // the bar floats over it instead of sitting in normal flow.
-  const isHome = pathname === "/";
-  const floatOverlay = isHome || pathname === "/access";
-  // Over the home photograph the marks are white; elsewhere they follow ink.
-  const tone = isHome ? "text-white" : "text-ink";
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (barRef.current && !barRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // The gate (home and access) shows no visible bar and no socials.
+  const isGate = pathname === "/" || pathname === "/access";
 
   return (
     <>
@@ -57,67 +61,41 @@ export function Footer() {
         <p>&copy; {new Date().getFullYear()} Dusk&Co. All rights reserved.</p>
       </footer>
 
+      {!isGate && (
       <div
         className={
-          floatOverlay
-            ? "pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center pb-5"
-            : snap
-              ? "flex snap-end justify-center border-t border-line py-8"
-              : "flex justify-center border-t border-line py-8"
+          snap
+            ? "flex snap-end justify-center border-t border-line py-8"
+            : "flex justify-center border-t border-line py-8"
         }
       >
-        <div
-          ref={barRef}
-          className={`relative ${tone} ${floatOverlay ? "pointer-events-auto" : ""}`}
-        >
-          {/* Pages — a plain list that opens above the bar */}
-          {menuOpen && (
-            <nav className="absolute bottom-full right-0 mb-3 flex min-w-[160px] flex-col border border-line bg-bg py-2 text-ink">
-              {PAGES.map((page) => (
-                <Link
-                  key={page.href}
-                  href={page.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="t-label px-4 py-2 transition-opacity hover:opacity-60"
-                >
-                  {page.label}
-                </Link>
-              ))}
-            </nav>
-          )}
-
-          <div className="t-label flex items-center gap-4 px-5 sm:gap-7">
-            <Link href="/" className="font-logo text-[10px] font-bold tracking-[0.08em]">
+        {/* Phones: the links on one line, the logo and Instagram under them.
+            From md: one line, logo first. */}
+        <div className="t-label flex flex-col items-center gap-5 px-5 font-mono text-ink md:flex-row md:gap-8">
+          <nav aria-label="Help and policies" className="flex items-center gap-5 md:order-2 md:gap-8">
+            {BAR_LINKS.map((l) => (
+              <Link key={l.href} href={l.href} className="opacity-70 transition-opacity hover:opacity-100">
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="flex items-center gap-6 md:contents">
+            <Link href="/" className="font-logo text-[10px] font-bold tracking-[0.08em] md:order-1">
               DUSK&CO
             </Link>
-            {SOCIALS.map((s) => (
-              <a
-                key={s.href}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="opacity-70 transition-opacity hover:opacity-100"
-              >
-                {s.label}
-              </a>
-            ))}
             <a
-              href="mailto:help@dusk.co"
-              className="hidden opacity-70 transition-opacity hover:opacity-100 sm:inline"
+              href={INSTAGRAM}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="opacity-70 transition-opacity hover:opacity-100 md:order-3"
             >
-              Email
+              <InstagramIcon />
             </a>
-            <button
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-expanded={menuOpen}
-              aria-label="Site pages"
-              className="t-label opacity-70 transition-opacity hover:opacity-100"
-            >
-              {menuOpen ? "Close" : "Info"}
-            </button>
           </div>
         </div>
       </div>
+      )}
     </>
   );
 }

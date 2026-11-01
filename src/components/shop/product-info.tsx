@@ -162,7 +162,7 @@ export function ProductInfo({ product }: { product: Product }) {
 
   return (
     <div className="flex flex-col lg:h-full">
-      <p className="t-label text-ink-muted">Stage One · Limited</p>
+      <p className="t-label text-ink-muted">Stage 01 · Limited</p>
 
       {/* Title + price */}
       <h1 className="t-title mt-3 uppercase">{displayName}</h1>

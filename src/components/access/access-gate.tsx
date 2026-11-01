@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { HERO_IMAGE } from "@/components/home/hero-section";
+import { GateBar, GatePhoto } from "@/components/home/gate-frame";
 
 const SAFE_NEXT = /^\/(shop|collections|products)(\/|$)/;
 const PREFIX = "DUSK";
@@ -70,36 +70,24 @@ export function AccessGate() {
   const granted = status === "granted";
 
   return (
-    <main className="relative flex min-h-svh items-center justify-center overflow-hidden bg-bg px-5 py-28 text-ink">
-      {/* The hero photograph, blurred under a veil — same feel as the waitlist */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={HERO_IMAGE}
-        alt=""
-        aria-hidden
-        className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
-      />
-      <div aria-hidden className="absolute inset-0 bg-bg/75" />
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pearl px-5 py-28 text-center font-mono uppercase text-graphite">
+      <GatePhoto />
+      <GateBar right="Stage 01" />
 
-      <div className="relative z-10 w-full max-w-sm">
-        <p className="t-label text-ink-muted">Access</p>
-        <h1 className="t-title mt-4">Enter your access code</h1>
-        <p className="t-body mt-4 text-ink-muted">
-          Stage One is open to waitlist members. Use the code from your invitation email.
-        </p>
+      <div className="relative z-10 w-full max-w-xs">
+        <h1 className="gate-title">Enter access code</h1>
+        <p className="gate-label mt-6">From your invitation</p>
 
-        <form onSubmit={onSubmit} className="mt-10" noValidate>
+        <form onSubmit={onSubmit} className="mt-14" noValidate>
           <label className="block">
-            <span className="t-label text-ink-muted">Access code</span>
+            <span className="sr-only">Access code</span>
             <span
-              className={`mt-1 flex h-11 items-center gap-3 border-b transition-colors ${
-                denied ? "border-danger" : "border-line-strong focus-within:border-ink"
+              className={`gate-field flex items-center justify-center gap-3 ${
+                denied ? "!border-graphite" : ""
               }`}
             >
-              <span className="select-none text-[14px] tracking-[0.12em] text-ink-faint">
-                {PREFIX}
-              </span>
-              <span aria-hidden className="h-4 w-px bg-line-strong" />
+              <span className="select-none opacity-50">{PREFIX}</span>
+              <span aria-hidden className="h-4 w-px bg-graphite/35" />
               <input
                 ref={inputRef}
                 value={value}
@@ -117,33 +105,30 @@ export function AccessGate() {
                 data-1p-ignore
                 data-lpignore="true"
                 data-form-type="other"
-                className="h-full min-w-0 flex-1 bg-transparent text-[14px] tracking-[0.12em] text-ink outline-none placeholder:text-ink-faint"
+                className="h-full w-[10ch] min-w-0 bg-transparent tracking-[0.12em] outline-none placeholder:text-graphite/35"
               />
             </span>
           </label>
 
           <p
-            className={`t-body mt-3 min-h-[1.65em] ${denied ? "text-danger" : "text-ink-muted"}`}
+            className="gate-label mt-4 min-h-[1.4em] text-graphite"
             role={denied ? "alert" : undefined}
           >
-            {denied ? error : granted ? "Code accepted. Opening Stage One." : ""}
+            {denied ? error : granted ? "Accepted" : ""}
           </p>
 
           <button
             type="submit"
             disabled={!value || status === "loading" || granted}
-            className="btn btn-primary mt-4 w-full"
+            className="gate-action gate-action-primary mt-10"
           >
-            {status === "loading" ? "Checking" : granted ? "Opening" : "Continue"}
+            {status === "loading" ? "Checking" : granted ? "Opening" : "Enter"}
           </button>
         </form>
 
-        <p className="t-body mt-8 text-ink-muted">
-          No code yet?{" "}
-          <Link href="/?join" className="link text-ink">
-            Join the waitlist
-          </Link>
-        </p>
+        <Link href="/?join" className="gate-action gate-label mt-16 inline-block">
+          No code · Join the waitlist
+        </Link>
       </div>
     </main>
   );

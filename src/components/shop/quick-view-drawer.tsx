@@ -111,7 +111,7 @@ export function QuickViewDrawer() {
       />
 
       <div
-        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col bg-bg text-ink transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
+        className={`gate-scope fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col bg-bg text-ink transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
           isOpen ? "translate-x-0 border-l border-line" : "translate-x-full"
         }`}
         aria-hidden={!isOpen}

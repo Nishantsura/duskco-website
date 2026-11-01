@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
@@ -70,12 +69,6 @@ export function ChromeThemeProvider({
       document.documentElement.dataset.theme === "light" ? "dark" : "light"
     );
   }, [setTheme]);
-
-  useEffect(() => {
-    const el = document.documentElement;
-    el.classList.toggle("snap-page", snap);
-    return () => el.classList.remove("snap-page");
-  }, [snap]);
 
   return (
     <Ctx.Provider value={{ theme, toggle, setTheme, snap, setSnap }}>

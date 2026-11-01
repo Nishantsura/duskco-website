@@ -47,7 +47,7 @@ export default async function CollectionPage({
   if (!collection) {
     const allProducts = await getProducts(20);
     return (
-      <main>
+      <main className="gate-scope">
         <ListViewTracker listType="collection" collection={handle} productCount={allProducts.length} />
 
         <section className="flex min-h-[42vh] items-end overflow-hidden bg-black px-5 pb-12 sm:px-10">
@@ -73,7 +73,7 @@ export default async function CollectionPage({
   const products = collection.products.edges.map((e) => e.node);
 
   return (
-    <main>
+    <main className="gate-scope">
       <ListViewTracker listType="collection" collection={handle} productCount={products.length} />
 
       {/* The stages — up to 3 scroll-driven story chapters */}

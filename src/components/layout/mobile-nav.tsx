@@ -16,6 +16,9 @@ const SECONDARY = [
   { label: "Instagram", href: "https://instagram.com/duskandco", external: true },
   { label: "Snapchat", href: "https://snapchat.com/add/duskandco", external: true },
   { label: "help@dusk.co", href: "mailto:help@dusk.co", external: false },
+  { label: "Shipping", href: "/policies/shipping", external: false },
+  { label: "Returns", href: "/policies/refund", external: false },
+  { label: "Privacy", href: "/policies/privacy", external: false },
 ];
 
 export function MobileNav({ open, onClose }: MobileNavProps) {

@@ -17,9 +17,9 @@ export function Header() {
   const pathname = usePathname();
 
   // Routes that open on a full-bleed image — the nav floats transparent over
-  // them (with white marks) until the user scrolls.
+  // them until the user scrolls. Its marks are white under difference
+  // blending, so they invert against light and dark photographs alike.
   const isHeroRoute =
-    pathname === "/" ||
     pathname === "/shop" ||
     pathname.startsWith("/collections/");
   const isTransparent = isHeroRoute && !scrolled;
@@ -28,15 +28,22 @@ export function Header() {
   const nextTheme = theme === "dark" ? "light" : "dark";
   const count = cart?.totalQuantity ?? 0;
 
+  // The gate (home and access) draws its own bare top line, no nav.
+  if (pathname === "/" || pathname === "/access") return null;
+
   return (
     <>
+      {/* Only the slide animates. The transparent/solid swap is instant: the
+          blend mode and mark colour can't fade, so fading the background
+          under them flashes an inverted band. Keyboard focus brings a hidden
+          bar back. */}
       <header
-        className={`fixed top-0 z-50 w-full transition-[transform,background-color,border-color] duration-500 ${
+        className={`fixed top-0 z-50 w-full border-b transition-transform duration-500 ease-[cubic-bezier(0.2,0,0,1)] focus-within:translate-y-0 motion-reduce:transition-none ${
           hidden ? "-translate-y-full" : "translate-y-0"
-        } ${isTransparent ? "border-b border-transparent bg-transparent" : "border-b border-line bg-bg"}`}
+        } ${isTransparent ? "border-transparent bg-transparent mix-blend-difference" : "border-line bg-bg"}`}
       >
         <div
-          className={`mx-auto flex max-w-[90rem] items-center justify-between px-5 sm:px-10 ${mark}`}
+          className={`mx-auto flex max-w-[90rem] items-center justify-between px-5 font-mono sm:px-10 ${mark}`}
           style={{ height: NAVBAR_HEIGHT }}
         >
           {/* Left — menu */}

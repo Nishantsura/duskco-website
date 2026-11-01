@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { WaitlistModal } from "./waitlist-modal";
+import { CutOn, CutText, GateBar, GatePhoto, cutEnd } from "./gate-frame";
 
-export const HERO_IMAGE = "/Cover%203.png";
+const HEADLINE = "By invitation only";
+const CUT_START = 0.35; // s before the first letter
 
 export function HeroSection({ openWaitlist = false }: { openWaitlist?: boolean }) {
   const [waitlistOpen, setWaitlistOpen] = useState(openWaitlist);
@@ -17,31 +19,25 @@ export function HeroSection({ openWaitlist = false }: { openWaitlist?: boolean }
 
   return (
     <>
-      <section className="relative h-svh w-full overflow-hidden bg-black">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={HERO_IMAGE}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        {/* Quiet floor so the copy stays legible on any frame */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
+      <section className="relative h-dvh w-full overflow-hidden bg-pearl font-mono uppercase text-graphite">
+        <GatePhoto />
+        <GateBar right="Stage 01" />
 
-        <div className="animate-fade-in absolute inset-x-0 bottom-20 z-10 mx-auto max-w-[90rem] px-5 text-white sm:bottom-24 sm:px-10">
-          <p className="t-label text-white/75">Stage One</p>
-          <h1 className="t-display mt-3">By invitation only</h1>
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-5 text-center">
+          <CutText text={HEADLINE} start={CUT_START} />
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <button
-              onClick={() => setWaitlistOpen(true)}
-              className="btn btn-light w-full sm:w-auto"
-            >
+          {/* The links cut on once the word is whole. */}
+          <CutOn
+            at={cutEnd(HEADLINE, CUT_START)}
+            className="mt-20 flex flex-wrap items-center justify-center gap-x-12 gap-y-5 sm:mt-28 sm:gap-x-18"
+          >
+            <button onClick={() => setWaitlistOpen(true)} className="gate-action gate-action-primary">
               Join the waitlist
             </button>
-            <Link href="/access" className="btn btn-ghost-light w-full sm:w-auto">
+            <Link href="/access" className="gate-action">
               Enter access code
             </Link>
-          </div>
+          </CutOn>
         </div>
       </section>
 

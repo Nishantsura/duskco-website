@@ -1,17 +1,22 @@
 # Dusk&Co Design System
 
-Quiet, monochrome, editorial. Reference points: Zara, Yeezy, institutional
+Quiet, silver white, editorial. Reference points: Zara, Yeezy, institutional
 signage. The photography and the garments carry the colour; the interface stays
 out of the way.
+
+The gate (home page, waitlist overlay, access page) and the shop pages
+(collections, product, cart and quick view drawers) follow their own direction:
+see [DESIGN.md](DESIGN.md).
 
 ---
 
 ## Principles
 
-1. **Monochrome only.** Black, white and the greys between. No accent colour, no
+1. **Silver white only.** Cool whites, steel greys and graphite. No accent colour, no
    gradients (except a plain dark floor under hero copy for legibility), no glows.
-2. **One typeface.** Inter for all text. The DUSK&CO wordmark keeps Expansiva and
-   is never used for anything else.
+2. **Two typefaces.** Inter for running pages (about, contact, policies). IBM
+   Plex Mono for the header, the gate and the shop pages. The DUSK&CO wordmark
+   keeps Expansiva and is never used for anything else.
 3. **Few elements.** Every screen has one primary action. Remove decoration before
    adding anything.
 4. **Square.** No rounded corners, pills or circles. Hairline borders only.
@@ -29,10 +34,10 @@ Light is the default. `[data-theme="dark"]` on `<html>` flips everything.
 
 | Token | Light | Dark | Tailwind |
 |---|---|---|---|
-| `--bg` | `#ffffff` | `#0b0b0b` | `bg-bg` |
-| `--surface` | `#f4f4f4` | `#141414` | `bg-surface` |
-| `--surface-2` | `#eaeaea` | `#1d1d1d` | `bg-surface-2` |
-| `--ink` | `#0a0a0a` | `#f2f2f2` | `text-ink` |
+| `--bg` | `#f4f5f6` | `#0b0b0b` | `bg-bg` |
+| `--surface` | `#e9eaec` | `#141414` | `bg-surface` |
+| `--surface-2` | `#dfe1e4` | `#1d1d1d` | `bg-surface-2` |
+| `--ink` | `#121314` | `#f2f2f2` | `text-ink` |
 | `--ink-muted` | ink at 60% | ink at 60% | `text-ink-muted` |
 | `--ink-faint` | ink at 40% | ink at 40% | `text-ink-faint` |
 | `--line` | ink at 10% | ink at 12% | `border-line` |

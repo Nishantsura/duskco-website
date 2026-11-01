@@ -284,7 +284,7 @@ export function ProductGallery({
       {/* Fixed thumbnail dock — sits flush under the navbar and hides/shows with it (mobile only) */}
       {images.length > 1 && (
         <div
-          className={`fixed left-0 right-0 z-40 flex items-center gap-1.5 border-b border-line bg-bg px-5 py-1.5 transition-transform duration-500 lg:hidden ${
+          className={`fixed left-0 right-0 z-40 flex items-center gap-1.5 border-b border-line bg-bg px-5 py-1.5 transition-transform duration-500 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none lg:hidden ${
             isStuck && !navHidden
               ? "translate-y-0"
               : "pointer-events-none -translate-y-[calc(100%+44px)]"
