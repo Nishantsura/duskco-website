@@ -2,19 +2,47 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 export const HERO_IMAGE = "/Cover%203.png";
+export const HERO_VIDEO = "/videos/hero.mp4";
+export const HERO_POSTER = "/videos/hero-poster.jpg";
+
+/** Behind the photograph the page is pearl. Lives only while a gate screen is
+ *  mounted. */
+function GateGround() {
+  return <style>{"html,body{background:var(--pearl)}"}</style>;
+}
 
 /** The gate photograph, full bleed and untouched. Fills its nearest
  *  positioned parent. See DESIGN.md. */
 export function GatePhoto() {
   return (
     <>
-      {/* Behind the photograph the page is pearl. Lives only while a gate
-          screen is mounted. */}
-      <style>{"html,body{background:var(--pearl)}"}</style>
+      <GateGround />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={HERO_IMAGE}
         alt=""
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    </>
+  );
+}
+
+/** The gate footage, in place of the photograph: full bleed, silent, looping,
+ *  shown exactly as shot. The poster is the first frame, so the still and the
+ *  footage are the same picture and nothing jumps when playback starts. */
+export function GateVideo() {
+  return (
+    <>
+      <GateGround />
+      <video
+        src={HERO_VIDEO}
+        poster={HERO_POSTER}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
         aria-hidden
         className="absolute inset-0 h-full w-full object-cover"
       />
@@ -92,12 +120,23 @@ export function CutOn({
   );
 }
 
-/** The only marks on a gate screen: the wordmark top left, one mark top right. */
-export function GateBar({ right }: { right: ReactNode }) {
+/** The only marks on a gate screen: the wordmark top left, one mark top right.
+ *
+ *  `tone` picks how they sit on what's behind them:
+ *  - `invert` (default) is white under difference blending, which reads over a
+ *    pale overlay or a photograph that swings light to dark.
+ *  - `light` is plain pearl, for the dark footage on the home gate, where
+ *    difference blending turns the wordmark a muddy grey against the sky. */
+export function GateBar({
+  right,
+  tone = "invert",
+}: {
+  right: ReactNode;
+  tone?: "invert" | "light";
+}) {
+  const marks = tone === "light" ? "text-pearl" : "text-white mix-blend-difference";
   return (
-    // White under difference blending inverts against whatever is behind it,
-    // so the marks read over dark hair and pale sky alike.
-    <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 pt-6 text-white mix-blend-difference sm:px-12 sm:pt-10">
+    <div className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 pt-6 sm:px-12 sm:pt-10 ${marks}`}>
       <Link
         href="/"
         className="font-logo text-[15px] font-bold uppercase tracking-[0.08em] sm:text-[17px]"

@@ -56,6 +56,20 @@ These are fixed and never flip with the theme. The site-wide light tokens
   posing for the lens.
 - Shown exactly as shot: no filter, no wash, no gradient, no grain, no blur.
   The silver white is the interface around the photograph, never applied to it.
+- Both gates run footage (`<GateVideo />`) in place of the still: silent,
+  looping, full bleed. Its poster is the first frame, so nothing jumps when
+  playback starts. The footage is denoised — it is shot at dusk and the grain
+  is the sensor's, not a look.
+- The home gate shows it bare. `/access` lays the waitlist overlay's frosted
+  pearl (`bg-pearl/85 backdrop-blur-xl`) over it, so both ways in read as one
+  room.
+- Type over the bare footage goes white rather than graphite. Difference
+  blending is for a pale overlay; across a frame holding both sky and a dark
+  figure it goes muddy in the mid-tones, so `<GateBar tone="light" />` puts
+  plain pearl marks on the home gate instead.
+- On phones the crop brings the shirt's print up under the actions, so they
+  shift down past it with a transform — never a margin, which would push the
+  headline up into the sky.
 
 ## Layout
 
@@ -151,8 +165,8 @@ serif headlines.
 
 ## Where it lives
 
-- `src/components/home/gate-frame.tsx`: `GatePhoto`, `GateBar`, `HERO_IMAGE`,
-  `CutText`, `CutOn`, `cutEnd`
+- `src/components/home/gate-frame.tsx`: `GatePhoto`, `GateVideo`, `GateBar`,
+  `HERO_IMAGE`, `HERO_VIDEO`, `HERO_POSTER`, `CutText`, `CutOn`, `cutEnd`
 - `src/components/home/hero-section.tsx`: the home page and the cut headline
 - `src/components/home/waitlist-modal.tsx`: the waitlist overlay
 - `src/components/access/access-gate.tsx`: the access page

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { GateBar, GatePhoto } from "@/components/home/gate-frame";
+import { GateBar, GateVideo } from "@/components/home/gate-frame";
 
 const SAFE_NEXT = /^\/(shop|collections|products)(\/|$)/;
 const PREFIX = "DUSK";
@@ -71,7 +71,10 @@ export function AccessGate() {
 
   return (
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-pearl px-5 py-28 text-center font-mono uppercase text-graphite">
-      <GatePhoto />
+      <GateVideo />
+      {/* The same frosted pearl the waitlist overlay lays over the footage, so
+          the two ways in look like one room. */}
+      <div aria-hidden className="absolute inset-0 z-[5] bg-pearl/85 backdrop-blur-xl" />
       <GateBar right="Stage 01" />
 
       <div className="relative z-10 w-full max-w-xs">
