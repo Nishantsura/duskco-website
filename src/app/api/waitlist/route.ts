@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { rateLimit, clientIp } from "@/lib/access/rate-limit";
+import { getAdminAccessToken } from "@/lib/shopify/admin";
 
 export async function POST(request: Request) {
   try {
@@ -23,22 +24,19 @@ export async function POST(request: Request) {
 
     const timestamp = new Date().toISOString();
 
-    // Every configured channel is attempted. The signup succeeds as long as the
-    // lead lands in at least one durable place, so a single channel being down
-    // (e.g. Shopify customer writes pending merchant approval) never loses a lead.
-    const [shopifyResult, sheetResult, emailResult, confirmResult] =
+    // Shopify is the lead store: a signup is a customer tagged "waitlist", which
+    // the drop-day selection (scripts/send-codes.mjs) later draws from. The founder
+    // notification is a durable fallback inbox record; the client confirmation is a
+    // courtesy. Every channel is attempted so one being down never loses a lead.
+    const [shopifyResult, emailResult, confirmResult] =
       await Promise.allSettled([
         createShopifyCustomer({ email, name }),
-        appendToGoogleSheet({ email, name, timestamp }),
         sendEmailNotification({ email, name, timestamp }),
         sendClientConfirmation({ email, name }),
       ]);
 
     if (shopifyResult.status === "rejected") {
       console.error("Shopify customer error:", shopifyResult.reason);
-    }
-    if (sheetResult.status === "rejected") {
-      console.error("Google Sheets error:", sheetResult.reason);
     }
     if (emailResult.status === "rejected") {
       console.error("Founder notification error:", emailResult.reason);
@@ -48,11 +46,10 @@ export async function POST(request: Request) {
       console.error("Client confirmation error:", confirmResult.reason);
     }
 
-    // Lead capture is judged on durable stores only (Shopify / Sheet / founder
+    // Lead capture is judged on durable stores only (Shopify customer / founder
     // notification) — the client confirmation is a courtesy, not a lead store.
     const captured =
       shopifyResult.status === "fulfilled" ||
-      (sheetResult.status === "fulfilled" && sheetResult.value === "stored") ||
       (emailResult.status === "fulfilled" && emailResult.value === "stored");
 
     if (!captured) {
@@ -84,12 +81,14 @@ async function createShopifyCustomer({
   const [firstName, ...rest] = name.trim().split(" ");
   const lastName = rest.join(" ") || "";
 
+  const adminToken = await getAdminAccessToken();
+
   const res = await fetch(
-    "https://duskco-brqicsmo.myshopify.com/admin/api/2025-04/customers.json",
+    `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/${process.env.SHOPIFY_API_VERSION ?? "2025-04"}/customers.json`,
     {
       method: "POST",
       headers: {
-        "X-Shopify-Access-Token": process.env.SHOPIFY_ADMIN_TOKEN ?? "",
+        "X-Shopify-Access-Token": adminToken,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -110,46 +109,6 @@ async function createShopifyCustomer({
     if (res.status === 422 && err.errors?.email) return;
     throw new Error(`Shopify error ${res.status}: ${JSON.stringify(err)}`);
   }
-}
-
-// Appends the lead to a Google Sheet via SheetDB (https://sheetdb.io), which
-// turns a Google Sheet into a writable REST API — no Google Cloud project or
-// Apps Script deploy needed. The column keys below must match the Sheet's header
-// row exactly (Name | Email | Timestamp). Returns "stored" on success, "skipped"
-// if unconfigured, and throws on a real failure.
-async function appendToGoogleSheet({
-  email,
-  name,
-  timestamp,
-}: {
-  email: string;
-  name: string;
-  timestamp: string;
-}): Promise<"stored" | "skipped"> {
-  const apiUrl = process.env.SHEETDB_API_URL;
-
-  if (!apiUrl) {
-    console.warn(
-      "Sheet storage not configured. Set SHEETDB_API_URL to your SheetDB API endpoint."
-    );
-    return "skipped";
-  }
-
-  const res = await fetch(apiUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      data: [{ Name: name || "—", Email: email, Timestamp: timestamp }],
-    }),
-  });
-
-  // SheetDB returns 201 { created: N } on success.
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`SheetDB error: ${res.status} ${text}`);
-  }
-
-  return "stored";
 }
 
 async function sendEmailNotification({
