@@ -57,9 +57,10 @@ These are fixed and never flip with the theme. The site-wide light tokens
 - Shown exactly as shot: no filter, no wash, no gradient, no grain, no blur.
   The silver white is the interface around the photograph, never applied to it.
 - Both gates run footage (`<GateVideo />`) in place of the still: silent,
-  looping, full bleed. Its poster is the first frame, so nothing jumps when
-  playback starts. The footage is denoised — it is shot at dusk and the grain
-  is the sensor's, not a look.
+  looping, full bleed, shown as shot. Its poster is the first frame, so
+  nothing jumps when playback starts. Check a new clip for sensor grain before
+  it goes in: a clean one encodes untouched, and only a noisy one earns noise
+  reduction, which is restoration, never a look.
 - The home gate shows it bare. `/access` lays the waitlist overlay's frosted
   pearl (`bg-pearl/85 backdrop-blur-xl`) over it, so both ways in read as one
   room.
