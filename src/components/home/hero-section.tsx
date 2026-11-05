@@ -28,7 +28,9 @@ export function HeroSection({ openWaitlist = false }: { openWaitlist?: boolean }
             sky as well as the dark figure, and difference goes muddy over the
             mid-tones in between. */}
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-5 text-center text-white">
-          <CutText text={HEADLINE} start={CUT_START} />
+          {/* Dropped clear of the lit building edge the crop puts behind it,
+              onto the figure. The actions keep their own place below. */}
+          <CutText text={HEADLINE} start={CUT_START} className="gate-title translate-y-12" />
 
           {/* The links cut on once the word is whole. On phones the crop puts
               the shirt's white print right where they'd land, so they shift
