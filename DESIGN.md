@@ -57,10 +57,21 @@ These are fixed and never flip with the theme. The site-wide light tokens
 - Shown exactly as shot: no filter, no wash, no gradient, no grain, no blur.
   The silver white is the interface around the photograph, never applied to it.
 - Both gates run footage (`<GateVideo />`) in place of the still: silent,
-  looping, full bleed, shown as shot. Its poster is the first frame, so
-  nothing jumps when playback starts. Check a new clip for sensor grain before
-  it goes in: a clean one encodes untouched, and only a noisy one earns noise
-  reduction, which is restoration, never a look.
+  full bleed, at the camera's own resolution. Its poster is the first frame,
+  so nothing jumps when playback starts.
+- The clip bounces rather than cuts: it is built as a ping-pong, every frame
+  forward then back again, skipping the end frames so neither turn holds a
+  doubled frame. Native `loop` then joins tail to head without a seam, and
+  nothing in the footage has to match its own first frame.
+- A bounce means reversed frames, and reversed frames mean one re-encode —
+  a bitstream cannot be played backwards. Encode it well above the point
+  where more bits stop showing (PSNR against the source plateaus near 50 dB;
+  anything past ~46 dB is already invisible) rather than at the highest
+  number the disk will take. Audio comes out, the moov atom goes up front.
+- Weight is the price of all this: a bounce is twice the clip's length. Check
+  the file size against the gate's patience before swapping a longer clip in.
+  Noise reduction is a separate matter, for a grainy clip only, and it is
+  restoration, never a look.
 - The home gate shows it bare. `/access` lays the waitlist overlay's frosted
   pearl (`bg-pearl/85 backdrop-blur-xl`) over it, so both ways in read as one
   room.
